@@ -38,7 +38,7 @@
     "axios": "^1.7.7",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "core-js": "^3.37.1",
-    "eslint": "^9.11.1",
+    "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.37.1",
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.12",
