@@ -4,11 +4,12 @@ import eslint from "vite-plugin-eslint";
 export default defineConfig({
   plugins: [
     react(),
-    eslint({
-      cache: false,
-      include: ["src/**/*.ts", "src/**/*.tsx"],
-      exclude: ["node_modules"],
-    }),
+    process.env.NODE_ENV !== "production" &&
+      eslint({
+        cache: false,
+        include: ["src/**/*.ts", "src/**/*.tsx"],
+        exclude: ["node_modules"],
+      }),
   ],
   server: {
     port: 3005,
