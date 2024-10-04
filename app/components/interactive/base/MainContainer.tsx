@@ -93,7 +93,7 @@ export default function MainContainer(): JSX.Element {
         if (cardsSect instanceof HTMLElement) cardsSect.style.paddingTop = "0";
         if (panelSect instanceof HTMLElement) {
           panelSect.style.paddingTop = "0";
-          panelSect.style.paddingBottom = "10rem";
+          panelSect.style.paddingBottom = "5rem";
         }
         if (innerWidth > 520 && innerWidth <= 1025) numRows = 2;
         /* eslint-disable */

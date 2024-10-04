@@ -97,18 +97,24 @@ export default function UserProfileDropdown({ user }: UserProfileDropdownProps):
         <div id='logoutDiv' className='flexJSt cGap1v noInvert'>
           <span className='bolded mg-04t noInvert'>Logout</span>
           <button type='button' className='transparent-el-bg noInvert' id='logoutBtn' style={{ position: "relative" }}>
-            <a
-              id='logoutAnchor'
-              target='_self'
-              rel='nofollow'
+            <div
+              id='logoutAnchorDlg'
               style={{
                 zIndex: "10",
                 position: "absolute",
                 color: "transparent",
-              }}
-              href='#'>
-              <Link to='/login'>LOGIN</Link>
-            </a>
+              }}>
+              <Link
+                to='/login'
+                rel='nofollow'
+                onClick={() => {
+                  localStorage.removeItem("authorized");
+                  localStorage.removeItem("user");
+                  localStorage.removeItem("pw");
+                }}>
+                LOGIN
+              </Link>
+            </div>
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='16'

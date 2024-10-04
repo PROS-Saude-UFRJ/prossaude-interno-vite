@@ -186,7 +186,7 @@
   }
 
   #cardsSect {
-    max-width: 98vw;
+    max-width: 97%;
   }
 
   #panelBtn {
@@ -217,7 +217,6 @@
 @media screen and (min-width: 1025px) {
   .baseBody {
     .main-container {
-      min-height: 60rem;
       grid-template-rows: 88%;
     }
     .header-main-container {
@@ -252,18 +251,18 @@
     }
     #bgDiv {
       height: 46rem;
-      min-height: 70rem;
+      min-height: 50rem;
     }
     #cardsSect {
       grid-template-columns: repeat(4, 24.8%);
       gap: 0.5rem;
       max-width: 98%;
-      padding-inline: 1.3vw 0.5vw;
-      transform: translateY(-2.3rem);
+      padding-inline: 0.5vw 1vw;
+      transform: translateY(-4.5rem);
     }
     #panelSect {
       padding-top: 1rem;
-      transform: translateY((-5.8rem));
+      transform: translateY((-8.5rem));
     }
   }
 }
@@ -567,12 +566,16 @@
   .baseBody {
     div {
       #bgDiv {
+        max-height: 125rem !important;
         min-height: 125.625rem;
       }
     }
     .header-main-text {
       margin-left: 0;
       margin-right: 1rem;
+    }
+    #cardsSect {
+      padding-left: 1.3%;
     }
   }
 }

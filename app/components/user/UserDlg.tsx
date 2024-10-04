@@ -94,18 +94,24 @@ export default function UserDlg({
               className='transparent-el-bg noInvert'
               id='logoutBtnDlg'
               style={{ position: "relative" }}>
-              <a
+              <div
                 id='logoutAnchorDlg'
-                target='_self'
-                rel='nofollow'
-                href='#'
                 style={{
                   zIndex: "10",
                   position: "absolute",
                   color: "transparent",
                 }}>
-                <Link to='/login'>LOGIN</Link>
-              </a>
+                <Link
+                  to='/login'
+                  rel='nofollow'
+                  onClick={() => {
+                    localStorage.removeItem("authorized");
+                    localStorage.removeItem("user");
+                    localStorage.removeItem("pw");
+                  }}>
+                  LOGIN
+                </Link>
+              </div>
               <svg
                 xmlns='http://www.w3.org/2000/svg'
                 width='16'
