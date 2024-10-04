@@ -37,13 +37,6 @@ export default function LoginInputs(): JSX.Element {
           }
         };
         spin();
-        navigator.language.startsWith("pt-")
-          ? alert(
-              "Esta é apenas uma versão de teste estático do sistema. O login irá prosseguir independente da validez do formulário.",
-            )
-          : alert(
-              "This is a client only, static, test execution. The login will be forwarded regardless of the form validity.",
-            );
         setTimeout(() => {
           const spinTime =
             parseFloat(
