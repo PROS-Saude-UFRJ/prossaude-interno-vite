@@ -1,4 +1,4 @@
-import styles from "./ReactSpinner.module.scss";
+import styles from "./reactSpinner.module.scss";
 export default function ReactSpinner({ scale = 0.8 }: { scale: number }): JSX.Element {
   return (
     <div style={{ transform: `scale(${scale})` }}>
