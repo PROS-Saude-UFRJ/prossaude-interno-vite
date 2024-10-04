@@ -29,6 +29,8 @@ __tests__/
 # production
 /build
 /app/build
+/dist
+dist/
 /snippets.json
 /app/snippets.json
 notes/

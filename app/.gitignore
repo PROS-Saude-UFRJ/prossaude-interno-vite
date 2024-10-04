@@ -28,6 +28,8 @@ __tests__/
 
 # production
 /build
+/dist
+dist/
 /app/build
 /snippets.json
 /app/snippets.json
