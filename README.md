@@ -7,3 +7,5 @@ O projeto foi construído com Vite, Webpack, TypeScript e Django, e tem a inten�
 
 This is a repository for building a test, static, clientside deploy of the application for the PROSSaúde Health Clinic (Universidade Federal do Rio de Janeiro).
 The project is built with Vite, Webpack and TypeScript, and meant to test mainly the UI/UX.
+
+https://prossaude-interno.netlify.app/login
