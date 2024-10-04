@@ -6,6 +6,7 @@ import HeaderDate from "../../components/interactive/def/HeaderDate";
 import Watcher from "../../components/interactive/def/Watcher";
 import SwitchDiv from "../../components/interactive/def/SwitchDiv";
 import Spinner from "../../components/icons/Spinner";
+import Guard from "../../components/interactive/def/Guard";
 const Form = lazy(() => import("../../components/interactive/ag/AgForm"));
 export default function AGPage(): JSX.Element {
   return (
@@ -34,6 +35,7 @@ export default function AGPage(): JSX.Element {
         </main>
       </div>
       <Watcher routeCase='ag' />
+      <Guard />
     </ErrorBoundary>
   );
 }

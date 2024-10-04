@@ -27,7 +27,7 @@ export default function LoginInputs(): JSX.Element {
         const uW = document.getElementById("userWarn"),
           pW = document.getElementById("pwWarn");
         if (uW instanceof HTMLElement) uW.style.display = "none";
-        if (pW instanceof HTMLElement) pW.style.display = "none";
+        if (pW instanceof HTMLElement) pW.textContent = "";
         const spin = (): void => {
           setMsg(<Spinner fs={true} />);
           const form = formRef.current ?? resSpan.closest("form");
@@ -58,7 +58,14 @@ export default function LoginInputs(): JSX.Element {
                 .find(a => (a as CSSAnimation).animationName === "spinner-border")
                 ?.startTime?.toString() ?? "",
             );
-          setTimeout(() => navigate("/base"), Number.isFinite(spinTime) ? spinTime : 2000);
+          setTimeout(
+            () => {
+              localStorage.removeItem("pw");
+              localStorage.setItem("authorized", "true");
+              navigate("/base");
+            },
+            Number.isFinite(spinTime) ? spinTime : 2000,
+          );
         }, 1200);
       } catch (e) {
         console.error(`Error executing exeLogin:\n${(e as Error).message}`);

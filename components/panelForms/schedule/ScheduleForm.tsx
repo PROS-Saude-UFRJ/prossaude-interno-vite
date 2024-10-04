@@ -40,6 +40,7 @@ import { assignFormAttrs } from "../../../src/lib/global/gModel";
 import { PanelCtx } from "../defs/client/SelectLoader";
 import { ExportHandler } from "../../../src/lib/global/declarations/classes";
 import { useSearchParams } from "react-router-dom";
+import useExportHandler from "../../../src/lib/hooks/useExportHandler";
 export default function ScheduleForm({ mainRoot }: ScheduleFormProps): JSX.Element {
   const cols = [1, 2, 3, 4, 5, 6, 7, 8, 9],
     hours: validSchedHours[] = [18, 19, 20, 21],
@@ -351,6 +352,7 @@ export default function ScheduleForm({ mainRoot }: ScheduleFormProps): JSX.Eleme
       }
     };
   }, [userClass]);
+  useExportHandler("scheduleExporter", formRef.current);
   useEffect(() => assignFormAttrs(formRef.current));
   return (
     <ErrorBoundary FallbackComponent={() => <GenericErrorComponent message='Erro carregando agenda!' />}>

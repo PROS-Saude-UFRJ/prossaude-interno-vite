@@ -709,7 +709,7 @@ export class ExportHandler {
           }
         };
       if (namer) {
-        const writeNamedFile = (namer: HTMLElement): void => {
+        const writeNamedFile = (namer: Element | string): void => {
           if (
             namer instanceof HTMLInputElement ||
             namer instanceof HTMLSelectElement ||
@@ -767,13 +767,19 @@ export class ExportHandler {
                 namer.tagName
               }form_${fullDate}.xlsx`,
             );
-          } else throw new Error(`namer unqualified for naming spreadsheet`);
+          } else if (typeof namer === "string") {
+            fetchProcess(wb);
+            writeFile(wb, `data_${context}_${namer.trim().replace(/\s/g, "__")}_form_${fullDate}.xlsx`);
+          }
         };
         if (typeof namer === "string") {
           if ((scope ?? document).querySelector(namer)) {
             fetchProcess(wb);
             writeNamedFile((scope ?? document).querySelector(namer)!);
-          } else throw new Error(`Error validating namer.`);
+          } else {
+            fetchProcess(wb);
+            writeNamedFile(namer);
+          }
         }
         if (typeof namer === "object") {
           fetchProcess(wb);
@@ -809,7 +815,6 @@ export class ExportHandler {
         console.error(`Failed fetching Canvas: ${e}`);
       }
     }
-    console.log(canvasBlobs);
     const zip = new JSZip();
     for (const [idf, blob] of Object.entries(canvasBlobs)) {
       try {
@@ -840,25 +845,26 @@ export class Validator {
   #validUsers: Map<string, { p: string; a: boolean }>;
   constructor() {
     this.#validUsers = new Map([
-      ["YW5kcmVtYWxpbmFAeWFob28uY29tLmJy", { p: "YURtTHVGJmluUFNELTA=", a: true }],
-      ["YW5nZWxhZXN0YWdpb0B5YWhvby5jb20uYnI=", { p: "b2QmJmVkJiZtZWQz", a: true }],
-      ["QWxhbnNmLm5zYW50YW5hQGdtYWlsLmNvbQ==", { p: "dGkmJmFMVkNwczU=", a: true }],
-      ["bnV0cmlhbGluZW1hcnRpbmV6QGdtYWlsLmNvbQ==", { p: "bnV0JiZlZGZpczIq", a: true }],
-      ["bWFsaW5lY3Jpc0BnbWFpbC5jb20=", { p: "bWwmY3ImJnVGckpQUmE1Kg==", a: true }],
-      ["RG9oZDUzNkBnbWFpbC5jb20=", { p: "dGlVQT1hZHNBUyo=", a: true }],
-      ["ZXJpY2hwYWRpbGhhZHNAZ21haWwuY29t", { p: "dWFUST1BRFNhbCYmcGQq", a: true }],
-      ["Z2Vyc29ubWFjaGFkby5taWJAZ21haWwuY29tDQo=", { p: "Z3JNaERkJnBzUkEqKg0K", a: true }],
-      ["anVsaWFlZWZkdWZyakBnbWFpbC5jb20=", { p: "akxlRiZwc0c2JA==", a: true }],
-      ["anVnc2FsbGVzQGdtYWlsLmNvbQ==", { p: "akdzUHM3KiY4", a: true }],
-      ["anVubmkucmFtYWxob0BnbWFpbC5jb20=", { p: "ak5DR29QQioqYQ==", a: true }],
-      ["a2FyZW5iLnNhbnRpYWdvMjdAZ21haWwuY29t", { p: "a3JTdEVmJnBzZDdBKg==", a: true }],
-      ["bWFyY296LmFyYXVqb3pAZ21haWwuY29tDQo=", { p: "bXJTbUJNdGhMcDImR3JwaCoqDQo=", a: true }],
-      ["bWFyaWFjbGFyYWc0MjJAZ21haWwuY29t", { p: "bVJjRzQmJnBkMjI0Kg==", a: true }],
-      ["ZGV2LnBobWNAZ21haWwuY29t", { p: "cEhwV3BSWU0qJjI=", a: true }],
-      ["cGhzYW1wYWlvNTAzQGdtYWlsLmNvbQ==", { p: "cEhTZUYmJnBzMTAq", a: true }],
-      ["cHJvc3NhdWRldWZyakBnbWFpbC5jb20=", { p: "b3JnJiZudXQmJmVkJiZvZCYmbWVkMTkq", a: true }],
-      ["cmFmYWVsZWR1YXJkbzIwNDBAZ21haWwuY29t", { p: "cmZERCpwc2QtMQ==", a: true }],
-      ["dmlueW1hcmluaG8xMkBnbWFpbC5jb20=", { p: "dlltUiZQc0QqLTA=", a: true }],
+      ["YW5kcmVtYWxpbmFAeWFob28uY29tLmJy", { p: "YURtTHVGJmluUFNELTA=", a: true }], //am
+      ["YW5nZWxhZXN0YWdpb0B5YWhvby5jb20uYnI=", { p: "b2QmJmVkJiZtZWQz", a: true }], //an
+      ["QWxhbnNmLm5zYW50YW5hQGdtYWlsLmNvbQ==", { p: "dGkmJmFMVkNwczU=", a: true }], //al
+      ["bnV0cmlhbGluZW1hcnRpbmV6QGdtYWlsLmNvbQ==", { p: "bnV0JiZlZGZpczIq", a: true }], //al
+      ["bWFsaW5lY3Jpc0BnbWFpbC5jb20=", { p: "bWwmY3ImJnVGckpQUmE1Kg==", a: true }], //mc
+      ["RG9oZDUzNkBnbWFpbC5jb20=", { p: "dGlVQT1hZHNBUyo=", a: true }], //d
+      ["ZXJpY2hwYWRpbGhhZHNAZ21haWwuY29t", { p: "dWFUST1BRFNhbCYmcGQq", a: true }], //e
+      ["R2Vyc29ubWFjaGFkby5taWJAZ21haWwuY29t", { p: "Z3JNaERkJnBzUkEqKg0K", a: true }], //g
+      ["anVsaWFlZWZkdWZyakBnbWFpbC5jb20=", { p: "akxlRiZwc0c2JA==", a: true }], //je
+      ["anVnc2FsbGVzQGdtYWlsLmNvbQ==", { p: "akdzUHM3KiY4", a: true }], //jug
+      ["anVubmkucmFtYWxob0BnbWFpbC5jb20=", { p: "ak5DR29QQioqYQ==", a: true }], //jc
+      ["a2FyZW5iLnNhbnRpYWdvMjdAZ21haWwuY29t", { p: "a3JTdEVmJnBzZDdBKg==", a: true }], //k
+      ["bWFyY296LmFyYXVqb3pAZ21haWwuY29t", { p: "bXJTbUJNdGhMcDImR3JwaCoqDQo=", a: true }], //ms
+      ["bWFyaWFjbGFyYWc0MjJAZ21haWwuY29t", { p: "bVJjRzQmJnBkMjI0Kg==", a: true }], //mc
+      ["ZGV2LnBobWNAZ21haWwuY29t", { p: "cEhwV3BSWU0qJjI=", a: true }], //pd
+      ["cGhzYW1wYWlvNTAzQGdtYWlsLmNvbQ==", { p: "cEhTZUYmJnBzMTAq", a: true }], //pe
+      ["cHJvc3NhdWRldWZyakBnbWFpbC5jb20=", { p: "b3JnJiZudXQmJmVkJiZvZCYmbWVkMTkq", a: true }], //p
+      ["YXJvbi5iLjk2QGdtYWlsLmNvbQ==", { p: "NzY1NjJmM0Eq", a: true }],
+      ["cmFmYWVsZWR1YXJkbzIwNDBAZ21haWwuY29t", { p: "cmZERCpwc2QtMQ==", a: true }], //r
+      ["dmlueW1hcmluaG8xMkBnbWFpbC5jb20=", { p: "dlltUiZQc0QqLTA=", a: true }], //v
     ]);
   }
   public async checkLogin(u: string, p: string): Promise<boolean> {
