@@ -15,6 +15,7 @@ import Spinner from "../../icons/Spinner";
 import { ClickEvaluator } from "../../../src/lib/global/declarations/classes";
 import { useNavigate } from "react-router-dom";
 export default function LoginInputs(): JSX.Element {
+  let isSpinning = false;
   const anchorRef = useRef<nullishAnchor>(null),
     formRef = useRef<nullishForm>(null),
     spanRef = useRef<nullishSpan>(null),
@@ -24,11 +25,10 @@ export default function LoginInputs(): JSX.Element {
       try {
         if (!(formRef.current instanceof HTMLFormElement)) throw new Error(`Failed to validate form instance`);
         if (!(resSpan instanceof HTMLElement)) throw new Error(`Failed to validate span reference`);
-        const uW = document.getElementById("userWarn"),
-          pW = document.getElementById("pwWarn");
+        const uW = document.getElementById("userWarn");
         if (uW instanceof HTMLElement) uW.style.display = "none";
-        if (pW instanceof HTMLElement) pW.textContent = "";
         const spin = (): void => {
+          isSpinning = true;
           setMsg(<Spinner fs={true} />);
           const form = formRef.current ?? resSpan.closest("form");
           if (form instanceof HTMLElement) {
@@ -36,30 +36,32 @@ export default function LoginInputs(): JSX.Element {
             form.style.filter = "grayscale(40%)";
           }
         };
-        spin();
-        setTimeout(() => {
-          const spinTime =
-            parseFloat(
-              document
-                .getAnimations()
-                .find(a => (a as CSSAnimation).animationName === "spinner-border")
-                ?.timeline?.currentTime?.toString() ?? "",
-            ) -
-            parseFloat(
-              document
-                .getAnimations()
-                .find(a => (a as CSSAnimation).animationName === "spinner-border")
-                ?.startTime?.toString() ?? "",
+        if (!isSpinning) {
+          spin();
+          setTimeout(() => {
+            const spinTime =
+              parseFloat(
+                document
+                  .getAnimations()
+                  .find(a => (a as CSSAnimation).animationName === "spinner-border")
+                  ?.timeline?.currentTime?.toString() ?? "",
+              ) -
+              parseFloat(
+                document
+                  .getAnimations()
+                  .find(a => (a as CSSAnimation).animationName === "spinner-border")
+                  ?.startTime?.toString() ?? "",
+              );
+            setTimeout(
+              () => {
+                localStorage.removeItem("pw");
+                localStorage.setItem("authorized", "true");
+                navigate("/base");
+              },
+              Number.isFinite(spinTime) ? spinTime : 2000,
             );
-          setTimeout(
-            () => {
-              localStorage.removeItem("pw");
-              localStorage.setItem("authorized", "true");
-              navigate("/base");
-            },
-            Number.isFinite(spinTime) ? spinTime : 2000,
-          );
-        }, 1200);
+          }, 1200);
+        }
       } catch (e) {
         console.error(`Error executing exeLogin:\n${(e as Error).message}`);
       }
@@ -214,6 +216,7 @@ export default function LoginInputs(): JSX.Element {
               onClick={ev => {
                 ev.preventDefault();
                 if (ev.currentTarget.firstElementChild instanceof HTMLAnchorElement) {
+                  localStorage.setItem("shouldTrustNavigate", "true");
                   ev.currentTarget.firstElementChild.focus();
                   ev.currentTarget.firstElementChild.click();
                 }
