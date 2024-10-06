@@ -1,4 +1,4 @@
-import { validateForm } from "../../../src/lib/global/handlers/gHandlers";
+import { registerPersistInputs, validateForm } from "../../../src/lib/global/handlers/gHandlers";
 import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
 import { Fragment } from "react";
 import Name from "../def/Name";
@@ -36,9 +36,24 @@ import ConfirmLocId from "../def/ConfirmLocId";
 import ConfirmDate from "../def/ConfirmDate";
 import Signature from "../def/Signature";
 import SectConfirmBtns from "../def/SectConfirmBtns";
+import { useRef, useEffect } from "react";
+import useDataProvider from "../../../src/lib/hooks/useDataProvider";
+import { nullishForm } from "../../../src/lib/global/declarations/types";
 export default function EdFisForm(): JSX.Element {
+  const f = useRef<nullishForm>(null);
+  useEffect(() => {
+    registerPersistInputs({
+      f: f.current,
+      textareas: true,
+      selects: true,
+      inputTypes: ["date", "number", "text", "checkbox", "radio"],
+      queriesToExclude: ['[role="switch"]'],
+    });
+  }, []);
+  useDataProvider(f.current);
   return (
     <form
+      ref={f}
       name='ed_form'
       action='submit_ed_form'
       encType='multipart/form-data'

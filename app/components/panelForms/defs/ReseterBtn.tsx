@@ -1,9 +1,9 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { ReseterBtnProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
+import { ReseterBtnProps } from "../../../src/lib/global/declarations/interfacesCons";
 import { nullishBtn } from "../../../src/lib/global/declarations/types";
 import { panelRoots } from "../../../src/vars";
 import { scheduleReset } from "../panelFormsData";
-import { syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
+import { checkForReset, syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import ResetDlg from "../../alerts/ResetDlg";
@@ -34,7 +34,9 @@ export default function ReseterBtn({ renderForm }: ReseterBtnProps): JSX.Element
         className='btn btn-warning flexAlItCt flexJC flexBasis50 bolded opaquelightEl widFull noInvert'
         name='btnResetSched'
         ref={resetBtnRef}
-        onClick={toggleResetSchdDlg}>
+        onClick={ev => {
+          /regist/gi.test(location.search) ? checkForReset(ev) : toggleResetSchdDlg();
+        }}>
         Resetar Formulário
       </button>
       {shouldDisplayResetDlg && (

@@ -19,7 +19,7 @@ export default function LocComp(): JSX.Element {
           })
         }
       />
-      <span role='group' className='halfSpanCheck halfR flexAlItCt noInvert'>
+      <label role='group' htmlFor='compNumNullId' className='halfSpanCheck halfR flexAlItCt noInvert'>
         <input
           type='checkbox'
           name='compNumNullName'
@@ -40,7 +40,7 @@ export default function LocComp(): JSX.Element {
               : blockeableInput?.removeAttribute("disabled");
           }}
         />
-      </span>
+      </label>
     </>
   );
 }

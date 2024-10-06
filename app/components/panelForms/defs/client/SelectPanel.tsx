@@ -1,8 +1,8 @@
 import { AppRootContext } from "../../../../src/App";
 import { AppRootContextType } from "../../../../src/lib/global/declarations/interfaces";
-import { DataProvider } from "../../../../src/lib/locals/panelPage/declarations/classesCons";
+import { DataProvider } from "../../../../src/lib/global/declarations/classesCons";
 import { ErrorBoundary } from "react-error-boundary";
-import { MainPanelProps } from "../../../../src/lib/locals/panelPage/declarations/interfacesCons";
+import { MainPanelProps } from "../../../../src/lib/global/declarations/interfacesCons";
 import { camelToKebab, kebabToCamel } from "../../../../src/lib/global/gModel";
 import { createRoot } from "react-dom/client";
 import { handleLinkChanges } from "../../../../src/lib/global/handlers/gRoutingHandlers";

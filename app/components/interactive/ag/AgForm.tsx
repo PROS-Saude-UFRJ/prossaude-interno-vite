@@ -11,7 +11,7 @@ import FamOnc from "./FamOnc";
 import FamPulm from "./FamPulm";
 import RadioPairDoces from "./RadioPairDoces";
 import AntMedFs from "./AntMedFs";
-import { validateForm } from "../../../src/lib/global/handlers/gHandlers";
+import { registerPersistInputs, validateForm } from "../../../src/lib/global/handlers/gHandlers";
 import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
 import Name from "../def/Name";
 import SocialName from "../def/SocialName";
@@ -40,9 +40,24 @@ import HASDivAdd from "./HASDivAdd";
 import OtherD from "./OtherD";
 import FamDiab from "./FamDiab";
 import FamDislip from "./FamDislip";
+import { useRef, useEffect } from "react";
+import { nullishForm } from "../../../src/lib/global/declarations/types";
+import useDataProvider from "../../../src/lib/hooks/useDataProvider";
 export default function AgForm(): JSX.Element {
+  const f = useRef<nullishForm>(null);
+  useEffect(() => {
+    registerPersistInputs({
+      f: f.current,
+      textareas: true,
+      selects: true,
+      inputTypes: ["date", "number", "text", "checkbox", "radio"],
+      queriesToExclude: ['[role="switch"]'],
+    });
+  }, []);
+  useDataProvider(f.current);
   return (
     <form
+      ref={f}
       name='ag_form'
       id='formAnamGId'
       method='post'
@@ -217,13 +232,17 @@ export default function AgForm(): JSX.Element {
               <br role='presentation' />
             </span>
             <span role='group' className='fsAnamGSpan locSpan form-switch flexColumn noInvert' id='fsAnamGSpan13'>
-              <span role='textbox'>Número:</span>
+              <span role='textbox' style={{ marginLeft: "0.5rem" }}>
+                Número:
+              </span>
               <span role='group' className='flexDiv spanLoc fitSpaced mg-07t'>
                 <StreetNum />
               </span>
             </span>
             <span role='group' className='fsAnamGSpan locSpan form-switch flexColumn noInvert' id='fsAnamGSpan14'>
-              <span role='textbox'>Complemento:</span>
+              <span role='textbox' style={{ marginLeft: "0.5rem" }}>
+                Complemento:
+              </span>
               <span role='group' className='flexDiv spanLoc fitSpaced mg-07t'>
                 <LocComp />
               </span>

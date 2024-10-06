@@ -1,7 +1,7 @@
 import { DlgProps } from "../../../src/lib/global/declarations/interfaces";
 export default function TipsBtn({ dispatch, state }: DlgProps): JSX.Element {
   return (
-    <button className='transparent-el-bg' id='tipsBtn' onClick={() => dispatch(!state)}>
+    <button className='transparent-el-bg' id='tipsBtn' aria-label='Abrir Dicas' onClick={() => dispatch(!state)}>
       <svg
         xmlns='http://www.w3.org/2000/svg'
         width='16'

@@ -19,7 +19,7 @@ export default function StreetNum(): JSX.Element {
           })
         }
       />
-      <span role='group' className='halfSpanCheck halfR flexAlItCt noInvert'>
+      <label role='group' htmlFor='streetNumNullId' className='halfSpanCheck halfR flexAlItCt noInvert'>
         <input
           type='checkbox'
           name='streetNumNullName'
@@ -40,7 +40,7 @@ export default function StreetNum(): JSX.Element {
               : blockeableInput?.removeAttribute("disabled");
           }}
         />
-      </span>
+      </label>
     </>
   );
 }

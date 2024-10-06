@@ -2,67 +2,65 @@ import { changeToAstDigit } from "../../../src/lib/global/handlers/gHandlers";
 import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
 import { nullishCanvas } from "../../../src/lib/global/declarations/types";
 import { useEffect, useState, useRef, useCallback } from "react";
-import { addCanvasListeners } from "../../../src/lib/global/gController";
+import { addCanvasListeners, getCanvasCoords } from "../../../src/lib/global/gController";
 let ctx: CanvasRenderingContext2D | null = null;
 export default function Signature(): JSX.Element {
-  const canvasRef = useRef<nullishCanvas>(null);
-  const [isDrawing, setDrawing] = useState<boolean>(false);
-  const startDrawing = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void => {
-    setDrawing(true);
-    draw(e);
-  };
-  const startDrawingTouch = (e: React.TouchEvent<HTMLCanvasElement>): void => {
-    setDrawing(true);
-    drawTouch(e);
-  };
-  const draw = useCallback(
-    (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void => {
+  const canvasRef = useRef<nullishCanvas>(null),
+    [isDrawing, setDrawing] = useState<boolean>(false),
+    startDrawing = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void => {
+      e.preventDefault();
+      setDrawing(true);
+      draw(e);
+    },
+    startDrawingTouch = (e: React.TouchEvent<HTMLCanvasElement>): void => {
+      e.preventDefault();
+      setDrawing(true);
+      drawTouch(e);
+    },
+    draw = useCallback(
+      (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void => {
+        try {
+          if (!(canvasRef.current instanceof HTMLCanvasElement))
+            throw elementNotFound(canvasRef.current, `Validation of Canvas Ref Instance`, extLine(new Error()));
+          if (!(ctx instanceof CanvasRenderingContext2D))
+            throw new Error(`Error getting Canvas Context:
+          Obtained Value: ${ctx ?? "nullish"}`);
+          if (!isDrawing) return;
+          const { x, y } = getCanvasCoords(e.clientX, e.clientY, canvasRef.current);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+        } catch (e) {
+          console.error(`Error executing draw():
+        ${(e as Error).message}`);
+        }
+      },
+      [isDrawing],
+    ),
+    drawTouch = (e: React.TouchEvent<HTMLCanvasElement>): void => {
       try {
         if (!(canvasRef.current instanceof HTMLCanvasElement))
           throw elementNotFound(canvasRef.current, `Validation of Canvas Ref Instance`, extLine(new Error()));
         if (!(ctx instanceof CanvasRenderingContext2D))
           throw new Error(`Error getting Canvas Context:
-          Obtained Value: ${ctx ?? "nullish"}`);
+        Obtained Value: ${ctx ?? "nullish"}`);
         if (!isDrawing) return;
-        const rect = canvasRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const point = e.touches[0];
+        const { x, y } = getCanvasCoords(point.clientX, point.clientY, canvasRef.current);
         ctx.lineTo(x, y);
         ctx.stroke();
         ctx.beginPath();
         ctx.moveTo(x, y);
       } catch (e) {
         console.error(`Error executing draw():
-        ${(e as Error).message}`);
+      ${(e as Error).message}`);
       }
     },
-    [isDrawing],
-  );
-  const drawTouch = (e: React.TouchEvent<HTMLCanvasElement>): void => {
-    try {
-      if (!(canvasRef.current instanceof HTMLCanvasElement))
-        throw elementNotFound(canvasRef.current, `Validation of Canvas Ref Instance`, extLine(new Error()));
-      if (!(ctx instanceof CanvasRenderingContext2D))
-        throw new Error(`Error getting Canvas Context:
-        Obtained Value: ${ctx ?? "nullish"}`);
-      if (!isDrawing) return;
-      const rect = canvasRef.current.getBoundingClientRect();
-      const point = e.touches[0];
-      const x = point.clientX - rect.left;
-      const y = point.clientY - rect.top;
-      ctx.lineTo(x, y);
-      ctx.stroke();
-      ctx.beginPath();
-      ctx.moveTo(x, y);
-    } catch (e) {
-      console.error(`Error executing draw():
-      ${(e as Error).message}`);
-    }
-  };
-  const stopDrawing = (): void => {
-    setDrawing(false);
-    ctx?.beginPath();
-  };
+    stopDrawing = (): void => {
+      setDrawing(false);
+      ctx?.beginPath();
+    };
   useEffect(() => {
     const equalizeCanvas = (): void => {
       try {
@@ -121,38 +119,35 @@ export default function Signature(): JSX.Element {
           className='btn btn-secondary'
           id='resetAstBtn'
           onClick={ev => {
-            const res = prompt("Digite CONFIRMAR para resetar o formulário");
-            if (res === "CONFIRMAR") {
-              try {
-                const divConfirm = ev.currentTarget.closest(".divConfirm");
-                if (!(divConfirm instanceof HTMLElement))
-                  throw elementNotFound(divConfirm, `Main ancestral div for resetAstBtn`, extLine(new Error()));
-                const astEl = divConfirm.querySelector("#inpAstConfirmId");
-                if (!(astEl instanceof HTMLCanvasElement || astEl instanceof HTMLInputElement))
-                  throw elementNotFound(astEl, `Element for patient signing`, extLine(new Error()));
-                if (astEl instanceof HTMLCanvasElement) {
-                  const replaceCanvas = Object.assign(document.createElement("canvas"), {
-                    id: "inpAstConfirmId",
-                  });
-                  replaceCanvas.dataset.title = "Assinatura do Paciente";
-                  astEl.parentElement?.replaceChild(replaceCanvas, astEl);
-                  addCanvasListeners();
-                }
-                if (astEl instanceof HTMLInputElement) {
-                  const replaceInp = Object.assign(
-                    Object.assign(document.createElement("input") as HTMLInputElement, {
-                      type: "file",
-                      id: "inpAstConfirmId",
-                      accept: "image/*",
-                    }),
-                  );
-                  replaceInp.dataset.title = "Assinatura do Paciente";
-                  replaceInp.classList.add("inpAst", "mg-07t", "form-control");
-                  astEl.parentElement?.replaceChild(replaceInp, astEl);
-                }
-              } catch (e2) {
-                console.error(`Error handling click on Reset signature button`);
+            try {
+              const divConfirm = ev.currentTarget.closest(".divConfirm");
+              if (!(divConfirm instanceof HTMLElement))
+                throw elementNotFound(divConfirm, `Main ancestral div for resetAstBtn`, extLine(new Error()));
+              const astEl = divConfirm.querySelector("#inpAstConfirmId");
+              if (!(astEl instanceof HTMLCanvasElement || astEl instanceof HTMLInputElement))
+                throw elementNotFound(astEl, `Element for patient signing`, extLine(new Error()));
+              if (astEl instanceof HTMLCanvasElement) {
+                const replaceCanvas = Object.assign(document.createElement("canvas"), {
+                  id: "inpAstConfirmId",
+                });
+                replaceCanvas.dataset.title = "Assinatura do Paciente";
+                astEl.parentElement!.replaceChild(replaceCanvas, astEl);
+                addCanvasListeners();
               }
+              if (astEl instanceof HTMLInputElement) {
+                const replaceInp = Object.assign(
+                  Object.assign(document.createElement("input") as HTMLInputElement, {
+                    type: "file",
+                    id: "inpAstConfirmId",
+                    accept: "image/*",
+                  }),
+                );
+                replaceInp.dataset.title = "Assinatura do Paciente";
+                replaceInp.classList.add("inpAst", "mg-07t", "form-control");
+                astEl.parentElement!.replaceChild(replaceInp, astEl);
+              }
+            } catch (e2) {
+              console.error(`Error handling click on Reset signature button`);
             }
           }}>
           Resetar

@@ -152,9 +152,10 @@ export default function LoginInputs(): JSX.Element {
                 name='user_name'
                 type='text'
                 aria-label='email ou usuário'
+                aria-describedby='userWarn'
                 placeholder='Nome de Usuário'
                 title='Por favor, preencha este
-			      campo.'
+			          campo.'
                 minLength={5}
                 maxLength={30}
                 data-title='Usuário'
@@ -165,7 +166,7 @@ export default function LoginInputs(): JSX.Element {
               />
             </div>
           </div>
-          <small className='customValidityWarn' id='userWarn' role='textbox'></small>
+          <small className='customValidityWarn' id='userWarn'></small>
           <div role='group' className='loginInputCont1'>
             <div role='group' className='loginInputCont2'>
               <fieldset className='form-control flexDiv fade-in-element' id='loginInputCont3'>
@@ -176,6 +177,7 @@ export default function LoginInputs(): JSX.Element {
                   type='password'
                   autoComplete='password'
                   aria-label='senha'
+                  aria-describedby='pwWarn'
                   placeholder='Senha'
                   pattern='^(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*[^a-zA-Z0-9])(?=.{8,})(?:(?!.*\s).)*(?!.*(.).*\1{4,}).*$'
                   minLength={8}
@@ -187,6 +189,7 @@ export default function LoginInputs(): JSX.Element {
                   type='button'
                   id='spanShowPw'
                   className='halfL fade-in-late-element'
+                  aria-label='Alterar visualização de senha'
                   onClick={ev => callbackShowPw(ev.currentTarget)}>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -202,7 +205,7 @@ export default function LoginInputs(): JSX.Element {
               </fieldset>
             </div>
           </div>
-          <small className='customValidityWarn' id='pwWarn' role='textbox' ref={spanRef}>
+          <small className='customValidityWarn' id='pwWarn' ref={spanRef}>
             {msg}
           </small>
           <nav id='loginBtnCont'>
@@ -213,9 +216,12 @@ export default function LoginInputs(): JSX.Element {
               type='submit'
               className='btn btn-primary fade-in-element'
               id='submitBtn'
-              onClick={ev => {
+              onClick={(ev: MouseEvent) => {
                 ev.preventDefault();
-                if (ev.currentTarget.firstElementChild instanceof HTMLAnchorElement) {
+                if (
+                  ev.currentTarget instanceof Element &&
+                  ev.currentTarget.firstElementChild instanceof HTMLAnchorElement
+                ) {
                   localStorage.setItem("shouldTrustNavigate", "true");
                   ev.currentTarget.firstElementChild.focus();
                   ev.currentTarget.firstElementChild.click();

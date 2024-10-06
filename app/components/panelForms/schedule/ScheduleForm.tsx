@@ -1,5 +1,5 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { ScheduleFormProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
+import { ScheduleFormProps } from "../../../src/lib/global/declarations/interfacesCons";
 import { addExportFlags } from "../../../src/lib/global/gController";
 import { fillScheduleState } from "../../../src/vars";
 import { panelRoots, providers } from "../../../src/vars";

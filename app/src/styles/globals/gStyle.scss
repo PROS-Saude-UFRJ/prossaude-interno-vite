@@ -453,6 +453,7 @@ button {
 }
 
 canvas {
+  touch-action: none;
   &#inpAstConfirmId {
     max-width: 90vw;
     display: block;
@@ -2287,6 +2288,7 @@ td,
 }
 
 #cepId {
+  margin-top: 0.3rem;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
 }
