@@ -14,6 +14,7 @@ import { assignFormAttrs } from "../../../src/lib/global/gModel";
 import Spinner from "../../icons/Spinner";
 import { ClickEvaluator } from "../../../src/lib/global/declarations/classes";
 import { useNavigate } from "react-router-dom";
+import { defUser, setFullUser } from "../../../src/redux/slices/userSlice";
 export default function LoginInputs(): JSX.Element {
   let isSpinning = false;
   const anchorRef = useRef<nullishAnchor>(null),
@@ -276,7 +277,11 @@ export default function LoginInputs(): JSX.Element {
                   callbackSubmitBtn();
                   setTimeout(() => {
                     handleLogin(ev, loginForm, true).then(res => {
-                      res.valid ? exeLogin(spanRef.current) : setMsg(res.message);
+                      if (res.valid) {
+                        exeLogin(spanRef.current);
+                        //TODO ESSE VALOR, QUANDO ENDPOINTS ESTIVEREM ATIVOS, DEVE SER O QUE FOR OBTIDO COM HTTP
+                        setFullUser({ v: defUser });
+                      } else setMsg(res.message);
                       setTimeout(() => {
                         setMsg("");
                       }, 10000);

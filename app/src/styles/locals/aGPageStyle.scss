@@ -31,6 +31,9 @@
     &[for="histDc"] {
       margin-bottom: 0.5rem;
     }
+    &[for="dateBdayId"] {
+      width: 88%;
+    }
   }
 
   [type="checkbox"] {
@@ -300,7 +303,7 @@
       height: 2.4rem;
       margin-top: 0.1vh;
       &:has(#streetNumNullId) {
-        height: 2.377rem;
+        height: 2.4rem;
       }
     }
   }
@@ -341,6 +344,10 @@
     }
   }
 
+  .taOp {
+    width: 61.5vw;
+  }
+
   #divAddFamDiab {
     .divAntFamCheck {
       width: 99%;
@@ -349,6 +356,7 @@
   }
 
   #divAddGrv {
+    width: 61.5vw;
     input {
       @include formCheckOpaque;
       transform: translateY(0.04rem);
@@ -422,11 +430,24 @@
   }
 
   #fsAnamGDiv3 {
-    width: 65%;
+    width: 75%;
+    input:not([type="radio"]):not([type="checkbox"]),
+    select {
+      min-width: 5rem;
+    }
+    #streetNumId,
+    #compNumId {
+      width: 13.3rem;
+    }
   }
 
   #fsAnamGDiv4 {
-    width: 33%;
+    width: 60%;
+    display: flex;
+    justify-content: space-between;
+    .labelIdentif {
+      min-width: 25vw;
+    }
   }
 
   #fsAnamGSpan8 {
@@ -441,7 +462,6 @@
   #fsAnamGSpan11 {
     grid-column: 2;
     grid-row: 2;
-    margin-right: 5.5vw;
     width: 100%;
   }
 
@@ -498,6 +518,10 @@
 
   #statusPac {
     width: 90%;
+  }
+
+  #tempFum {
+    transform: translateY(-2rem);
   }
 
   #textAddOtherDId {
@@ -651,6 +675,8 @@ $baseNullableVw900InpWidth: 70vw;
 
     #dateAgeId {
       width: $base900InpWidth;
+      min-width: 25vw !important;
+      max-width: 36ch;
     }
 
     #dateBdayId {

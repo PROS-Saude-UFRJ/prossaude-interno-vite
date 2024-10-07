@@ -3,6 +3,7 @@ import { aptTypes, formCases, looseNum, panelOpts } from "../../../global/declar
 import { nullishForm, nullishDlg, nullishTab, voidVal, nullishBtn } from "../../../global/declarations/types";
 import { MutableRefObject, Dispatch, SetStateAction, Component } from "react";
 import { Root } from "react-dom/client";
+import { vRoot } from "./types";
 export interface FormData {
   [key: string]: any;
 }
@@ -112,7 +113,7 @@ export interface ExcludeConsDlgProps extends Omit<ExcludeDlgProps, "route"> {
 export interface FailedRegstProps {
   setDisplayFailRegstDlg: Dispatch<SetStateAction<boolean>>;
   shouldDisplayFailRegstDlg: boolean;
-  root: Root | undefined;
+  root: vRoot;
   secondOp: string;
 }
 export interface ReseterBtnProps {

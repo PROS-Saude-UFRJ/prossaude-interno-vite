@@ -1,4 +1,4 @@
-import { ConsDlgProps } from "../../src/lib//locals/panelPage/declarations/interfacesCons";
+import { ConsDlgProps } from "../../src/lib/global/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
 import { addListenerAvMembers } from "../../src/lib//locals/panelPage/handlers/consHandlerList";
 import { consVariablesData } from "./consVariables";

@@ -11,9 +11,11 @@ import { defUser } from "../../../src/redux/slices/userSlice";
 import { AppRootContext } from "../../../src/App";
 import { Link } from "react-router-dom";
 import { experimentalProps } from "../../../src/vars";
+import { AppRootContextType } from "../../../src/lib/global/declarations/interfaces";
+import { registerRoot } from "../../../src/lib/global/handlers/gHandlers";
 let baseRootUser: targEl;
 export default function MainContainer(): JSX.Element {
-  const context = useContext(AppRootContext);
+  const context = useContext<AppRootContextType>(AppRootContext);
   useEffect(() => {
     experimentalProps.experimentalUser = localStorage.getItem("activeUser")
       ? JSON.parse(localStorage.getItem("activeUser")!)
@@ -37,7 +39,7 @@ export default function MainContainer(): JSX.Element {
     localStorage.setItem("activeUser", JSON.stringify(experimentalProps.experimentalUser));
     baseRootUser = document.getElementById("rootUserInfo");
     baseRootUser instanceof HTMLElement && !context.roots.baseRootedUser
-      ? (context.roots.baseRootedUser = createRoot(baseRootUser))
+      ? (context.roots.baseRootedUser = registerRoot(context.roots.baseRootedUser, `#${baseRootUser.id}`))
       : setTimeout(() => {
           baseRootUser = document.getElementById("rootUserInfo");
           !baseRootUser && elementNotFound(baseRootUser, "Root for user painel", extLine(new Error()));

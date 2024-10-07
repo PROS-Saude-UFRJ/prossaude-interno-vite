@@ -1,13 +1,14 @@
-import { useEffect } from "react";
+import { MutableRefObject, useEffect } from "react";
 import { cleanStorageName, handleCondtReq, handleEventReq } from "../../../src/lib/global/handlers/gHandlers";
-export default function Name(): JSX.Element {
+import { nullishInp } from "../../../src/lib/global/declarations/types";
+export default function Name({ lastNameRef }: { lastNameRef?: MutableRefObject<nullishInp> }): JSX.Element {
   useEffect(() => {
     addEventListener("beforeunload", cleanStorageName);
     (): void => {
       cleanStorageName();
       removeEventListener("beforeunload", cleanStorageName);
     };
-  }, []);
+  }, [cleanStorageName]);
   return (
     <div
       className='fsAnamGDiv alItSt900Q flexQ900NoWC flexAlItE flexNoW flexSimple wsNoW cGap0 ws900N'
@@ -64,6 +65,7 @@ export default function Name(): JSX.Element {
         <label htmlFor='familyNameId' className='labelIdentif'>
           Último Sobrenome:
           <input
+            ref={lastNameRef}
             type='text'
             name='family_name'
             id='familyNameId'

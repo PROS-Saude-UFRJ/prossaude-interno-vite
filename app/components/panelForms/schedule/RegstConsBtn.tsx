@@ -1,14 +1,14 @@
-import { RegsConstBtnProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
-import { Root, createRoot } from "react-dom/client";
+import { RegsConstBtnProps } from "../../../src/lib/global/declarations/interfacesCons";
+import { createRoot } from "react-dom/client";
 import { checkRegstBtn } from "../../../src/lib/locals/panelPage/handlers/consHandlerCmn";
 import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nullishBtn, voidVal } from "../../../src/lib/global/declarations/types";
+import { nullishBtn, voidVal, vRoot } from "../../../src/lib/global/declarations/types";
 import { syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
 import { useContext, useEffect, useRef, useState } from "react";
 import FailRegstAlert from "../../alerts/FailRegsAlert";
 import { PanelCtx } from "../defs/client/SelectLoader";
 export default function RegstConsBtn({ rootEl, secondOp = "Arraste" }: RegsConstBtnProps): JSX.Element {
-  let root: Root | undefined;
+  let root: vRoot;
   const [shouldDisplayFailRegstDlg, setDisplayFailRegstDlg] = useState<boolean>(false),
     userClass = useContext(PanelCtx).userClass,
     RegstBtnRef = useRef<nullishBtn>(null),

@@ -26,7 +26,6 @@ import {
 } from "../../../../locals/panelPage/handlers/consHandlerCmn";
 import { sessionScheduleState } from "../../../../../../components/panelForms/panelFormsData";
 import { consVariablesData } from "../../../../../../components/consRegst/consVariables";
-import { Root } from "react-dom/client";
 import React from "react";
 import {
   AppointmentHandler,
@@ -37,7 +36,8 @@ import {
   ISODate,
   WeekDay,
   WeekDaysNum,
-} from "../../../src/lib/tests/testVars";
+} from "../../../testVars";
+import { vRoot } from "../../../../global/declarations/types";
 let isDragging = false;
 describe("checkComponentValidity", (): void => {
   test("should return JSX element if valid and contains children", (): void => {
@@ -373,7 +373,7 @@ describe("replaceRegstSlot", (): void => {
 describe("checkRegstBtn", (): void => {
   let regstBtn: HTMLElement;
   let scope: Document;
-  let failProps: [Root | undefined, boolean, jest.Mock, string];
+  let failProps: [vRoot, boolean, jest.Mock, string];
   const userClass = "coordenador";
   beforeEach((): void => {
     regstBtn = document.createElement("button") as HTMLButtonElement;

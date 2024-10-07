@@ -1,6 +1,6 @@
-import { Root, createRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { clearPhDates } from "../../../global/gStyleScript";
-import { entryEl, targEl, voidVal } from "../../../global/declarations/types";
+import { entryEl, queryableNode, targEl, vRoot } from "../../../global/declarations/types";
 import { handleClientPermissions } from "./consHandlerUsers";
 import { isValidElement, Fragment, Dispatch, SetStateAction } from "react";
 import { parseNotNaN, textTransformPascal } from "../../../global/gModel";
@@ -406,7 +406,7 @@ export function generateSchedPacData(scope: targEl): { [k: string]: string } {
 }
 export const rootDlgContext: {
   renderCounts: number;
-  aptBtnsRoots: { [k: string]: Root | undefined };
+  aptBtnsRoots: { [k: string]: vRoot };
   aptBtnsIdx: { [k: string]: number };
   addedAptListeners: boolean;
   addedDayListeners: boolean;
@@ -554,7 +554,7 @@ export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
 export function createAptBtn(
   formData: { [key: string]: string },
   _providerFormData: { [key: string]: string },
-  rootedDlg: Root | voidVal,
+  rootedDlg: vRoot,
   userClass: string,
 ): targEl {
   const apppointBtn = document.getElementById("addAppointBtn");
@@ -969,11 +969,11 @@ export function replaceRegstSlot(
 }
 export function checkRegstBtn(
   regstBtn: targEl,
-  scope: HTMLElement | Document = document,
-  failProps: [Root | undefined, boolean, Dispatch<SetStateAction<boolean>>, string],
+  scope: queryableNode = document,
+  failProps: [vRoot, boolean, Dispatch<SetStateAction<boolean>>, string],
   userClass: string = "estudante",
 ): boolean | undefined {
-  if (regstBtn instanceof HTMLButtonElement) {
+  if (regstBtn instanceof HTMLButtonElement && scope) {
     const daySel =
       scope.querySelector("#changeDaySel") ||
       scope.querySelector("[id$=ChangeDaySel]") ||
@@ -1239,7 +1239,7 @@ export function verifyAptCheck(dayCheck: targEl): void {
   }
 }
 export function addListenersForSchedTab(
-  scope: HTMLElement | Document = document,
+  scope: queryableNode = document,
   userClass: string,
   isAutoFillMonthOn: boolean,
 ): void {
@@ -1361,7 +1361,7 @@ export function addListenersForSchedTab(
     ${(err as Error).message}`);
   }
 }
-export function applyStylesForSchedTab(scope: HTMLElement | Document = document): void {
+export function applyStylesForSchedTab(scope: queryableNode = document): void {
   try {
     if (!(scope instanceof HTMLElement || scope instanceof Document))
       throw elementNotFound(scope, `Scope for Table Schedule Root when applying styles`, extLine(new Error()));
