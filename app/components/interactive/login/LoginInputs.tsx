@@ -1,7 +1,13 @@
 import { basePath } from "../../../src/vars";
 import { clearDefInvalidMsg, resetPhs } from "../../../src/lib/global/gStyleScript";
 import { handleLogin } from "../../../src/lib/locals/panelPage/handlers/handlers";
-import { nullishAnchor, nullishForm, nullishHtEl, nullishSpan } from "../../../src/lib/global/declarations/types";
+import {
+  nullishAnchor,
+  nullishForm,
+  nullishHtEl,
+  nullishSpan,
+  rMouseEvent,
+} from "../../../src/lib/global/declarations/types";
 import { useEffect, useRef, useState } from "react";
 import {
   elementNotFound,
@@ -217,7 +223,7 @@ export default function LoginInputs(): JSX.Element {
               type='submit'
               className='btn btn-primary fade-in-element'
               id='submitBtn'
-              onClick={(ev: MouseEvent) => {
+              onClick={(ev: rMouseEvent) => {
                 ev.preventDefault();
                 if (
                   ev.currentTarget instanceof Element &&

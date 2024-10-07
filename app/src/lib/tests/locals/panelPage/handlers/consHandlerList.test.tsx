@@ -10,10 +10,16 @@ import {
   filterAvMembers,
   filterTabMembers,
   fillTabAttr,
+  renderTable,
 } from "../../../../locals/panelPage/handlers/consHandlerList";
 import { elementNotFound, multipleElementsNotFound } from "../../../../global/handlers/errorHandler";
-import { personAbrvClasses } from "../../../src/lib/global/declarations/types";
-import { AppointmentHandler, ErrorHandler, EventTargetMethod } from "../../../src/lib/tests/testVars";
+import { personAbrvClasses } from "../../../../global/declarations/types";
+import { AppointmentHandler, ErrorHandler, EventTargetMethod } from "../../../testVars";
+import { registerRoot } from "../../../../global/handlers/gHandlers";
+import { panelRoots } from "../../../../../vars";
+import GenericErrorComponent from "../../../../../../components/error/GenericErrorComponent";
+import { createRoot } from "react-dom/client";
+import React from "react";
 jest.mock(
   "../../../../global/handlers/errorHandler",
   (): {
@@ -330,3 +336,48 @@ describe("fillTabAttr", (): void => {
     expect(elementNotFound).toHaveBeenCalled() as void;
   }) as void;
 }) as void;
+describe("renderTable", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    document.body.innerHTML = "";
+  });
+  test("should return early if no table is found", () => {
+    jest.spyOn(document, "querySelector").mockReturnValue(null);
+    renderTable();
+    expect(registerRoot).not.toHaveBeenCalled();
+    expect(panelRoots).toEqual({});
+  });
+  test("should call registerRoot if a table is found", () => {
+    const mockTable = document.createElement("table");
+    mockTable.id = "testTable";
+    document.body.appendChild(mockTable);
+    panelRoots["testTable"] = {
+      render: jest.fn(),
+    };
+    jest.spyOn(document, "querySelector").mockReturnValue(mockTable);
+    renderTable();
+    expect(registerRoot).toHaveBeenCalledWith(panelRoots["testTable"], "#testTable");
+  });
+  test("should call render on the root after registering", () => {
+    const mockTable = document.createElement("table");
+    mockTable.id = "testTable";
+    document.body.appendChild(mockTable);
+    const mockRender = jest.fn();
+    panelRoots["testTable"] = {
+      render: mockRender,
+    };
+    jest.spyOn(document, "querySelector").mockReturnValue(mockTable);
+    renderTable();
+    expect(mockRender).toHaveBeenCalledWith(<GenericErrorComponent message='Failed to render table' />);
+  });
+  test("should not call render if panelRoots entry is undefined", () => {
+    const mockTable = document.createElement("table");
+    mockTable.id = "testTable";
+    document.body.appendChild(mockTable);
+    panelRoots["testTable"] = undefined;
+    jest.spyOn(document, "querySelector").mockReturnValue(mockTable);
+    renderTable();
+    expect(registerRoot).toHaveBeenCalledWith(undefined, "#testTable");
+    expect(createRoot).not.toHaveBeenCalled();
+  });
+});

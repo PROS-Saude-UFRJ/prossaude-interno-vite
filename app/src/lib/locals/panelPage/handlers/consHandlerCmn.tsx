@@ -1,4 +1,3 @@
-import { createRoot } from "react-dom/client";
 import { clearPhDates } from "../../../global/gStyleScript";
 import { entryEl, queryableNode, targEl, vRoot } from "../../../global/declarations/types";
 import { handleClientPermissions } from "./consHandlerUsers";
@@ -17,6 +16,7 @@ import {
   typeError,
 } from "../../../global/handlers/errorHandler";
 import { providerFormData, consVariablesData } from "../../../../../components/consRegst/consVariables";
+import { registerRoot } from "../../../global/handlers/gHandlers";
 
 //nesse arquivo estão as funções para handling de casos comuns entre os components
 
@@ -435,7 +435,7 @@ export function handleRenderRefLost(id: string, prevRef: HTMLElement, userClass:
         replaceRoot.id = id;
         replaceRoot.role = "group";
         document.getElementById("bgDiv")?.insertAdjacentElement("afterend", replaceRoot);
-        rootDlgContext.aptBtnsRoots[id] = createRoot(replaceRoot);
+        rootDlgContext.aptBtnsRoots[id] = registerRoot(rootDlgContext.aptBtnsRoots[id], `#${replaceRoot}`);
         rootDlgContext.aptBtnsRoots[id]?.render(
           <ProviderAptDatList
             data={
@@ -469,7 +469,10 @@ export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
     if (!consVariablesData.rootDlg) {
       const rootDlg = document.getElementById("rootDlgList");
       if (!rootDlg) throw new Error(`Failed to fetch Main Dialog Root`);
-      consVariablesData.rootDlg = createRoot(rootDlg);
+      consVariablesData.rootDlg = registerRoot(
+        consVariablesData.rootDlg,
+        `#${rootDlg.id || rootDlg.className.replace(/\s/g, "__") || rootDlg.tagName}`,
+      );
     }
     if (!rootDlgContext.aptBtnsRoots[`rootDlgList`]) {
       rootDlgContext.aptBtnsRoots[`rootDlgList`] = consVariablesData.rootDlg;
@@ -481,6 +484,7 @@ export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
     if (rootDlgContext.aptBtnsIdx[ev.currentTarget.id] === 1) {
       console.log(`Attempting to render in rootDlgList`);
       console.log(rootDlgContext.aptBtnsRoots[`rootDlgList`]);
+      if (!rootDlgContext.aptBtnsRoots[`rootDlgList`]) throw new Error(`Failed to validate Root for Dialog List`);
       rootDlgContext.aptBtnsRoots[`rootDlgList`].render(
         <ProviderAptDatList
           data={
@@ -509,8 +513,10 @@ export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
         const lastDlgRoot = Array.from(document.querySelectorAll(".rootDlg")).at(-1);
         if (!lastDlgRoot) throw new Error(`Error locating Last Dialog Root Element`);
         lastDlgRoot.insertAdjacentElement("beforebegin", newRoot);
-        if (!rootDlgContext.aptBtnsRoots[`${ev.currentTarget.id}`])
-          rootDlgContext.aptBtnsRoots[`${ev.currentTarget.id}`] = createRoot(newRoot);
+        rootDlgContext.aptBtnsRoots[ev.currentTarget.id] = registerRoot(
+          rootDlgContext.aptBtnsRoots[ev.currentTarget.id],
+          `#${ev.currentTarget.id}`,
+        );
       }
       if (!rootDlgContext.aptBtnsRoots[`${ev.currentTarget.id}`]) {
         const targRoot = document.getElementById(
@@ -522,7 +528,10 @@ export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
             `Target Dialog Root for ${ev.currentTarget.id || ev.currentTarget.tagName}`,
             extLine(new Error()),
           );
-        rootDlgContext.aptBtnsRoots[`${ev.currentTarget.id}`] = createRoot(targRoot);
+        rootDlgContext.aptBtnsRoots[ev.currentTarget.id] = registerRoot(
+          rootDlgContext.aptBtnsRoots[ev.currentTarget.id],
+          `#${ev.currentTarget.id}`,
+        );
       }
       console.log(
         `Attempt to render in ${`rootDlgList-${rootDlgContext.aptBtnsRoots[`${ev.currentTarget.id}`] ?? "null"}-${
@@ -1038,7 +1047,7 @@ export function checkRegstBtn(
           matchedSlot,
           newAppointmentBtn,
         );
-        if (typeof failProps[0] === "object" && "_internalRoot" in failProps[0]) return false;
+        if (failProps && typeof failProps[0] === "object" && "_internalRoot" in (failProps as any)[0]) return false;
       }
     } else
       multipleElementsNotFound(
@@ -1164,7 +1173,10 @@ export function handleScheduleChange(
       Map values: ${Object.values(sessionScheduleState)}
       Available keys in the map: ${Object.keys(sessionScheduleState)}`);
     if (typeof stateScheduleHTML === "string") root.innerHTML = stateScheduleHTML;
-    if (stateScheduleHTML instanceof Object && "props" in stateScheduleHTML) createRoot(root).render(stateScheduleHTML);
+    if (stateScheduleHTML instanceof Object && "props" in stateScheduleHTML)
+      registerRoot(undefined, `${root.id || root.className.replace(/\s/g, "__") || root.tagName}`)?.render(
+        stateScheduleHTML,
+      );
     //readicionando listeners
     addListenersForSchedTab((root as HTMLElement) ?? document, userClass, isAutoFillMonthOn);
     applyStylesForSchedTab(root as HTMLElement);

@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import ResetDlg from "../../alerts/ResetDlg";
 export default function ReseterBtn({ renderForm }: ReseterBtnProps): JSX.Element {
-  const [shouldDisplayResetDlg, setDisplayResetDlg] = useState(false);
-  const toggleResetSchdDlg = (): void => setDisplayResetDlg(!shouldDisplayResetDlg);
-  const resetBtnRef = useRef<nullishBtn>(null);
+  const [shouldDisplayResetDlg, setDisplayResetDlg] = useState(false),
+    toggleResetSchdDlg = (): void => setDisplayResetDlg(!shouldDisplayResetDlg),
+    resetBtnRef = useRef<nullishBtn>(null);
   useEffect(() => {
     const formBody = document.getElementById("formBodySchedSect") || document.querySelector("form");
     if (resetBtnRef.current instanceof HTMLButtonElement && formBody) {

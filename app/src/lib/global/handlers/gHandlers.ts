@@ -1554,15 +1554,19 @@ export function registerRoot(root: vRoot, selector: string, selectorRef?: Mutabl
         : document.querySelector(selector) ?? document.getElementById(selector);
     if (!(rootEl instanceof HTMLElement))
       throw elementNotFound(rootEl, `Finding element with ${selector} for rooting`, extLine(new Error()));
-    if (!root) {
-      if (rootEl && (!rootEl.dataset.rooted || rootEl.dataset.rooted !== "true")) root = createRoot(rootEl);
-      else if (!root["_internalRoot"]) {
-        root = undefined;
-        rootEl.dataset.rooted = "false";
-        root = createRoot(rootEl);
-      }
-      rootEl.dataset.rooted = "true";
+    if (!root && rootEl) {
+      if (rootEl.dataset.rooted === "true") {
+        if (!rootEl.hasChildNodes()) {
+          rootEl.dataset.rooted = "false";
+          root = createRoot(rootEl);
+        } else root = createRoot(rootEl);
+      } else root = createRoot(rootEl);
+    } else if (root && !(root as any)["_internalRoot"]) {
+      root = undefined;
+      rootEl.dataset.rooted = "false";
+      root = createRoot(rootEl);
     }
+    rootEl.dataset.rooted = "true";
   } catch (e) {
     console.error(`Error executing registerRoot:\n${(e as Error).message}`);
   }

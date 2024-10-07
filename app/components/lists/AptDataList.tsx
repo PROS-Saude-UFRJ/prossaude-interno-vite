@@ -1,18 +1,18 @@
-import { AptDataListProps } from "../../src/lib/locals/panelPage/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
+import { AptDataListProps } from "../../src/lib/global/declarations/interfacesCons";
 import { addExportFlags } from "../../src/lib/global/gController";
 import { consVariablesData } from "../consRegst/consVariables";
-import { createRoot } from "react-dom/client";
 import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
 import { isClickOutside } from "../../src/lib/global/gStyleScript";
 import { nullishDlg } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { registerRoot, syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
 import { useContext, useEffect, useRef } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
 import { PanelCtx } from "../panelForms/defs/client/SelectLoader";
 import { ExportHandler } from "../../src/lib/global/declarations/classes";
 import { exporters } from "../../src/vars";
 import useExportHandler from "../../src/lib/hooks/useExportHandler";
+import { Link } from "react-router-dom";
 export default function AptDataList({
   setDisplayAptList,
   data,
@@ -47,7 +47,10 @@ export default function AptDataList({
           const fallbackRootDlg = document.getElementById("rootDlgList");
           if (!(fallbackRootDlg instanceof HTMLElement))
             throw elementNotFound(fallbackRootDlg, `attemp to recreate rootDlg`, extLine(new Error()));
-          createRoot(fallbackRootDlg).unmount();
+          registerRoot(
+            undefined,
+            `#${fallbackRootDlg.id || fallbackRootDlg.className.replace(/\s/g, "__") || fallbackRootDlg.tagName}`,
+          )?.unmount();
         } catch (e2) {
           console.error(`Error rendering AptDataList:
         ${(e2 as Error).message};
@@ -78,7 +81,10 @@ export default function AptDataList({
           const fallbackRootDlg = document.getElementById("rootDlgList");
           if (!(fallbackRootDlg instanceof HTMLElement))
             throw elementNotFound(fallbackRootDlg, `attemp to recreate rootDlg`, extLine(new Error()));
-          createRoot(fallbackRootDlg).unmount();
+          registerRoot(
+            undefined,
+            `#${fallbackRootDlg.id || fallbackRootDlg.className.replace(/\s/g, "__") || fallbackRootDlg.tagName}`,
+          )?.unmount();
         } catch (e2) {
           console.error(`Error rendering AptDataList:
           ${(e2 as Error).message};
@@ -157,7 +163,12 @@ export default function AptDataList({
                     <em className='noInvert'>
                       Lista Recuperada da Ficha de Consultas registradas. Acesse
                       <samp>
-                        <a> ROTA_PLACEHOLDER </a>
+                        <Link
+                          to={`${location.origin}/panel?panel=agenda&new-cons=open`}
+                          style={{ display: "inline" }}
+                          id='addAppointmentLink'>
+                          Adicionar Consulta
+                        </Link>
                       </samp>
                       para cadastrar
                     </em>

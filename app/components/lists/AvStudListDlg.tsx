@@ -1,5 +1,5 @@
-import { AvStudListDlgProps } from "../../src/lib/locals/panelPage/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
+import { AvStudListDlgProps } from "../../src/lib/global/declarations/interfacesCons";
 import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
 import { isClickOutside } from "../../src/lib/global/gStyleScript";
 import { nullishDlg } from "../../src/lib/global/declarations/types";

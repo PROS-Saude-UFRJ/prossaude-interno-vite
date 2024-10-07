@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { ExportHandler } from "../../../src/lib/global/declarations/classes";
-import { addCanvasListeners, addExportFlags } from "../../../src/lib/global/gController";
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
+import { addExportFlags } from "../../../src/lib/global/gController";
 import { exporters } from "../../../src/vars";
 import { nullishBtn } from "../../../src/lib/global/declarations/types";
 import { checkForReset } from "../../../src/lib/global/handlers/gHandlers";

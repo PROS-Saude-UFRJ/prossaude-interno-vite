@@ -1,4 +1,4 @@
-import { AlterFieldListProps } from "../../src/lib/locals/panelPage/declarations/interfacesCons";
+import { AlterFieldListProps } from "../../src/lib/global/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
 import { isClickOutside } from "../../src/lib/global/gStyleScript";
 import { nullishDlg, nullishForm, nullishSel } from "../../src/lib/global/declarations/types";

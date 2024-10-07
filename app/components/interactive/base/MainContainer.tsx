@@ -1,5 +1,4 @@
 import { User } from "../../../src/lib/global/declarations/classes";
-import { createRoot } from "react-dom/client";
 import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
 import { equalizeParagraphs } from "../../../src/lib/locals/basePage/baseStylescript";
 import { expandContent } from "../../../src/lib/global/gStyleScript";
@@ -45,7 +44,7 @@ export default function MainContainer(): JSX.Element {
           !baseRootUser && elementNotFound(baseRootUser, "Root for user painel", extLine(new Error()));
         }, 2000);
     typeof context.roots.baseRootedUser === "object"
-      ? context.roots.baseRootedUser.render(<UserProfilePanel />)
+      ? context.roots.baseRootedUser?.render(<UserProfilePanel />)
       : elementNotFound(
           `${JSON.stringify(context.roots.baseRootedUser)}`,
           "Root instance for User panel",

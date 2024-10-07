@@ -4,10 +4,9 @@ import { DataProvider } from "../../../../src/lib/global/declarations/classesCon
 import { ErrorBoundary } from "react-error-boundary";
 import { MainPanelProps } from "../../../../src/lib/global/declarations/interfacesCons";
 import { camelToKebab, kebabToCamel } from "../../../../src/lib/global/gModel";
-import { createRoot } from "react-dom/client";
 import { handleLinkChanges } from "../../../../src/lib/global/handlers/gRoutingHandlers";
 import { nullishDiv, panelOpts } from "../../../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../../../src/lib/global/handlers/gHandlers";
+import { registerRoot, syncAriaStates } from "../../../../src/lib/global/handlers/gHandlers";
 import { useState, useRef, useEffect, useContext } from "react";
 import DefaultForm from "../DefaultForm";
 import ErrorMainDiv from "../../../error/ErrorMainDiv";
@@ -48,7 +47,8 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
       const formRoot = document.getElementById("formRoot");
       if (!(formRoot instanceof HTMLElement))
         throw elementNotFound(formRoot, `Validation of Form Roots Element in Schedule`, extLine(new Error()));
-      if (!context.roots.formRoot) context.roots.formRoot = createRoot(formRoot);
+      context.roots.formRoot = registerRoot(context.roots.formRoot, `#${formRoot.id}`);
+      if (!context.roots.formRoot) throw new Error(`Failed to validate Form root`);
       context.roots.formRoot.render(
         ((opt: panelOpts): JSX.Element => {
           console.log(`Rendering for ${opt}...`);
@@ -104,7 +104,7 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
           throw elementNotFound(formRoot, `Validation of Option Selection Element`, extLine(new Error()));
         if (!(panelSelect instanceof HTMLSelectElement || panelSelect instanceof HTMLInputElement))
           throw inputNotFound(panelSelect, `Validation of Select for panel instance`, extLine(new Error()));
-        if (!context.roots.formRoot) context.roots.formRoot = createRoot(formRoot);
+        context.roots.formRoot = registerRoot(context.roots.formRoot, `#${formRoot.id}`);
         const camel = kebabToCamel(location.search);
         console.log([camel, location.search]);
         formRoot.style.transition = "";
@@ -116,6 +116,7 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
             formRoot.style.opacity = "1";
           }
         }, 300);
+        if (!context.roots.formRoot) throw new Error(`Failed to validate Form root`);
         if (/registStud/gi.test(camel)) {
           context.roots.formRoot.render(
             userClass === "coordenador" || userClass === "supervisor" ? <StudentForm /> : <Unauthorized />,
@@ -156,7 +157,8 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
       const selDiv = document.getElementById("formSelDiv");
       if (mounted && selDiv instanceof HTMLElement && !document.querySelector("select")) {
         selDiv.innerHTML = ``;
-        if (!context.roots.rootSel) context.roots.rootSel = createRoot(selDiv);
+        context.roots.rootSel = registerRoot(context.roots.rootSel, `#formSelDiv`);
+        if (!context.roots.rootSel) throw new Error(`Failed to validate Select root`);
         context.roots.rootSel.render(<ErrorMainDiv />);
       } else
         setTimeout(() => {
@@ -165,7 +167,8 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
             elementNotFound(selDiv, "selDiv during DOM initialization", extLine(new Error()));
             if (selDiv instanceof HTMLElement) {
               selDiv.innerHTML = ``;
-              if (!context.roots.rootSel) context.roots.rootSel = createRoot(selDiv);
+              context.roots.rootSel = registerRoot(context.roots.rootSel, `#formSelDiv`);
+              if (!context.roots.rootSel) throw new Error(`Failed to validate Select root`);
               context.roots.rootSel.render(<ErrorMainDiv />);
             }
           }
@@ -178,7 +181,7 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
         ...((document.getElementById("formPanelDiv") ?? document)?.querySelectorAll("*") ?? null),
         document.getElementById("formPanelDiv")!,
       ]);
-      if (!panelRoots.mainRoot) panelRoots.mainRoot = createRoot(formRootRef.current);
+      panelRoots.mainRoot = registerRoot(panelRoots.mainRoot, `#${formRootRef.current.id}`, formRootRef);
     }
   }, [mounted]);
   // Snippet para repassar para CSR totalmente (erro ainda não investigado)

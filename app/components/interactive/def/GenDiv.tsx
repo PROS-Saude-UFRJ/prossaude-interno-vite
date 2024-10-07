@@ -2,13 +2,20 @@ import { fluxGen } from "../../../src/lib/global/gModel";
 import { person } from "../../../src/vars";
 import { SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { elementNotFound, extLine, inputNotFound } from "../../../src/lib/global/handlers/errorHandler";
-import { nullishSel } from "../../../src/lib/global/declarations/types";
+import { nullishDiv, nullishSel } from "../../../src/lib/global/declarations/types";
 import { ENContextProps } from "../../../src/lib/global/declarations/interfaces";
 import { Dispatch } from "react";
 import { Gender } from "../../../src/lib/tests/testVars";
 import { ENContext } from "../edfis/ENForm";
-export default function GenDiv({ onSetGen }: { onSetGen?: Dispatch<SetStateAction<Gender>> }): JSX.Element {
+export default function GenDiv({
+  onSetGen,
+  setGenRef,
+}: {
+  onSetGen?: Dispatch<SetStateAction<Gender>>;
+  setGenRef?: Dispatch<SetStateAction<nullishSel>>;
+}): JSX.Element {
   const ctxGen = useContext<ENContextProps>(ENContext).gen,
+    r = useRef<nullishDiv>(null),
     gr = useRef<nullishSel>(null),
     gbr = useRef<nullishSel>(null),
     gtr = useRef<nullishSel>(null),
@@ -36,7 +43,7 @@ export default function GenDiv({ onSetGen }: { onSetGen?: Dispatch<SetStateActio
     } catch (e) {
       console.error(`Error executing procedure for agBody:\n${(e as Error).message}`);
     }
-  }, []);
+  }, [onSetGen]);
   useEffect(() => {
     try {
       if (tbr.current instanceof HTMLSelectElement || (tbr.current as any) instanceof HTMLInputElement) return;
@@ -51,7 +58,7 @@ export default function GenDiv({ onSetGen }: { onSetGen?: Dispatch<SetStateActio
       gt = gtr.current ?? (document.getElementById("genTransId") as HTMLSelectElement),
       ga = gar.current ?? (document.getElementById("genFisAlinId") as HTMLSelectElement);
     fluxGen({ g, gb, gt, ga }, g.value, setGenFisAlin);
-  }, []);
+  }, [fluxGen]);
   useEffect(() => {
     const handleResize = (): void => {
       if (gbr.current instanceof HTMLElement && gtr.current instanceof HTMLElement) {
@@ -68,8 +75,30 @@ export default function GenDiv({ onSetGen }: { onSetGen?: Dispatch<SetStateActio
     addEventListener("resize", handleResize);
     return (): void => removeEventListener("resize", handleResize);
   }, []);
+  useEffect(() => {
+    const handleResize = (): void => {
+      if (!(gar.current instanceof HTMLElement && gr.current instanceof HTMLElement)) return;
+      gar.current.style.width = getComputedStyle(gr.current).width;
+      gar.current.style.maxWidth = getComputedStyle(gr.current).width;
+    };
+    try {
+      if (!(r.current instanceof HTMLElement))
+        throw elementNotFound(r.current, `Validation of Gen Div Reference`, extLine(new Error()));
+      if (!r.current.dataset.equalizing || r.current.dataset.equalizing !== "true") {
+        addEventListener("resize", handleResize);
+        document.body.dataset.equalizing = "true";
+        handleResize();
+      }
+    } catch (e) {
+      console.error(`Error executing addition of resizing listener to GenDiv:\n${(e as Error).message}`);
+    }
+    (): void => removeEventListener("resize", handleResize);
+  }, [r]);
+  useEffect(() => {
+    if (setGenRef && gr.current) setGenRef(gr.current);
+  }, [setGenRef]);
   return (
-    <div className='gridTwoCol noInvert' id='genDiv' role='group'>
+    <div className='gridTwoCol noInvert' id='genDiv' role='group' ref={r}>
       <span role='group' className='fsAnamGSpan flexAlItCt genSpan' id='spanFsAnamG13'>
         <label htmlFor='genId' className='labelIdentif'>
           Gênero:

@@ -1,7 +1,7 @@
-import { DlgProps } from "../../../global/declarations/interfaces";
 import { aptTypes, formCases, looseNum, panelOpts } from "../../../global/declarations/types";
 import { nullishForm, nullishDlg, nullishTab, voidVal, nullishBtn } from "../../../global/declarations/types";
 import { MutableRefObject, Dispatch, SetStateAction, Component } from "react";
+import { DlgProps } from "./interfaces";
 import { Root } from "react-dom/client";
 import { vRoot } from "./types";
 export interface FormData {
