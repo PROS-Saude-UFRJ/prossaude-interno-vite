@@ -1,6 +1,6 @@
 import { ErrorBoundary } from "react-error-boundary";
 import { ReseterBtnProps } from "../../../src/lib/global/declarations/interfacesCons";
-import { nullishBtn } from "../../../src/lib/global/declarations/types";
+import { nlBtn } from "../../../src/lib/global/declarations/types";
 import { panelRoots } from "../../../src/vars";
 import { scheduleReset } from "../panelFormsData";
 import { checkForReset, syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
@@ -10,7 +10,7 @@ import ResetDlg from "../../alerts/ResetDlg";
 export default function ReseterBtn({ renderForm }: ReseterBtnProps): JSX.Element {
   const [shouldDisplayResetDlg, setDisplayResetDlg] = useState(false),
     toggleResetSchdDlg = (): void => setDisplayResetDlg(!shouldDisplayResetDlg),
-    resetBtnRef = useRef<nullishBtn>(null);
+    resetBtnRef = useRef<nlBtn>(null);
   useEffect(() => {
     const formBody = document.getElementById("formBodySchedSect") || document.querySelector("form");
     if (resetBtnRef.current instanceof HTMLButtonElement && formBody) {

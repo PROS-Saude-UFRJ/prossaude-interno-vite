@@ -1,7 +1,7 @@
 import { Person } from "../../../../src/lib/global/declarations/classes";
 import { exeAutoFill } from "../../../../src/lib/locals/edFisNutPage/edFisNutHandler";
 import { handleEventReq } from "../../../../src/lib/global/handlers/gHandlers";
-import { looseNum, nullishInp } from "../../../../src/lib/global/declarations/types";
+import { looseNum, nlInp } from "../../../../src/lib/global/declarations/types";
 import { tabProps, person } from "../../../../src/vars";
 import { useState, useEffect, Dispatch, SetStateAction, MutableRefObject } from "react";
 import { validateEvResultNum } from "../../../../src/lib/locals/edFisNutPage/edFisNutHandler";
@@ -11,7 +11,7 @@ export default function AgeElement({
   inpRef,
 }: {
   onSetAge?: Dispatch<SetStateAction<looseNum>>;
-  inpRef: MutableRefObject<nullishInp>;
+  inpRef: MutableRefObject<nlInp>;
 }): JSX.Element {
   const [value, setValue] = useState<string>("");
   const [prevValue, setPreValue] = useState<string>("");

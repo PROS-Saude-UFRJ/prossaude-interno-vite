@@ -1,9 +1,9 @@
-import { nullishBtn, nullishInp } from "../../../src/lib/global/declarations/types";
+import { nlBtn, nlInp } from "../../../src/lib/global/declarations/types";
 import { useEffect, useRef } from "react";
 import { parseNotNaN } from "../../../src/lib/global/gModel";
 export default function ConfirmDate(): JSX.Element {
-  const dateRef = useRef<nullishInp>(null);
-  const btnRef = useRef<nullishBtn>(null);
+  const dateRef = useRef<nlInp>(null);
+  const btnRef = useRef<nlBtn>(null);
   useEffect(() => {
     const equalizeBtn = (): void => {
       btnRef.current ??= document.getElementById("headerDatBtn") as HTMLButtonElement;

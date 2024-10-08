@@ -1,7 +1,7 @@
 import { MutableRefObject, useEffect } from "react";
 import { cleanStorageName, handleCondtReq, handleEventReq } from "../../../src/lib/global/handlers/gHandlers";
-import { nullishInp } from "../../../src/lib/global/declarations/types";
-export default function Name({ lastNameRef }: { lastNameRef?: MutableRefObject<nullishInp> }): JSX.Element {
+import { nlInp } from "../../../src/lib/global/declarations/types";
+export default function Name({ lastNameRef }: { lastNameRef?: MutableRefObject<nlInp> }): JSX.Element {
   useEffect(() => {
     addEventListener("beforeunload", cleanStorageName);
     (): void => {

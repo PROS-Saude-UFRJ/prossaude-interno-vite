@@ -5,7 +5,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { MainPanelProps } from "../../../../src/lib/global/declarations/interfacesCons";
 import { camelToKebab, kebabToCamel } from "../../../../src/lib/global/gModel";
 import { handleLinkChanges } from "../../../../src/lib/global/handlers/gRoutingHandlers";
-import { nullishDiv, panelOpts } from "../../../../src/lib/global/declarations/types";
+import { nlDiv, panelOpts } from "../../../../src/lib/global/declarations/types";
 import { registerRoot, syncAriaStates } from "../../../../src/lib/global/handlers/gHandlers";
 import { useState, useRef, useEffect, useContext } from "react";
 import DefaultForm from "../DefaultForm";
@@ -29,7 +29,7 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
   const { userClass, setUserClass: setPrivilege } = useContext(PanelCtx),
     [selectedOption, setSelectedOption] = useState<string>(defOp),
     [mounted, setMounted] = useState<boolean>(false),
-    formRootRef = useRef<nullishDiv>(null),
+    formRootRef = useRef<nlDiv>(null),
     navigate = useNavigate(),
     location = useLocation(),
     context = useContext<AppRootContextType>(AppRootContext);

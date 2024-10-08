@@ -1,5 +1,5 @@
 import { clearPhDates } from "../../../global/gStyleScript";
-import { entryEl, queryableNode, targEl, vRoot } from "../../../global/declarations/types";
+import { entryEl, queryableNode, rMouseEvent, targEl, vRoot } from "../../../global/declarations/types";
 import { handleClientPermissions } from "./consHandlerUsers";
 import { isValidElement, Fragment, Dispatch, SetStateAction } from "react";
 import { parseNotNaN, textTransformPascal } from "../../../global/gModel";
@@ -453,7 +453,7 @@ export function handleRenderRefLost(id: string, prevRef: HTMLElement, userClass:
     console.error(`Error executing handleRenderRefLost:\n${(e as Error).message}`);
   }
 }
-export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
+export function handleAptBtnClick(ev: rMouseEvent, userClass: string): void {
   try {
     console.log("Click listened");
     if (!(ev.currentTarget instanceof HTMLElement && ev.currentTarget.id !== ""))

@@ -1,7 +1,7 @@
 import { addExportFlags } from "../../../src/lib/global/gController";
 import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
 import { normalizeSizeSb } from "../../../src/lib/global/gStyleScript";
-import { nullishBtn, nullishForm } from "../../../src/lib/global/declarations/types";
+import { nlBtn, nlFm } from "../../../src/lib/global/declarations/types";
 import { syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState, useCallback } from "react";
 import PacList from "../../lists/PacList";
@@ -11,8 +11,8 @@ import { exporters } from "../../../src/vars";
 import useExportHandler from "../../../src/lib/hooks/useExportHandler";
 export default function PacTabForm(): JSX.Element {
   const [shouldDisplayRowData, setDisplayRowData] = useState<boolean>(false),
-    formRef = useRef<nullishForm>(null),
-    btnExportPacsTabRef = useRef<nullishBtn>(null),
+    formRef = useRef<nlFm>(null),
+    btnExportPacsTabRef = useRef<nlBtn>(null),
     callbackNormalizeSizesSb = useCallback(() => {
       normalizeSizeSb(
         [

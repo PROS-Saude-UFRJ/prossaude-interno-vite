@@ -1,4 +1,3 @@
-"use client";
 import { createContext, useContext } from "react";
 import { ScheduleCtx } from "./ScheduleForm";
 import TrBSchedTab from "./TrBSchedTab";

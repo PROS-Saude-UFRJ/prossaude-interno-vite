@@ -1,14 +1,14 @@
 import { FillerProps } from "../../src/lib//locals/panelPage/declarations/interfacesCons";
 import { addListenerAvMembers } from "../../src/lib//locals/panelPage/handlers/consHandlerList";
 import { providers } from "../../src/vars";
-import { nullishBtn, nullishDiv } from "../../src/lib/global/declarations/types";
+import { nlBtn, nlDiv } from "../../src/lib/global/declarations/types";
 import { useEffect, useRef, useState } from "react";
 import AvStudListDlg from "../lists/AvStudListDlg";
 import { handleCondtReq, syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
 import { useSearchParams } from "react-router-dom";
 export default function DREFiller({ forwardedRef }: FillerProps): JSX.Element {
-  const btnStudListRef = useRef<nullishBtn>(null),
-    fillerDivRef = useRef<nullishDiv>(null),
+  const btnStudListRef = useRef<nlBtn>(null),
+    fillerDivRef = useRef<nlDiv>(null),
     [shouldDisplayStudList, setStudListDisplay] = useState<boolean>(false),
     [searchParams] = useSearchParams(),
     toggleStudListDisplay = (s: boolean = false): void => setStudListDisplay(!s);

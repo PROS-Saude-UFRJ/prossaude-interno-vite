@@ -24,7 +24,7 @@ import {
   sixTargEl,
   textEl,
   looseNum,
-  nullishHtEl,
+  nlHtEl,
   nlEl,
   btnFillResult,
   IndCases,
@@ -638,7 +638,7 @@ export function updateAtvLvl(mainSelect: targEl, secondarySelect: targEl, atvLvl
   return atvLvl || "leve";
 }
 export function defineTargInps(parentEl: targEl, numRef: string | number = 1, context: string = "cons"): sixTargEl {
-  const arrayTargInps: nullishHtEl[] = [],
+  const arrayTargInps: nlHtEl[] = [],
     validTargInps: targEl[] | sixTargEl = [];
   if (
     parentEl instanceof HTMLElement &&

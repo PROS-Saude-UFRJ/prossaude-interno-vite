@@ -1,4 +1,4 @@
-import { nullishBtn, nullishDlg } from "../../src/lib/global/declarations/types";
+import { nlBtn, nullishDlg } from "../../src/lib/global/declarations/types";
 import { isClickOutside } from "../../src/lib/global/gStyleScript";
 import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
 import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
@@ -15,7 +15,7 @@ export default function ExcludeConsDlg({
 }: ExcludeConsDlgProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     excludeDlgRef = useRef<nullishDlg>(null),
-    confirmRef = useRef<nullishBtn>(null),
+    confirmRef = useRef<nlBtn>(null),
     handleClick = (): void => {
       setDisplayExcludeDlg(!shouldDisplayExcludeDlg);
       if (!shouldDisplayExcludeDlg && excludeDlgRef.current instanceof HTMLDialogElement) excludeDlgRef.current.close();

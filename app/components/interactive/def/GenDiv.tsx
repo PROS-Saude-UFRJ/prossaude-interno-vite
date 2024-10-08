@@ -2,7 +2,7 @@ import { fluxGen } from "../../../src/lib/global/gModel";
 import { person } from "../../../src/vars";
 import { MutableRefObject, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { elementNotFound, extLine, inputNotFound } from "../../../src/lib/global/handlers/errorHandler";
-import { nullishDiv, nullishSel } from "../../../src/lib/global/declarations/types";
+import { nlDiv, nlSel } from "../../../src/lib/global/declarations/types";
 import { ENContextProps } from "../../../src/lib/global/declarations/interfaces";
 import { Dispatch } from "react";
 import { Gender } from "../../../src/lib/tests/testVars";
@@ -13,16 +13,16 @@ export default function GenDiv({
   genBirthRef,
 }: {
   onSetGen?: Dispatch<SetStateAction<Gender>>;
-  genRef?: MutableRefObject<nullishSel>;
-  genBirthRef?: MutableRefObject<nullishSel>;
+  genRef?: MutableRefObject<nlSel>;
+  genBirthRef?: MutableRefObject<nlSel>;
 }): JSX.Element {
   const ctxGen = useContext<ENContextProps>(ENContext).gen,
-    r = useRef<nullishDiv>(null),
-    gr = useRef<nullishSel>(null),
-    gbr = useRef<nullishSel>(null),
-    gtr = useRef<nullishSel>(null),
-    gar = useRef<nullishSel>(null),
-    tbr = useRef<nullishSel>(null),
+    r = useRef<nlDiv>(null),
+    gr = useRef<nlSel>(null),
+    gbr = useRef<nlSel>(null),
+    gtr = useRef<nlSel>(null),
+    gar = useRef<nlSel>(null),
+    tbr = useRef<nlSel>(null),
     [gen, setGen] = useState<string>(ctxGen),
     [genBirthRel, setGenBirthRel] = useState<string>("cis"),
     [genTrans, setGenTrans] = useState<string>("avancado"),
@@ -49,7 +49,7 @@ export default function GenDiv({
   useEffect(() => {
     try {
       if (tbr.current instanceof HTMLSelectElement || (tbr.current as any) instanceof HTMLInputElement) return;
-      tbr.current = document.getElementById("textBodytype") as nullishSel;
+      tbr.current = document.getElementById("textBodytype") as nlSel;
     } catch (e) {
       console.error(`Error executing effect for assigning Text Body Type reference:\n${(e as Error).message}`);
     }

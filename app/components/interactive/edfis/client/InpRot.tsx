@@ -2,11 +2,11 @@ import { ErrorBoundary } from "react-error-boundary";
 import { InpRotProps } from "../../../../src/lib/global/declarations/interfaces";
 import { extLine, inputNotFound } from "../../../../src/lib/global/handlers/errorHandler";
 import { handleEventReq } from "../../../../src/lib/global/handlers/gHandlers";
-import { mainContextRot, nullishInp } from "../../../../src/lib/global/declarations/types";
+import { mainContextRot, nlInp } from "../../../../src/lib/global/declarations/types";
 import { useEffect, useRef } from "react";
 import GenericErrorComponent from "../../../error/GenericErrorComponent";
 export default function InpRot(props: InpRotProps): JSX.Element {
-  const inpRef = useRef<nullishInp>(null);
+  const inpRef = useRef<nlInp>(null);
   const title = ((): string => {
     let mainCtx: mainContextRot = "Diário";
     switch (props.ctx) {

@@ -2,12 +2,12 @@ import { useEffect, useRef } from "react";
 import { ExportHandler } from "../../../src/lib/global/declarations/classes";
 import { addExportFlags } from "../../../src/lib/global/gController";
 import { exporters } from "../../../src/vars";
-import { nullishBtn } from "../../../src/lib/global/declarations/types";
+import { nlBtn } from "../../../src/lib/global/declarations/types";
 import { checkForReset } from "../../../src/lib/global/handlers/gHandlers";
 import { useLocation } from "react-router-dom";
 let exporter: ExportHandler | undefined = undefined;
 export default function SectConfirmBtns(): JSX.Element {
-  const btnRef = useRef<nullishBtn>(null),
+  const btnRef = useRef<nlBtn>(null),
     location = useLocation();
   useEffect(() => {
     exporter = (() => {

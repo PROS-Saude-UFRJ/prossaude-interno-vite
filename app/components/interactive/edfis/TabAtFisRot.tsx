@@ -1,11 +1,11 @@
 import { PayloadCounterAction } from "../../../src/lib/global/declarations/interfaces";
 import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nullishDiv } from "../../../src/lib/global/declarations/types";
+import { nlDiv } from "../../../src/lib/global/declarations/types";
 import { useEffect, useReducer, useRef } from "react";
 import { syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
 import { addRowAtivFis, removeRowAtivFis } from "../../../src/lib/locals/edFisNutPage/edFisNutHandler";
 export default function TabAtFirsRot({ children = <></> }: { children: JSX.Element }): JSX.Element {
-  const mainRef = useRef<nullishDiv>(null);
+  const mainRef = useRef<nlDiv>(null);
   const [blockCount, setBlockCount] = useReducer<(s: number, a: PayloadCounterAction) => number>(
     (s: number, a: PayloadCounterAction) => {
       switch (a.type) {

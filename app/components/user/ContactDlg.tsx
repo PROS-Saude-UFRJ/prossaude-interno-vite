@@ -1,12 +1,12 @@
 import { ContactDlgProps } from "../../src/lib/locals/panelPage/declarations/interfacesCons";
 import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
 import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { nullishBtn, nullishDlg } from "../../src/lib/global/declarations/types";
+import { nlBtn, nullishDlg } from "../../src/lib/global/declarations/types";
 import { useEffect, useRef } from "react";
 import { validateForm, syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
 export default function ContactDlg({ setContact, shouldDisplayContact = true }: ContactDlgProps): JSX.Element {
   const contactDlgRef = useRef<nullishDlg>(null);
-  const contacBtnRef = useRef<nullishBtn>(null);
+  const contacBtnRef = useRef<nlBtn>(null);
   useEffect(() => {
     if (contactDlgRef.current instanceof HTMLDialogElement) {
       contactDlgRef.current.showModal();

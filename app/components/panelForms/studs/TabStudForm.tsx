@@ -11,7 +11,7 @@ import { useEffect, useRef, useCallback, useContext, useMemo } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import Spinner from "../../icons/Spinner";
 import StudRow from "./StudRow";
-import { nullishBtn, nullishForm, nullishTab, nullishTabSect } from "../../../src/lib/global/declarations/types";
+import { nlBtn, nlFm, nullishTab, nullishTabSect } from "../../../src/lib/global/declarations/types";
 import { StudInfo } from "../../../src/lib/global/declarations/interfacesCons";
 import { strikeEntries } from "../../../src/lib/locals/panelPage/consStyleScript";
 import { assignFormAttrs } from "../../../src/lib/global/gModel";
@@ -22,10 +22,10 @@ import { Link } from "react-router-dom";
 export default function TabStudForm(): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     studs: StudInfo[] = useMemo(() => [], []),
-    formRef = useRef<nullishForm>(null),
+    formRef = useRef<nlFm>(null),
     tabRef = useRef<nullishTab>(null),
     tbodyRef = useRef<HTMLTableSectionElement | null>(null),
-    btnExportTabStudsRef = useRef<nullishBtn>(null),
+    btnExportTabStudsRef = useRef<nlBtn>(null),
     callbackNormalizeSizeSb = useCallback(() => {
       normalizeSizeSb(
         [

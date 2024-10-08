@@ -2,7 +2,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { ExcludeDlgProps } from "../../src/lib//locals/panelPage/declarations/interfacesCons";
 import { handleDelete } from "../../src/lib//locals/panelPage/handlers/handlers";
 import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { nullishDlg, nullishForm } from "../../src/lib/global/declarations/types";
+import { nullishDlg, nlFm } from "../../src/lib/global/declarations/types";
 import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
 import { useEffect, useRef } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
@@ -13,7 +13,7 @@ export default function ExcludeDlg({
   shouldDisplayExcludeDlg = true,
 }: ExcludeDlgProps): JSX.Element {
   const excludeDlgRef = useRef<nullishDlg>(null),
-    formRef = useRef<nullishForm>(null),
+    formRef = useRef<nlFm>(null),
     handleClick = (): void => {
       setDisplayExcludeDlg(!shouldDisplayExcludeDlg);
       if (!shouldDisplayExcludeDlg && excludeDlgRef.current instanceof HTMLDialogElement) excludeDlgRef.current.close();

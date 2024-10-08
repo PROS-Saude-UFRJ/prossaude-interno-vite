@@ -38,14 +38,14 @@ import Signature from "../def/Signature";
 import SectConfirmBtns from "../def/SectConfirmBtns";
 import { useRef, useEffect } from "react";
 import useDataProvider from "../../../src/lib/hooks/useDataProvider";
-import { nullishForm } from "../../../src/lib/global/declarations/types";
+import { nlFm } from "../../../src/lib/global/declarations/types";
 import { ENContextProps } from "../../../src/lib/global/declarations/interfaces";
 export const ENContext = createContext<ENContextProps>({
   age: "0",
   gen: "masculino",
 });
 export default function ENForm(): JSX.Element {
-  const f = useRef<nullishForm>(null);
+  const f = useRef<nlFm>(null);
   useEffect(() => {
     registerPersistInputs({
       f: f.current,

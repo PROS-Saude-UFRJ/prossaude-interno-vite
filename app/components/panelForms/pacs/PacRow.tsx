@@ -1,7 +1,7 @@
 import { PacRowProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
 import { dateISOtoBRL } from "../../../src/lib/global/gModel";
 import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nullishBtn } from "../../../src/lib/global/declarations/types";
+import { nlBtn } from "../../../src/lib/global/declarations/types";
 import { useState, useRef, useContext } from "react";
 import AlterFieldList from "../../lists/AlterFieldList";
 import FormExcludeBtn from "../defs/FormExcludeBtn";
@@ -33,8 +33,8 @@ export default function PacRow({
   shouldShowAlocBtn = false,
 }: PacRowProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
-    btnPrevListRef = useRef<nullishBtn>(null),
-    alocBtnRef = useRef<nullishBtn>(null),
+    btnPrevListRef = useRef<nlBtn>(null),
+    alocBtnRef = useRef<nlBtn>(null),
     [shouldDisplayPrevList, setDisplayPrevList] = useState<boolean>(false),
     [shouldDisplayRowData, setDisplayRowData] = useState<boolean>(false),
     toggleDisplayRowData = (s: boolean = true): void => setDisplayRowData(!s),

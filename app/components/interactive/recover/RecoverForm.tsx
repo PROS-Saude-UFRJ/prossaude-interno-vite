@@ -2,11 +2,11 @@ import { handleEventReq, validateForm } from "../../../src/lib/global/handlers/g
 import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
 import { useState, useRef, useEffect } from "react";
 import RecoverAlert from "../../alerts/RecoverAlert";
-import { nullishForm } from "../../../src/lib/global/declarations/types";
+import { nlFm } from "../../../src/lib/global/declarations/types";
 import { assignFormAttrs } from "../../../src/lib/global/gModel";
 import { Link } from "react-router-dom";
 export default function RecoverForm(): JSX.Element {
-  const formRef = useRef<nullishForm>(null),
+  const formRef = useRef<nlFm>(null),
     [shouldShowAlert, setAlert] = useState<boolean>(false);
   useEffect(() => assignFormAttrs(formRef.current));
   return (

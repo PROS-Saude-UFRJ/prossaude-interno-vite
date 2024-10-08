@@ -1,4 +1,3 @@
-"use client";
 import { useContext } from "react";
 import ThDate from "./ThDate";
 import { ScheduleCtx } from "./ScheduleForm";

@@ -7,7 +7,7 @@ import { providers } from "@/vars";
 import { syncAriaStates } from "../../../../lib/global/handlers/gHandlers";
 import "@testing-library/jest-dom/extend-expect";
 import { MutableRefObject, useRef } from "react";
-import { nullishHtEl } from "../../../../lib/global/declarations/types";
+import { nlHtEl } from "../../../../lib/global/declarations/types";
 jest.mock(
   "../../../../lib/locals/panelPage/handlers/consHandlerList",
   (): {
@@ -39,7 +39,7 @@ jest.mock(
   }),
 ) as typeof jest;
 describe("DREFiller Component", (): void => {
-  const forwardedRef: MutableRefObject<nullishHtEl> = useRef<nullishHtEl>(null);
+  const forwardedRef: MutableRefObject<nlHtEl> = useRef<nlHtEl>(null);
   const defaultProps: FillerProps = {
     forwardedRef,
     userClass: "estudante",

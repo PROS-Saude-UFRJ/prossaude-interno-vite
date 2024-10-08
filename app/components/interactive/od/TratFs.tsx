@@ -1,13 +1,13 @@
 import { CounterAction } from "../../../src/lib/global/declarations/interfaces";
 import { addSubDivTrat } from "../../../src/lib/locals/odPage/odHandler";
 import { useEffect, useReducer, useRef } from "react";
-import { nullishBtn, nullishFs, nullishInp } from "../../../src/lib/global/declarations/types";
+import { nlBtn, nullishFs, nlInp } from "../../../src/lib/global/declarations/types";
 import { elementNotFound, extLine, inputNotFound } from "../../../src/lib/global/handlers/errorHandler";
 import { changeToAstDigit, syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
 export default function TratFs(props: { phCb?: () => void }): JSX.Element {
   const mainRef = useRef<nullishFs>(null);
-  const btnRef = useRef<nullishBtn>(null);
-  const inpRef = useRef<nullishInp>(null);
+  const btnRef = useRef<nlBtn>(null);
+  const inpRef = useRef<nlInp>(null);
   const [blockCount, setBlockCount] = useReducer((s: number, a: CounterAction) => {
     switch (a.type) {
       case "INCREMENT":

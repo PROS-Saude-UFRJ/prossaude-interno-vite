@@ -136,6 +136,7 @@ export default function StudList({ mainDlgRef, dispatch, state = true }: StudLis
                         <tbody id='avStudsTbody' ref={tbodyRef}>
                           <span style={{ margin: "2rem", position: "absolute" }}>
                             <Spinner
+                              key={crypto.randomUUID()}
                               spinnerClass='spinner-border'
                               spinnerColor='text-info'
                               message='Loading Students Table...'
@@ -328,7 +329,12 @@ export default function StudList({ mainDlgRef, dispatch, state = true }: StudLis
       </thead>
       <tbody id='avStudsTbody' ref={tbodyRef}>
         <span style={{ margin: "2rem", position: "absolute" }}>
-          <Spinner spinnerClass='spinner-border' spinnerColor='text-info' message='Loading Students Table...' />
+          <Spinner
+            key={crypto.randomUUID()}
+            spinnerClass='spinner-border'
+            spinnerColor='text-info'
+            message='Loading Students Table...'
+          />
         </span>
       </tbody>
     </table>
