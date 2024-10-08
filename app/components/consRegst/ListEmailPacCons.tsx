@@ -35,7 +35,11 @@ export default function ListEmailPacCons(): JSX.Element {
                 panelRoots[dlRef.current.id]?.unmount();
                 delete panelRoots[dlRef.current.id];
                 dlRef.current.remove() as void;
-                registerRoot(panelRoots[dlRef.current.id], `#${dlRef.current.id}`, dlRef);
+                panelRoots[dlRef.current.id] = registerRoot(
+                  panelRoots[dlRef.current.id],
+                  `#${dlRef.current.id}`,
+                  dlRef,
+                );
                 panelRoots[dlRef.current.id]?.render(
                   <ErrorBoundary
                     FallbackComponent={() => (
@@ -47,7 +51,11 @@ export default function ListEmailPacCons(): JSX.Element {
                 dlRef.current = document.getElementById("listEmailPacCons") as nullishDl;
                 if (!(dlRef.current instanceof HTMLElement))
                   throw elementNotFound(dlRef.current, `Validation of replaced dl`, extLine(new Error()));
-                registerRoot(panelRoots[dlRef.current.id], `#${dlRef.current.id}`, dlRef);
+                panelRoots[dlRef.current.id] = registerRoot(
+                  panelRoots[dlRef.current.id],
+                  `#${dlRef.current.id}`,
+                  dlRef,
+                );
                 if (!dlRef.current.querySelector("option"))
                   panelRoots[dlRef.current.id]?.render(
                     pacs.map((pac, i) => (
@@ -62,7 +70,8 @@ export default function ListEmailPacCons(): JSX.Element {
                 );
               }
             }, 1000);
-          } else registerRoot(panelRoots[dlRef.current.id], `#${dlRef.current.id}`, dlRef);
+          } else
+            panelRoots[dlRef.current.id] = registerRoot(panelRoots[dlRef.current.id], `#${dlRef.current.id}`, dlRef);
           if (!dlRef.current.querySelector("tr"))
             panelRoots[dlRef.current.id]?.render(
               pacs.map((pac, i) => (

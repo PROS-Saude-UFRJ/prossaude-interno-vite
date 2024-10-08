@@ -4,18 +4,21 @@ import { addExportFlags } from "../../../src/lib/global/gController";
 import { exporters } from "../../../src/vars";
 import { nullishBtn } from "../../../src/lib/global/declarations/types";
 import { checkForReset } from "../../../src/lib/global/handlers/gHandlers";
+import { useLocation } from "react-router-dom";
 let exporter: ExportHandler | undefined = undefined;
 export default function SectConfirmBtns(): JSX.Element {
-  const btnRef = useRef<nullishBtn>(null);
+  const btnRef = useRef<nullishBtn>(null),
+    location = useLocation();
   useEffect(() => {
     exporter = (() => {
-      if (/ag/gi.test(location.pathname)) {
+      const pn = location.pathname;
+      if (/ag/gi.test(pn)) {
         if (!exporters.agExporter) exporters.agExporter = new ExportHandler();
         return exporters.agExporter;
-      } else if (/ed/gi.test(location.pathname)) {
+      } else if (/ed/gi.test(pn)) {
         if (!exporters.edExporter) exporters.edExporter = new ExportHandler();
         return exporters.edExporter;
-      } else if (/od/gi.test(location.pathname)) {
+      } else if (/od/gi.test(pn)) {
         if (!exporters.odExporter) exporters.odExporter = new ExportHandler();
         return exporters.odExporter;
       } else return new ExportHandler();
@@ -48,7 +51,7 @@ export default function SectConfirmBtns(): JSX.Element {
       handleUnload();
       removeEventListener("beforeunload", handleUnload);
     };
-  }, []);
+  }, [location]);
   return (
     <section className='sectionMain sectionConfirm' id='sectConfirmBut'>
       <button

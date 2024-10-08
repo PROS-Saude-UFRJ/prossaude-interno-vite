@@ -472,6 +472,8 @@ export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
       consVariablesData.rootDlg = registerRoot(
         consVariablesData.rootDlg,
         `#${rootDlg.id || rootDlg.className.replace(/\s/g, "__") || rootDlg.tagName}`,
+        undefined,
+        false,
       );
     }
     if (!rootDlgContext.aptBtnsRoots[`rootDlgList`]) {

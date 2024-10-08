@@ -15,6 +15,7 @@ import {
   formatCPF,
   formatTel,
 } from "../../src/lib/global/gModel";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 export default function AlterFieldList({
   dispatch,
   tabRef,
@@ -24,16 +25,15 @@ export default function AlterFieldList({
   const alterFieldRef = useRef<nullishDlg>(null),
     formRef = useRef<nullishForm>(null),
     optsRef = useRef<nullishSel>(null),
+    navigate = useNavigate(),
+    location = useLocation(),
+    [searchParams, setSearchParams] = useSearchParams(),
     [, setChosenOp] = useState(optsRef.current?.value || null),
     handleChange = (targ: HTMLSelectElement): void => {
-      history.pushState(
-        {},
-        "",
-        `${location.origin}${location.pathname}${location.search}${camelToKebab(targ.value)}${location.hash}`,
-      );
-      setTimeout(() => {
-        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
-      }, 300);
+      const currentParams = new URLSearchParams(searchParams);
+      currentParams.set("alterDlg", camelToKebab(targ.value));
+      setSearchParams(currentParams);
+      setTimeout(() => setSearchParams(new URLSearchParams(searchParams)), 300);
     },
     toggleDisplayRowData = (state: boolean = true): void => dispatch(!state);
   useEffect(() => {
@@ -62,43 +62,32 @@ export default function AlterFieldList({
   }, [alterFieldRef, dispatch, toggleDisplayRowData]);
   //push em history
   useEffect(() => {
-    history.pushState(
-      {},
-      "",
-      `${location.origin}${location.pathname}${location.search}&alter-dlg=open#${btoa(
-        String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))),
-      )}`,
-    );
+    navigate({
+      pathname: location.pathname,
+      search: `${location.search}&alter-dlg=open`,
+      hash: `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`,
+    });
     optsRef.current instanceof HTMLSelectElement && handleChange(optsRef.current);
     setTimeout(() => {
-      history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+      navigate(`${window.location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"), { replace: true });
     }, 300);
     return (): void => {
-      optsRef.current instanceof HTMLSelectElement
-        ? history.pushState(
-            {},
-            "",
-            `${location.origin}${location.pathname}${location.search}`
-              .replaceAll(`&alter-dlg=open`, "")
-              .replaceAll(
-                `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`,
-                "",
-              )
-              .replaceAll(`${camelToKebab(optsRef.current.value)}${location.hash}`, ""),
-          )
-        : history.pushState(
-            {},
-            "",
-            `${location.origin}${location.pathname}${location.search}`
-              .replaceAll(`&alter-dlg=open`, "")
-              .replaceAll(`#${name.toLowerCase().replaceAll(" ", "-")}`, "")
-              .replaceAll(`${location.hash}`, ""),
-          );
-      setTimeout(() => {
-        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
-      }, 300);
+      const currentParams = new URLSearchParams(searchParams);
+      currentParams.delete("alterDlg");
+      const newHash =
+        optsRef.current instanceof HTMLSelectElement
+          ? `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`
+          : "";
+      navigate(
+        {
+          pathname: location.pathname,
+          search: currentParams.toString(),
+          hash: newHash,
+        },
+        { replace: true },
+      );
     };
-  }, [name]);
+  }, [name, location, navigate, searchParams]);
   useEffect(() => {
     if (
       (optsRef?.current instanceof HTMLSelectElement || optsRef.current! instanceof HTMLInputElement) &&

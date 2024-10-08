@@ -8,7 +8,7 @@ import { useEffect, useRef } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
 import GenericErrorComponent from "../error/GenericErrorComponent";
 import PrevConsRow from "./PrevConsRow";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 export default function PrevConsList({
   dispatch,
   state = true,
@@ -23,36 +23,32 @@ export default function PrevConsList({
     },
   ],
 }: HistoricDlgProps): JSX.Element {
-  const prevConsDlgRef = useRef<nullishDlg>(null);
-  const prevConsTabRef = useRef<nullishTab>(null);
+  const prevConsDlgRef = useRef<nullishDlg>(null),
+    prevConsTabRef = useRef<nullishTab>(null),
+    navigate = useNavigate();
   //push em history
   useEffect(() => {
-    history.pushState(
-      {},
-      "",
-      `${location.origin}${location.pathname}${location.search}&prev-cons=open#${btoa(
-        String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))),
-      )}`,
+    const encodedName = btoa(
+      String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))),
     );
-    setTimeout(() => {
-      history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
-    }, 300);
+    navigate({
+      pathname: location.pathname,
+      search: `${location.search}&prev-cons=open`,
+      hash: `#${encodedName}`,
+    });
     return (): void => {
-      history.pushState(
-        {},
-        "",
-        `${location.origin}${location.pathname}${location.search}`
-          .replaceAll(`&prev-cons=open`, "")
-          .replaceAll(
-            `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`,
-            "",
-          ),
+      const currentParams = new URLSearchParams(location.search);
+      currentParams.delete("prev-cons");
+      navigate(
+        {
+          pathname: location.pathname,
+          search: currentParams.toString(),
+          hash: "",
+        },
+        { replace: true },
       );
-      setTimeout(() => {
-        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
-      }, 300);
     };
-  }, [name]);
+  }, [name, location, navigate]);
   useEffect(() => {
     if (prevConsDlgRef.current instanceof HTMLDialogElement) {
       prevConsDlgRef.current.showModal();

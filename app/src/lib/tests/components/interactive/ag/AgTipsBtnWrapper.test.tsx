@@ -1,13 +1,14 @@
+import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import AgTipsBtnWrapper from "../../../../../../components/interactive/ag/AgTipsBtnWrapper";
 import { ErrorBoundary } from "react-error-boundary";
 jest.mock(
   "../../../../../components/AGTips",
-  (): (() => JSX.Element) => jest.fn((): JSX.Element => <div>AGTips Component</div>) as jest.Mock
+  (): (() => JSX.Element) => jest.fn((): JSX.Element => <div>AGTips Component</div>) as jest.Mock,
 ) as typeof jest;
 jest.mock(
   "../../../../../components/def/TipsBtn",
-  (): (() => JSX.Element) => jest.fn((): JSX.Element => <div>TipsBtn Component</div>) as jest.Mock
+  (): (() => JSX.Element) => jest.fn((): JSX.Element => <div>TipsBtn Component</div>) as jest.Mock,
 ) as typeof jest;
 describe("AgTipsBtnWrapper", (): void => {
   it("renders TipsBtn component", (): void => {

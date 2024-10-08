@@ -1,7 +1,9 @@
-import { HrRowProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
+import { useContext } from "react";
+import { HrRowProps } from "../../../src/lib/global/declarations/interfacesCons";
 import TdBSchedTab from "./TdBSchedTab";
+import { ScheduleCtx } from "./ScheduleForm";
 export default function TrBSchedTab({ mainRoot, nHr, nRow }: HrRowProps): JSX.Element {
-  const cols = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const cols = useContext(ScheduleCtx)?.nHrs ?? [];
   return (
     <tr id={`tr${nHr}`} data-row={nRow}>
       <td className='tabCel' data-col='0' data-row={nRow}>

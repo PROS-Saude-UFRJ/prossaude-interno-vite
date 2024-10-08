@@ -2,7 +2,7 @@ import { nullishBtn, nullishDlg } from "../../src/lib/global/declarations/types"
 import { isClickOutside } from "../../src/lib/global/gStyleScript";
 import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
 import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
-import { ExcludeConsDlgProps } from "../../src/lib/locals/panelPage/declarations/interfacesCons";
+import { ExcludeConsDlgProps } from "../../src/lib/global/declarations/interfacesCons";
 import { addEraseEvent } from "../../src/lib/locals/panelPage/handlers/consHandlerCmn";
 import { useContext, useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";

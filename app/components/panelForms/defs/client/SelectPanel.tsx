@@ -23,13 +23,17 @@ import ScheduleLoader from "../../schedule/ScheduleLoader";
 import { PanelCtx } from "./SelectLoader";
 import { panelRoots } from "../../../../src/vars";
 import { providers } from "../../../../src/vars";
+import Spinner from "../../../icons/Spinner";
+import { useLocation, useNavigate } from "react-router-dom";
 export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.Element {
-  const { userClass, setUserClass: setPrivilege } = useContext(PanelCtx);
+  const { userClass, setUserClass: setPrivilege } = useContext(PanelCtx),
+    [selectedOption, setSelectedOption] = useState<string>(defOp),
+    [mounted, setMounted] = useState<boolean>(false),
+    formRootRef = useRef<nullishDiv>(null),
+    navigate = useNavigate(),
+    location = useLocation(),
+    context = useContext<AppRootContextType>(AppRootContext);
   console.log("render user class " + userClass);
-  const [selectedOption, setSelectedOption] = useState<string>(defOp);
-  const [mounted, setMounted] = useState<boolean>(false);
-  const formRootRef = useRef<nullishDiv>(null);
-  const context = useContext<AppRootContextType>(AppRootContext);
   useEffect(() => {
     const privilege = localStorage.getItem("activeUser")
       ? JSON.parse(localStorage.getItem("activeUser")!).loadedData?.privilege
@@ -77,17 +81,20 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
   };
   const handlePanelPath = (change: React.ChangeEvent<HTMLSelectElement> | string): void => {
     const changeValue = typeof change === "object" && "target" in change ? change.target.value : change;
-    history.pushState(
-      {},
-      "",
-      `${location.origin}${
-        location.pathname.endsWith("/") ? location.pathname.slice(0, -1) : location.pathname
-      }?panel=${camelToKebab(changeValue)}`
-        .replace("/?", "?")
-        .replace("/#", "#"),
-    );
+    navigate({
+      pathname: location.pathname.endsWith("/") ? location.pathname.slice(0, -1) : location.pathname,
+      search: `?panel=${camelToKebab(changeValue)}`,
+      hash: location.hash,
+    });
     setTimeout(() => {
-      history.pushState({}, "", `${location.href}`.replace("/?", "?").replace("/#", "#"));
+      navigate(
+        {
+          pathname: location.pathname,
+          search: location.search.replace("/?", "?"),
+          hash: location.hash.replace("/#", "#"),
+        },
+        { replace: true },
+      );
     }, 300);
   };
   useEffect(() => {
@@ -132,7 +139,7 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
           panelSelect.value = "removeProf";
         } else if (/removeStud/gi.test(camel)) {
           console.log("removestud");
-          history.replaceState({}, "", location.search.replace("agenda", "remove-stud"));
+          navigate({ pathname: location.pathname, search: location.search.replace("agenda", "remove-stud"), hash: "" });
           panelSelect.value = "removeStud";
           context.roots.formRoot.render(
             userClass === "coordenador" || userClass === "supervisor" ? <TabStudForm /> : <Unauthorized />,
@@ -143,7 +150,7 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
         } else if (/pacList/gi.test(camel)) {
           context.roots.formRoot.render(<PacTabForm />);
           panelSelect.value = "pacList";
-        } else history.pushState({}, "", `${location.origin}${location.pathname}?panel=${defOp}`);
+        } else navigate({ pathname: location.pathname, search: `?panel=${defOp}`, hash: "" });
       } catch (e) {
         console.error(
           `Error executing procedure for adjusting selected panel option based on route:\n${(e as Error).message}`,
@@ -186,7 +193,7 @@ export default function SelectPanel({ defOp = "agenda" }: MainPanelProps): JSX.E
   }, [mounted]);
   // Snippet para repassar para CSR totalmente (erro ainda não investigado)
   return !mounted ? (
-    <></>
+    <Spinner spinnerClass='spinner-grow' />
   ) : (
     <ErrorBoundary
       FallbackComponent={() => <GenericErrorComponent message='Error loading Selector for Working Panel' />}>

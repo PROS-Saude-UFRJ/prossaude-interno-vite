@@ -1,6 +1,6 @@
 import { fluxGen } from "../../../src/lib/global/gModel";
 import { person } from "../../../src/vars";
-import { SetStateAction, useContext, useEffect, useRef, useState } from "react";
+import { MutableRefObject, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { elementNotFound, extLine, inputNotFound } from "../../../src/lib/global/handlers/errorHandler";
 import { nullishDiv, nullishSel } from "../../../src/lib/global/declarations/types";
 import { ENContextProps } from "../../../src/lib/global/declarations/interfaces";
@@ -9,10 +9,12 @@ import { Gender } from "../../../src/lib/tests/testVars";
 import { ENContext } from "../edfis/ENForm";
 export default function GenDiv({
   onSetGen,
-  setGenRef,
+  genRef,
+  genBirthRef,
 }: {
   onSetGen?: Dispatch<SetStateAction<Gender>>;
-  setGenRef?: Dispatch<SetStateAction<nullishSel>>;
+  genRef?: MutableRefObject<nullishSel>;
+  genBirthRef?: MutableRefObject<nullishSel>;
 }): JSX.Element {
   const ctxGen = useContext<ENContextProps>(ENContext).gen,
     r = useRef<nullishDiv>(null),
@@ -95,8 +97,11 @@ export default function GenDiv({
     (): void => removeEventListener("resize", handleResize);
   }, [r]);
   useEffect(() => {
-    if (setGenRef && gr.current) setGenRef(gr.current);
-  }, [setGenRef]);
+    if (genRef && gr.current) genRef.current = gr.current;
+  }, [genRef, gr]);
+  useEffect(() => {
+    if (genBirthRef && gr.current) genBirthRef.current = gr.current;
+  }, [genBirthRef, gr]);
   return (
     <div className='gridTwoCol noInvert' id='genDiv' role='group' ref={r}>
       <span role='group' className='fsAnamGSpan flexAlItCt genSpan' id='spanFsAnamG13'>

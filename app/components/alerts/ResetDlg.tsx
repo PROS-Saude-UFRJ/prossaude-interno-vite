@@ -15,8 +15,8 @@ export default function ResetDlg({
   root = registerRoot(panelRoots.mainRoot, "#formRoot");
   const ResetDlgRef = useRef<nullishDlg>(null),
     resetForm = (): void => {
-      document.querySelector("form")!.reset();
-      root.render(<MainFormPanel />);
+      document.querySelector("form")?.reset();
+      root?.render(<MainFormPanel />);
     },
     handleClose = (): void => {
       setDisplayResetDlg(!shouldDisplayResetDlg);

@@ -20,7 +20,7 @@ import {
   renderTable,
 } from "../../src/lib/locals/panelPage/handlers/consHandlerList";
 import { PanelCtx } from "../panelForms/defs/client/SelectLoader";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 export default function AvProfListDlg(props: AvProfListDlgProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     internalProfs: ProfInfo[] = useMemo(() => [], []),
@@ -31,12 +31,13 @@ export default function AvProfListDlg(props: AvProfListDlgProps): JSX.Element {
     tbodyIntRef = useRef<nullishTabSect>(null),
     tbodyExtRef = useRef<nullishTabSect>(null),
     secttabProfIntRef = useRef<nullishHtEl>(null),
+    navigate = useNavigate(),
     [searchParams, setSearchParams] = useSearchParams();
   //push em history
   useEffect(() => {
     if (!searchParams.has("av-prof")) setSearchParams({ ...Object.fromEntries(searchParams), "av-prof": "open" });
     setTimeout(() => {
-      history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+      navigate(`${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"), { replace: true });
     }, 300);
     return (): void => {
       const newSearchParams = new URLSearchParams(searchParams);
