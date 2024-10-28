@@ -25,9 +25,9 @@ module.exports = {
   devtool: "source-map",
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".jsx", ".scss", ".css"],
-  },
-  alias: {
-    "@": path.resolve(__dirname, "src"),
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
   },
   output: {
     filename: `${name}_bundle.${packageJson?.version ? `${packageJson.version}.` : ""}[contenthash].min.js`,

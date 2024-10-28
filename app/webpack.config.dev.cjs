@@ -12,15 +12,15 @@ module.exports = {
   devtool: "source-map",
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".jsx", ".scss", ".css"],
+    alias: {
+      "@": path.resolve(__dirname, "src"),
+    },
   },
   output: {
     filename: `bundle.min.js`,
     path: path.resolve(__dirname, "dev"),
     publicPath: "",
     crossOriginLoading: "anonymous",
-  },
-  alias: {
-    "@": path.resolve(__dirname, "src"),
   },
   module: {
     rules: [
