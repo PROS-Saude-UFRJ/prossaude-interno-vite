@@ -1,8 +1,8 @@
 import React from "react";
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
 import TabInpProg from "../../../../../../../../components/interactive/edfis/client/tabs/TabInpProg";
-import { handleEventReq, handleCondtReq } from "../../../../../../global/handlers/gHandlers";
 import { handleIndEv } from "../../../../../../locals/edFisNutPage/edFisNutHandler";
+import { handleEventReq, handleCondtReq } from "../../../../../../global/handlers/gHandlers";
 jest.mock(
   "../../../../../../../components/interactive/edfis/TabIndPerc",
   (): {

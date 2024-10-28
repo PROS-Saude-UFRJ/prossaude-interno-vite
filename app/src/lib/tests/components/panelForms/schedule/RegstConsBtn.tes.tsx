@@ -1,32 +1,32 @@
 import { render, fireEvent, RenderResult } from "@testing-library/react";
-import { checkRegstBtn } from "../../../src/lib/locals/panelPage/handlers/consHandlerCmn";
+import { checkRegstBtn } from "@/lib/locals/panelPage/handlers/consHandlerCmn";
 import RegstConsBtn from "../../../../../../components/panelForms/schedule/RegstConsBtn";
 jest.mock(
-  "../../../src/lib/global/handlers/errorHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
     extLine: jest.Mock<any, any, any>;
   } => ({
     elementNotFound: jest.fn() as jest.Mock,
     extLine: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/locals/panelPage/handlers/consHandlerCmn",
+  "@/lib/locals/panelPage/handlers/consHandlerCmn",
   (): {
     checkRegstBtn: jest.Mock<any, any, any>;
   } => ({
     checkRegstBtn: jest.fn(() => true) as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("RegstConsBtn Component", (): void => {
   test("renders button and toggles FailRegstAlert", (): void => {
     const renderResult = render(
-      <RegstConsBtn rootEl={null} secondOp='Arraste' userClass='coordenador' />,
+      <RegstConsBtn rootEl={null} secondOp='Arraste' userClass='coordenador' />
     ) as RenderResult;
     (
       expect(
-        fireEvent.click(renderResult.getByText(/Agendar Consulta/i) as HTMLButtonElement) as boolean,
+        fireEvent.click(renderResult.getByText(/Agendar Consulta/i) as HTMLButtonElement) as boolean
       ) as jest.JestMatchers<HTMLElement>
     ).toBe<boolean>(true) as void;
     (
@@ -37,7 +37,7 @@ describe("RegstConsBtn Component", (): void => {
     fireEvent.click(
       (
         render(<RegstConsBtn rootEl={document.body} secondOp='Arraste' userClass='coordenador' />) as RenderResult
-      ).getByText(/Agendar Consulta/i) as HTMLButtonElement,
+      ).getByText(/Agendar Consulta/i) as HTMLButtonElement
     ) as boolean;
     (expect(checkRegstBtn) as jest.JestMatchers<HTMLElement>).toHaveBeenCalled() as void;
   }) as void;

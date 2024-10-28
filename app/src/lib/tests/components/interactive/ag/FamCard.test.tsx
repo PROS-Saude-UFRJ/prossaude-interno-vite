@@ -1,7 +1,7 @@
 import React from "react";
-import { handleDivAddShow } from "../../../../../lib/locals/aGPage/aGHandlers";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import FamCard from "../../../../../../components/interactive/ag/FamCard";
+import { handleDivAddShow } from "../../../../../lib/locals/aGPage/aGHandlers";
 jest.mock(
   "../../../../../pages/ag",
   (): {

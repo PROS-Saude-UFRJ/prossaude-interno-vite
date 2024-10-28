@@ -1,8 +1,11 @@
-import { handleCondtReq } from "../../../src/lib/global/handlers/gHandlers";
+import { handleCondtReq } from "@/lib/global/handlers/gHandlers";
+import usePairedHeights from "@/lib/hooks/usePairedHeights";
 export default function LocComp(): JSX.Element {
+  const { left, right } = usePairedHeights();
   return (
     <>
       <input
+        ref={left}
         type='number'
         name='loc_complement'
         id='compNumId'
@@ -19,7 +22,7 @@ export default function LocComp(): JSX.Element {
           })
         }
       />
-      <label role='group' htmlFor='compNumNullId' className='halfSpanCheck halfR flexAlItCt noInvert'>
+      <label ref={right} role='group' htmlFor='compNumNullId' className='halfSpanCheck halfR flexAlItCt noInvert'>
         <input
           type='checkbox'
           name='compNumNullName'

@@ -26,6 +26,9 @@ module.exports = {
   resolve: {
     extensions: [".tsx", ".ts", ".js", ".jsx", ".scss", ".css"],
   },
+  alias: {
+    "@": path.resolve(__dirname, "src"),
+  },
   output: {
     filename: `${name}_bundle.${packageJson?.version ? `${packageJson.version}.` : ""}[contenthash].min.js`,
     path: path.resolve(__dirname, "../docs"),

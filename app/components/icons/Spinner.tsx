@@ -1,8 +1,8 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { SpinnerComponentProps } from "../../src/lib/global/declarations/interfaces";
+import { SpinnerComponentProps } from "@/lib/global/declarations/interfaces";
 import GenericErrorComponent from "../error/GenericErrorComponent";
 import { useRef, useEffect } from "react";
-import { nlDiv } from "../../src/lib/global/declarations/types";
+import { nlDiv } from "@/lib/global/declarations/types";
 export default function Spinner({
   spinnerClass = "spinner-border",
   spinnerColor = "text-info",
@@ -22,7 +22,7 @@ export default function Spinner({
       addEventListener("resize", handleResize);
       (): void => removeEventListener("resize", handleResize);
     } catch (e) {
-      console.error(`Error executing useEffect for spinner:\n${(e as Error).message}`);
+      return;
     }
   }, []);
   return (
@@ -52,8 +52,9 @@ export default function Spinner({
                 zIndex: 1,
                 animationTimingFunction: "cubic-bezier(0.1, 0.05, 0, 1)",
                 animationDuration: "1.2s",
+                cursor: "wait",
               }
-            : {}
+            : { cursor: "wait", backfaceVisibility: "hidden" }
         }>
         <span className='visually-hidden'>{`${message}`}</span>
       </div>

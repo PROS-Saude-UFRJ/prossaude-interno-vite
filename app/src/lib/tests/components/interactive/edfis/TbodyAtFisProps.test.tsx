@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import TbodyAtFisProps from "../../../../../../components/interactive/edfis/TbodyAtFisProps";
 import { handleEventReq } from "../../../../global/handlers/gHandlers";
-jest.mock("../../../src/lib/global/handlers/gHandlers", () => ({
+jest.mock("@/lib/global/handlers/gHandlers", () => ({
   handleEventReq: jest.fn(),
 }));
 describe("TbodyAtFisProps component", () => {

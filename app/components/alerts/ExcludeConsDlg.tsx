@@ -1,9 +1,9 @@
-import { nlBtn, nullishDlg } from "../../src/lib/global/declarations/types";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
-import { ExcludeConsDlgProps } from "../../src/lib/global/declarations/interfacesCons";
-import { addEraseEvent } from "../../src/lib/locals/panelPage/handlers/consHandlerCmn";
+import { nlBtn, nlDlg } from "@/lib/global/declarations/types";
+import { isClickOutside } from "@/lib/global/gStyleScript";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import { ExcludeConsDlgProps } from "@/lib/global/declarations/interfacesCons";
+import { addEraseEvent } from "@/lib/locals/panelPage/handlers/consHandlerCmn";
 import { useContext, useEffect, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
@@ -14,7 +14,7 @@ export default function ExcludeConsDlg({
   btn,
 }: ExcludeConsDlgProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
-    excludeDlgRef = useRef<nullishDlg>(null),
+    excludeDlgRef = useRef<nlDlg>(null),
     confirmRef = useRef<nlBtn>(null),
     handleClick = (): void => {
       setDisplayExcludeDlg(!shouldDisplayExcludeDlg);
@@ -39,13 +39,11 @@ export default function ExcludeConsDlg({
       true,
     );
     const handleKeyDown = (press: KeyboardEvent): void => {
-      if (press.key === "Escape") {
-        toggleClose();
-      }
+      if (press.key === "Escape") toggleClose();
     };
     addEventListener("keydown", handleKeyDown);
     return (): void => removeEventListener("keydown", handleKeyDown);
-  }, [shouldDisplayExcludeDlg, excludeDlgRef]);
+  }, [excludeDlgRef, setDisplayExcludeDlg]);
   useEffect(() => {
     try {
       if (!(confirmRef.current instanceof HTMLButtonElement))
@@ -56,8 +54,7 @@ export default function ExcludeConsDlg({
         );
       (userClass === "coordenador" || userClass === "supervisor") && addEraseEvent(btn!, userClass);
     } catch (err) {
-      console.warn(`Error fetching reference for confirm button:
-      ${(err as Error).message}`);
+      return;
     }
   }, [confirmRef, btn, userClass]);
   return (
@@ -66,7 +63,7 @@ export default function ExcludeConsDlg({
         <dialog
           role='alertdialog'
           ref={excludeDlgRef}
-          className='modal-content modal-content-fit'
+          className='modal-content modalContent__fit'
           id='exclude-cons-dlg'
           onClick={ev => {
             if (isClickOutside(ev, ev.currentTarget).some(coord => coord === true)) {

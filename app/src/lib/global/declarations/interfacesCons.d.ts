@@ -1,9 +1,20 @@
-import { aptTypes, formCases, looseNum, panelOpts } from "../../../global/declarations/types";
-import { nlFm, nullishDlg, nullishTab, voidVal, nlBtn } from "../../../global/declarations/types";
+import { DlgProps } from "@/lib/global/declarations/interfaces";
+import {
+  NlMRef,
+  aptTypes,
+  formCases,
+  looseNum,
+  nlDiv,
+  nlHtEl,
+  nlInp,
+  nlSel,
+  panelOpts,
+  vRoot,
+} from "@/lib/global/declarations/types";
+import { BodyType, FactorAtletaValue, Gender, GordLvl, NafTypeValue } from "@/lib/global/declarations/testVars";
+import { nlFm, nlDlg, nlTab, voidVal, nlBtn } from "@glSrc/types";
 import { MutableRefObject, Dispatch, SetStateAction, Component } from "react";
-import { DlgProps } from "./interfaces";
 import { Root } from "react-dom/client";
-import { vRoot, validSchedHours } from "./types";
 export interface FormData {
   [key: string]: any;
 }
@@ -23,19 +34,14 @@ export interface MainPanelProps {
 }
 export interface ScheduleFormProps extends GlobalFormProps {
   context: boolean;
-  children?: React.Element;
 }
 export interface HrRowProps extends GlobalFormProps {
-  nHr: validSchedHours;
+  nHr: 18 | 19 | 20 | 21;
   nRow: number;
   last?: boolean;
 }
 export interface HrCelProps extends HrRowProps {
   nCol: number;
-}
-export interface HrInpProps extends Omit<HrCelProps, "last"> {
-  hourOrder: string;
-  dayOrder: string;
 }
 export interface DataContextType {
   formData: FormData;
@@ -52,23 +58,23 @@ export interface ConsDlgProps extends Omit<BtnAddPacPros, "context"> {
   onClose: () => void;
 }
 export interface FormDlgProps extends ConsDlgProps {
-  dialogRef: MutableRefObject<nullishDlg>;
+  dialogRef: MutableRefObject<nlDlg>;
 }
 export interface FillerProps {
-  forwardedRef: MutableRefObject<nullishDlg>;
+  forwardedRef: MutableRefObject<nlDlg>;
   userClass?: userClasses;
 }
 export interface AvStudListDlgProps extends FillerProps, DlgProps {}
 export interface StudListProps extends GlobalFormProps, Partial<DlgProps> {
-  mainDlgRef: MutableRefObject<nullishDlg>;
+  mainDlgRef: MutableRefObject<nlDlg>;
 }
 export interface AvProfListDlgProps extends DlgProps, GlobalFormProps {
-  mainDlgRef: MutableRefObject<nullishDlg>;
+  mainDlgRef: MutableRefObject<nlDlg>;
   btnProf: HTMLButtonElement | null;
 }
 export interface AvPacListDlgProps extends DlgProps, GlobalFormProps {
   shouldShowAlocBtn: boolean;
-  mainDlgRef: MutableRefObject<nullishDlg>;
+  mainDlgRef: MutableRefObject<nlDlg>;
 }
 export interface PacListProps
   extends Omit<AvPacListDlgProps, "mainDlgRef" | "onClick" | "shouldDisplayPacList">,
@@ -76,7 +82,7 @@ export interface PacListProps
   setDisplayRowData: Dispatch<SetStateAction<boolean>>;
   shouldDisplayRowData: boolean;
   shouldShowAlocBtn: boolean;
-  mainDlgRef?: MutableRefObject<nullishDlg>;
+  mainDlgRef?: MutableRefObject<nlDlg>;
   dispatch?: Dispatch<SetStateAction<boolean>>;
   state?: boolean;
 }
@@ -85,7 +91,7 @@ export interface PrevConsListProps {
   shouldDisplayPrevList: boolean;
 }
 export interface AlterFieldListProps extends DlgProps {
-  tabRef: MutableRefObject<nullishTab>;
+  tabRef: MutableRefObject<nlTab>;
   name: string;
 }
 export interface ProviderAptDataListProps {
@@ -142,10 +148,9 @@ export interface UserPropsDlgProps {
   setPropDlg: Dispatch<SetStateAction<boolean>>;
   shouldDisplayPropDlg: boolean;
 }
-export interface UserDlgProps extends UserPropsDlgProps, ContactDlgProps, UserProfileDropdownProps {
+export interface UserDlgProps {
   setUserDlg: Dispatch<SetStateAction<boolean>>;
   shouldDisplayUserDlg: boolean;
-  callLogout: () => void;
 }
 export interface FallbackedMainPanelProps extends Omit<MainPanelProps, "mainRoot"> {
   renderError: Error;
@@ -160,7 +165,7 @@ export interface ErrorDlgProps {
   onClick: () => void;
 }
 export interface TabRowProps extends GlobalFormProps {
-  tabRef: MutableRefObject<nullishTab>;
+  tabRef: MutableRefObject<nlTab>;
   nRow: looseNum;
 }
 export interface UserRowProps extends TabRowProps {
@@ -223,8 +228,41 @@ export interface HistoricRowProps extends Pick<HistoricDlgProps, "name"> {
   historic: HistoricInfo;
   nRow: number;
 }
-export interface AptBtnProps extends GlobalFormProps {
-  formData: { [k: string]: string };
-  providerFormData: { [k: string]: string };
-  onAptClick: (ev: rMouseEvent) => void;
+export interface GenDivProps {
+  onSetGen?: Dispatch<SetStateAction<Gender>>;
+  onSetBodyType?: Dispatch<SetStateAction<BodyType>>;
+  genRef?: NlMRef<nlSel>;
+  genBirthRef?: NlMRef<nlSel>;
+  genAlinRef?: NlMRef<nlSel>;
+  genValueRef?: MutableRefObject<Gender>;
+  rGenValue?: Gender;
+}
+export interface UseGenDivReturn {
+  refs: {
+    r: MutableRefObject<nlDiv>;
+    gr: MutableRefObject<nlSel>;
+    gbr: MutableRefObject<nlSel>;
+    gtr: MutableRefObject<nlSel>;
+    gar: MutableRefObject<nlSel>;
+  };
+  values: {
+    gen: Gender;
+    genBirthRel: BirthRelation;
+    genTrans: TransitionLevel;
+    genFisAlin: AlignType;
+  };
+  setters: {
+    setGen: Dispatch<SetStateAction<Gender>>;
+    setGenBirthRel: Dispatch<SetStateAction<BirthRelation>>;
+    setGenTrans: Dispatch<SetStateAction<TransitionLevel>>;
+    setGenFisAlin: Dispatch<SetStateAction<AlignType>>;
+  };
+}
+export interface NafProps {
+  setFactorAtvLvl: Dispatch<SetStateAction<NafTypeValue>>;
+  factorAtvLvl?: NafTypeValue;
+}
+export interface SelFactorAtletaProps {
+  setFactorAtleta: Dispatch<SetStateAction<FactorAtletaValue>>;
+  factorAtleta?: FactorAtletaValue;
 }

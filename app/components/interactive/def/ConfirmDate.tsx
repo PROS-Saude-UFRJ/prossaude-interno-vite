@@ -1,22 +1,22 @@
-import { nlBtn, nlInp } from "../../../src/lib/global/declarations/types";
-import { useEffect, useRef } from "react";
-import { parseNotNaN } from "../../../src/lib/global/gModel";
+import { nlBtn, nlInp } from "@/lib/global/declarations/types";
+import { useCallback, useEffect, useRef } from "react";
+import { compProp, parseNotNaN } from "@/lib/global/gModel";
 export default function ConfirmDate(): JSX.Element {
-  const dateRef = useRef<nlInp>(null);
-  const btnRef = useRef<nlBtn>(null);
-  useEffect(() => {
-    const equalizeBtn = (): void => {
+  const dateRef = useRef<nlInp>(null),
+    btnRef = useRef<nlBtn>(null),
+    equalizeBtn = useCallback((): void => {
       btnRef.current ??= document.getElementById("headerDatBtn") as HTMLButtonElement;
       dateRef.current ??= document.getElementById("dateHeader") as HTMLInputElement;
-      const dateWidth = parseNotNaN(getComputedStyle(dateRef.current).width.replace("px", "").trim()),
-        btnWidth = parseNotNaN(getComputedStyle(btnRef.current).width.replace("px", "").trim());
+      const dateWidth = parseNotNaN(compProp(dateRef.current, "width")),
+        btnWidth = parseNotNaN(compProp(btnRef.current, "width"));
       if (dateWidth > btnWidth) btnRef.current.style.width = `${dateWidth}px`;
       else if (dateWidth < btnWidth) dateRef.current.style.width = `${btnWidth}px`;
-    };
+    }, [dateRef, btnRef]);
+  useEffect(() => {
     equalizeBtn();
     addEventListener("resize", equalizeBtn);
     return (): void => removeEventListener("resize", equalizeBtn);
-  }, []);
+  }, [equalizeBtn]);
   return (
     <label
       htmlFor='confirmDatId'

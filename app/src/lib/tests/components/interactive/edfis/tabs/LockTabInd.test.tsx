@@ -1,12 +1,12 @@
 import { RenderResult, render } from "@testing-library/react";
 import LockTabInd from "../../../../../../../components/interactive/edfis/tabs/LobTackInd";
 jest.mock(
-  "../../../src/lib/global/gModel",
+  "@/lib/global/gModel",
   (): {
     textTransformPascal: jest.Mock<any, any, any>;
   } => ({
     textTransformPascal: jest.fn().mockImplementation(str => str) as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("LockTabInd Component", (): void => {
   it("should render a span with an SVG lock when isSpan is true", (): void => {

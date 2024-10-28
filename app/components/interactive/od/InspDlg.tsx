@@ -1,23 +1,17 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { InspDlgProps } from "../../../src/lib/global/declarations/interfaces";
-import { addTextToObs } from "../../../src/lib/locals/odPage/odHandler";
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nullishDlg } from "../../../src/lib/global/declarations/types";
+import { InspDlgProps } from "@/lib/global/declarations/interfaces";
+import { addTextToObs } from "@/lib/locals/odPage/odHandler";
+import { nlDlg } from "@/lib/global/declarations/types";
 import { useEffect, useRef } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 export default function InspDlg({ count, ctx, state, dispatch }: InspDlgProps): JSX.Element {
-  const dlgRef = useRef<nullishDlg>(null);
+  const dlgRef = useRef<nlDlg>(null);
   useEffect(() => {
     try {
-      if (!(dlgRef.current instanceof HTMLDialogElement))
-        throw elementNotFound(
-          dlgRef.current,
-          `Validation of Dialog Reference for ${ctx || "Undefined context"}`,
-          extLine(new Error()),
-        );
+      if (!(dlgRef.current instanceof HTMLDialogElement)) return;
       state ? dlgRef.current.show() : dlgRef.current.close();
     } catch (e) {
-      console.error(`Error executing useEffect for InspDlg:\n${(e as Error).message}`);
+      return;
     }
   }, [state, ctx]);
   return (

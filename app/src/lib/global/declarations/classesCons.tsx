@@ -1,4 +1,3 @@
-import { elementNotFound, extLine, inputNotFound, stringError } from "../handlers/errorHandler";
 import {
   checkConfirmApt,
   handleAptBtnClick,
@@ -7,10 +6,10 @@ import {
   verifyAptCheck,
 } from "../../locals/panelPage/handlers/consHandlerCmn";
 import { panelFormsVariables } from "../../../../components/panelForms/panelFormsData";
-import { defUser } from "../../../redux/slices/userSlice";
+import { defUser } from "@/redux/slices/userSlice";
+import { privilege } from "@/lib/locals/basePage/declarations/serverInterfaces";
+import { providers } from "@/vars";
 import { queryableNode, voidVal } from "./types";
-import { providers } from "../../../vars";
-import { privilege } from "../../locals/basePage/declarations/serverInterfaces";
 const clearFlags: { [k: string]: boolean } = {};
 export class DataProvider {
   #sessionDataState: { [key: string]: any };
@@ -66,43 +65,35 @@ export class DataProvider {
           element.id === "regstPacDlg" ||
           element.id === "CPFFillerDiv"
         ) {
-          try {
-            const panelSelect = document.getElementById("coordPanelSelect");
-            if (!(panelSelect instanceof HTMLSelectElement))
-              throw inputNotFound(
-                panelSelect,
-                "Panel selector when fetching for session storage cicles",
-                extLine(new Error()),
-              );
-            let isTargPanelRendered = true;
-            const handleSessionPanelChange = (elementId: string): void => {
-              try {
-                const scope = document.getElementById(elementId);
-                if (!(scope instanceof HTMLElement)) {
-                  console.warn(`Could not find scopped element for handling panel change`);
-                  clearInterval(persistInterv);
+          (() => {
+            try {
+              const panelSelect = document.getElementById("coordPanelSelect");
+              if (!(panelSelect instanceof HTMLSelectElement)) return;
+              let isTargPanelRendered = true;
+              const handleSessionPanelChange = (elementId: string): void => {
+                try {
+                  const scope = document.getElementById(elementId);
+                  if (!(scope instanceof HTMLElement)) {
+                    clearInterval(persistInterv);
+                    return;
+                  }
+                  const persisters = sessionStorage.getItem(elementId);
+                  if (!persisters) return;
+                  this.#initSelectParsing(document.getElementById(elementId)!, elementId);
+                } catch (err) {
                   return;
                 }
-                const persisters = sessionStorage.getItem(elementId);
-                if (!persisters)
-                  throw stringError(`Persisting elements for ${elementId}`, persisters, extLine(new Error()));
-                this.#initSelectParsing(document.getElementById(elementId)!, elementId);
-              } catch (err) {
-                console.error(`Error handling Panel Change:
-                  ${(err as Error).message};`);
-              }
-              !this.#checkForm(elementId) ? (isTargPanelRendered = false) : (isTargPanelRendered = true);
-              !isTargPanelRendered &&
-                ((): void => {
-                  panelSelect.removeEventListener("change", () => handleSessionPanelChange(elementId));
-                  console.warn(`event listener removido para handleSessionPanelChange`);
-                })();
-            };
-            panelSelect.addEventListener("change", () => handleSessionPanelChange(element.id));
-          } catch (err) {
-            console.error(`Error on initiation of Panel Change Listening:
-              ${(err as Error).message}`);
-          }
+                !this.#checkForm(elementId) ? (isTargPanelRendered = false) : (isTargPanelRendered = true);
+                !isTargPanelRendered &&
+                  ((): void => {
+                    panelSelect.removeEventListener("change", () => handleSessionPanelChange(elementId));
+                  })();
+              };
+              panelSelect.addEventListener("change", () => handleSessionPanelChange(element.id));
+            } catch (err) {
+              return;
+            }
+          })();
         }
       }, checkTimer);
       setTimeout(() => {
@@ -115,7 +106,6 @@ export class DataProvider {
   }
   #checkForm(elementId: string, storageInterval?: NodeJS.Timer): boolean {
     if (!document.getElementById(elementId)) {
-      console.warn(`Failed to fetch form for persistence`);
       //@ts-ignore
       storageInterval && clearInterval(storageInterval);
       clearFlags[`${elementId}`] = false;
@@ -131,9 +121,7 @@ export class DataProvider {
       delete scope.dataset.start;
     }
     this.#sessionDataState = DataProvider.#persistSessionEntries(scope as HTMLElement | Document | undefined);
-    scope instanceof HTMLElement
-      ? sessionStorage.setItem(`${scope.id}`, JSON.stringify(this.#sessionDataState))
-      : console.warn("Failed to fetch scope when checking for persistence...");
+    if (scope instanceof HTMLElement) sessionStorage.setItem(`${scope.id}`, JSON.stringify(this.#sessionDataState));
     return this.#sessionDataState;
   }
   static #persistSessionEntries(scope: queryableNode = document): {
@@ -241,21 +229,18 @@ export class DataProvider {
               if (eraser) {
                 eraser.addEventListener("click", () => {
                   const relCel = eraser.closest("slot");
-                  relCel instanceof HTMLElement && eraser instanceof HTMLElement
-                    ? replaceBtnSlot(relCel.querySelector("[id*=appointmentBtn]"), relCel, eraser)
-                    : elementNotFound(
-                        relCel,
-                        `Table cell related to button for erasing day/hour appointment id ${eraser.id}`,
-                        extLine(new Error()),
-                      );
+                  if (relCel instanceof HTMLElement && eraser instanceof HTMLElement)
+                    replaceBtnSlot(relCel.querySelector("[id*=appointmentBtn]"), relCel);
                 });
               }
               const dayCheck = fetchedEl.querySelector(".apptCheck");
               if (dayCheck) {
                 dayCheck.addEventListener("change", () => {
-                  dayCheck instanceof HTMLInputElement && (dayCheck.type === "checkbox" || dayCheck.type === "radio")
-                    ? checkConfirmApt(dayCheck)
-                    : inputNotFound(dayCheck, `dayCheck id ${dayCheck?.id || "UNIDENTIFIED"}`, extLine(new Error()));
+                  if (
+                    dayCheck instanceof HTMLInputElement &&
+                    (dayCheck.type === "checkbox" || dayCheck.type === "radio")
+                  )
+                    checkConfirmApt(dayCheck);
                 });
                 verifyAptCheck(dayCheck);
               }

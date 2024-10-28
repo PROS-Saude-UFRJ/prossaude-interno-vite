@@ -1,12 +1,5 @@
 import { parseNotNaN } from "./gModel";
 import { targEl, entryEl } from "./declarations/types";
-import {
-  extLine,
-  elementNotFound,
-  elementNotPopulated,
-  multipleElementsNotFound,
-  inputNotFound,
-} from "./handlers/errorHandler";
 export function dinamicGridAdjust(gridDivs: Array<targEl>): void {
   if (gridDivs?.length > 0 && gridDivs.every(div => div instanceof HTMLElement)) {
     gridDivs.forEach(gridDiv => {
@@ -16,9 +9,7 @@ export function dinamicGridAdjust(gridDivs: Array<targEl>): void {
             const nColumns = (gridDiv.style.gridTemplateColumns || getComputedStyle(gridDiv).gridTemplateColumns)
               .trim()
               .split(/\s+/g).length;
-            !isFinite(nColumns) && nColumns > 0
-              ? (gridDiv.style.width = (25 * (nColumns + 1)).toFixed(1) + "vw")
-              : console.warn(`nColumns returned as NaN or not a natural number. Value obtained: ${nColumns}`);
+            if (!isFinite(nColumns) && nColumns > 0) gridDiv.style.width = (25 * (nColumns + 1)).toFixed(1) + "vw";
             break;
           case "flex":
             switch (gridDiv.style.flexDirection) {
@@ -41,9 +32,9 @@ export function dinamicGridAdjust(gridDivs: Array<targEl>): void {
           default:
             gridDiv.style.width = "70%";
         }
-      } else elementNotFound(gridDiv, `gridDiv id ${gridDiv?.id || "UNIDENTIFIED"}`, extLine(new Error()));
+      }
     });
-  } else elementNotPopulated(gridDivs, "gridDivs in dinamicGridAjust()", extLine(new Error()));
+  }
 }
 export function equalizeFlexSibilings(
   flexEls: Array<targEl> | NodeListOf<Element>,
@@ -77,26 +68,11 @@ export function equalizeFlexSibilings(
                   (elChildren[i] as any).style.minWidth = `${(previousChildRect as any)[context[0]].toFixed(4)}${
                     context[1]
                   }`;
-                } else
-                  console.warn(`Error validating objects for Geometry:
-                flexTwin type applied: el.classList.contains(flexTwin-${context[0]});
-                ${context[0]} in elChildren${i}, id ${elChildren[i]?.id || "UNIDENTIFIED"}: ${
-                    context[0] in elChildren[i]
-                  };
-                ${context[0]} in previousChildRect, id ${previousChild ?? "UNIDENTIFIED"}: ${
-                    context[0] in previousChildRect
-                  }.`);
+                }
               });
-            } else
-              console.warn(`Error validating instance of child in index ${i}:
-          Obtained instance: ${Object.prototype.toString.call(el.children[i]).slice(8, -1)}`);
+            }
           });
-      } else
-        console.warn(`Error calling equalizeFlexSibilings() for Element id ${el?.id}:
-        Instance of current Element: ${el instanceof HTMLElement}
-        Instance of previousElementSibling: ${Object.prototype.toString.call(el?.previousElementSibling).slice(8, -1)};
-        Match as flexTwin: ${/flexTwin/gi.test(el?.classList?.toString() ?? "")}
-        Display value: ${getComputedStyle(el!)?.display}.`);
+      }
     });
   }
 }
@@ -149,7 +125,7 @@ export function equalizeTabCells(tab: HTMLTableElement | null): void {
                   verticalAlign: "text-top",
                 });
               }
-            } else elementNotPopulated(tabCells, "tabCells in equalizeTabCells()", extLine(new Error()));
+            }
             if (Number.isNaN(widCell) || Math.abs(widCell) === Infinity || widCell < 0) widCell = 0;
             return widCell;
           }),
@@ -162,10 +138,9 @@ export function equalizeTabCells(tab: HTMLTableElement | null): void {
             verticalAlign: "text-top",
           });
         }
-      } else elementNotPopulated(tabCells, "tabCells in equalizeTabCells()", extLine(new Error()));
-    } else elementNotFound(parentEl, `parentEl for tab id ${tab?.id || "UNIDENTIFIED"}`, extLine(new Error()));
-  } else
-    elementNotFound(tab, `tab id ${(tab as any)?.id || "UNIDENTIFIED in equalizeTabCells()"}`, extLine(new Error()));
+      }
+    }
+  }
 }
 export function isClickOutside(event: MouseEvent | React.MouseEvent, dlgInBtn: Element): boolean[] {
   try {
@@ -175,7 +150,6 @@ export function isClickOutside(event: MouseEvent | React.MouseEvent, dlgInBtn: E
     const { clientX, clientY } = event;
     return [clientX < rect.left, clientX > rect.right, clientY < rect.top, clientY > rect.bottom];
   } catch (e) {
-    console.error(`Error executing isClickOutside:\n${(e as Error).message}`);
     return [false, false, false, false];
   }
 }
@@ -185,9 +159,14 @@ export function fadeElement(el: targEl, opacity: string = "1", timer: string = "
     setTimeout(() => {
       el.style.transition = `opacity ${timer}s ease-in`;
     }, timeout);
-  } else elementNotFound(el, `element ${el?.id || "UNDEFINED ELEMENT"}`, extLine(new Error()));
+  }
 }
-export function highlightChange(el: targEl, color: string = "red", context: string = "both"): void {
+export function highlightChange(
+  el: targEl,
+  color: string = "red",
+  context: string = "both",
+  double: boolean = false,
+): void {
   if (el instanceof HTMLElement && typeof color === "string") {
     const iniColor = "rgb(222, 226, 230)";
     const iniFontColor = "rgb(33, 37, 41)";
@@ -219,21 +198,15 @@ export function highlightChange(el: targEl, color: string = "red", context: stri
         }, 500);
       }, 250);
     };
-
     if (context === "both" || context === "border") {
       pulseBColor(el);
-      setTimeout(() => {
-        pulseBColor(el);
-      }, 1600);
+      double && setTimeout(() => pulseBColor(el), 1600);
     }
     if (context === "both" || context === "font") {
-      // if (el )
       pulseFColor(el);
-      setTimeout(() => {
-        pulseFColor(el);
-      }, 1600);
+      double && setTimeout(() => pulseFColor(el), 1600);
     }
-  } else multipleElementsNotFound(extLine(new Error()), "arguments for highlightChange()", el, color);
+  }
 }
 export function switchBtnBS(
   bsBtns: Array<targEl>,
@@ -274,9 +247,9 @@ export function switchBtnBS(
           bsBtn.classList.add(...bsClasses);
           bsBtn.classList.remove(...bsClassesToRemove);
         }
-      } else elementNotFound(bsBtn, `button id ${bsBtn?.id || "UNIDENTIFIED"}`, extLine(new Error()));
+      }
     });
-  } else elementNotPopulated(bsBtns, "argument for switchBtnBS()", extLine(new Error()));
+  }
 }
 export function clearDefInvalidMsg(
   form: HTMLFormElement | null,
@@ -293,15 +266,12 @@ export function clearDefInvalidMsg(
               inp instanceof HTMLInputElement ||
               inp instanceof HTMLSelectElement ||
               inp instanceof HTMLTextAreaElement
-            ) {
-              if (!inp.checkValidity()) console.warn(`Error validating data in field id ${inp?.id || "UNDEFINED ID"}`);
+            )
               inpsValidity.push(inp.checkValidity());
-            } else
-              inputNotFound(inp, `entry field id ${(inp as any)?.id || "UNDEFINED ID"} invalid`, extLine(new Error()));
           }
         });
       });
-    } else elementNotPopulated(submitBtns, "submitBtns in clearDefInvalidMsg()", extLine(new Error()));
+    }
     inps.forEach(inp => {
       if (inp instanceof HTMLInputElement || inp instanceof HTMLSelectElement || inp instanceof HTMLTextAreaElement) {
         inp.addEventListener("invalid", ev => {
@@ -311,41 +281,10 @@ export function clearDefInvalidMsg(
     });
     if (form instanceof HTMLFormElement) {
       form.addEventListener("submit", ev => {
-        if (inpsValidity.some(validity => validity === false)) {
-          ev.preventDefault();
-          console.warn(`Error validating fields in the form. Submission prevented.`);
-        }
+        if (inpsValidity.some(validity => validity === false)) ev.preventDefault();
       });
-    } else elementNotFound(form, "form in clearDefInvalidMsg()", extLine(new Error()));
-  }
-}
-export function fillCustomValidityWarn(inpId: string, customMsg: string = "Campo inválido"): void {
-  const warnEl = document.getElementById(`${inpId}Warn`);
-  if (warnEl instanceof HTMLElement) {
-    try {
-      let relatedInp: Element | null | undefined = warnEl.previousElementSibling;
-      if (!(relatedInp instanceof HTMLElement)) {
-        relatedInp = warnEl.parentElement?.previousElementSibling;
-        if (!relatedInp) throw new Error();
-      } else {
-        const rectLeft = relatedInp.getBoundingClientRect().left + scrollX;
-        warnEl.style.position = "relative";
-        if (innerWidth > 1250) warnEl.style.left = rectLeft / 3 + "px";
-        else warnEl.style.left = rectLeft / 2 + "px";
-      }
-    } catch (err) {
-      console.error(`Error finding related Input`);
     }
-    warnEl.textContent = customMsg;
-    setTimeout(() => {
-      warnEl.textContent = "";
-    }, 3000);
-  } else
-    elementNotFound(
-      warnEl,
-      `warnEl id ${(warnEl as any)?.id || "UNDEFINED"} in fillCustomValidityWarn()`,
-      extLine(new Error()),
-    );
+  }
 }
 export function addListenerForValidities(inps: Array<targEl>, pattern?: RegExp): boolean {
   if (Array.isArray(inps) && inps.length > 0 && inps.every(inp => inp instanceof HTMLElement)) {
@@ -384,7 +323,7 @@ export function addListenerForValidities(inps: Array<targEl>, pattern?: RegExp):
                 </svg>
                 `;
                 fadeElement(alertSpan.querySelector("svg"), "0");
-              } else console.warn(`No alert span found for input id ${inp.id}`);
+              }
             }
           } else {
             inpValidity = true;
@@ -397,14 +336,14 @@ export function addListenerForValidities(inps: Array<targEl>, pattern?: RegExp):
                 setTimeout(() => {
                   alertSpan.innerHTML = ``;
                 }, 2000);
-              } else console.warn(`No alert span found for input id ${inp.id}`);
+              }
             }
           }
           return inpValidity;
         });
-      } else inputNotFound(inp, `input id ${inp?.id || "UNIDENFITIED"}`, extLine(new Error()));
+      }
     });
-  } else elementNotPopulated(inps, "argument for addListenerForValidites()", extLine(new Error()));
+  }
   return false;
 }
 export function clearPhDates(dateInps: Array<targEl>): void {
@@ -420,9 +359,9 @@ export function clearPhDates(dateInps: Array<targEl>): void {
         inp.addEventListener("input", () => {
           inp.value.length === 0 ? (inp.style.color = "transparent") : (inp.style.color = "black");
         });
-      } else inputNotFound(inp, `date input id ${inp?.id || "UNIDENTIFIED"}`, extLine(new Error()));
+      }
     });
-  } else elementNotPopulated(dateInps, "dateInps in clearPhDates()", extLine(new Error()));
+  }
 }
 export function resetPhs(inps: Array<entryEl>, phs: { [key: string]: string }): void {
   if (Array.isArray(inps) && inps.every(inp => inp instanceof HTMLElement)) {
@@ -439,9 +378,9 @@ export function resetPhs(inps: Array<entryEl>, phs: { [key: string]: string }): 
               }, 3000);
           });
         });
-      } else inputNotFound(inp, `inp id ${inp?.id || "UNIDENFITIED"}`, extLine(new Error()));
+      }
     }
-  } else elementNotPopulated(inps, "argument for cleanLoginPhs()", extLine(new Error()));
+  }
 }
 export function equalizeWidWithPhs(els: Array<targEl>): void {
   if (Array.isArray(els) && els.length > 0 && els.every(el => el instanceof HTMLElement)) {
@@ -474,14 +413,6 @@ export function equalizeWidWithPhs(els: Array<targEl>): void {
                       parseFloat(getComputedStyle(el).paddingRight)) /
                       chWid
                   }ch`;
-                  if (
-                    parseFloat(getComputedStyle(el).width) < (option.textContent?.length ?? 0) + 8 ||
-                    parseFloat(getComputedStyle(el).width) < (option.value.length ?? 0) + 8
-                  )
-                    console.warn(
-                      `Failed to apply Placeholder equalization for ${el.id || "UNIDENTIFIED"} in equalizeWidWithPhs()`,
-                      extLine(new Error()),
-                    );
                 });
             } else {
               el.style.minWidth = `${
@@ -496,37 +427,15 @@ export function equalizeWidWithPhs(els: Array<targEl>): void {
                   chWid
               }ch`;
             }
-            if (
-              parseFloat(getComputedStyle(el).width) < (options[0].textContent?.length ?? 0) + 8 ||
-              parseFloat(getComputedStyle(el).width) < (options[0].value.length ?? 0) + 8
-            )
-              console.warn(
-                `Failed to apply Placeholder equalization for ${el.id || "UNIDENTIFIED"} in equalizeWidWithPhs()`,
-                extLine(new Error()),
-              );
-          } else
-            console.warn(
-              `No <${
-                options[0]?.tagName.toLowerCase() ?? "UNDEFINED TAG"
-              }> found for <${el.tagName.toLowerCase()}> id ${el?.id || "UNIDENTIFIED"} in equalizeWidWithPhs()`,
-            );
+          }
         } else if (el instanceof HTMLInputElement && (el.type === "date" || el.type === "hour")) {
           el.style.minWidth = `${
             10 + parseFloat(getComputedStyle(el).paddingLeft) + parseFloat(getComputedStyle(el).paddingRight)
           }ch`;
-          if (parseFloat(getComputedStyle(el).width) < 16)
-            console.warn(
-              `Failed to apply Placeholder equalization for ${el.id || "UNIDENTIFIED"} in equalizeWidWithPhs()`,
-              extLine(new Error()),
-            );
-        } else if (
-          !(el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement)
-        )
-          elementNotFound(el, `Element id ${el?.id || "UNIDENTIFIED"}`, extLine(new Error()));
+        }
       });
-    } else
-      console.error(`No ch measure reference. Results for equalizeWidWithPhs may be misleading. Aborting process.`);
-  } else elementNotPopulated(els, "els in balanceWidWithPhs()", extLine(new Error()));
+    }
+  }
 }
 export function strikeNulls(els: Array<targEl>): void {
   if (Array.isArray(els) && els.length > 0 && els.every(el => el instanceof HTMLElement)) {
@@ -540,9 +449,9 @@ export function strikeNulls(els: Array<targEl>): void {
           (/nul[ol]/gi.test(el.textContent) || /[ui]ndefin[ei]d/gi.test(el.textContent) || /NaN/g.test(el.textContent))
         )
           el.style.textDecoration = "line-through";
-      } else elementNotFound(el, `el id ${(el as any)?.id || "UNIDENTIFIED"} in strikeNulls()`, extLine(new Error()));
+      }
     });
-  } else elementNotPopulated(els, "argument for strikeNulls()", extLine(new Error()));
+  }
 }
 export function normalizeSizeSb(
   els: Array<targEl>,
@@ -558,7 +467,7 @@ export function normalizeSizeSb(
           const iniWid = parseFloat(getComputedStyle(element).width);
           const iniHt = parseFloat(getComputedStyle(element).height);
           const scrollDiv = document.createElement("div") as HTMLDivElement;
-          scrollDiv.className = "scrollbar-measure";
+          scrollDiv.className = "scrollbarMeasure";
           document.body.appendChild(scrollDiv);
           const scbWidAppend = scrollDiv.offsetWidth - scrollDiv.clientWidth;
           const scbHtAppend = scrollDiv.offsetWidth - scrollDiv.clientHeight;
@@ -574,12 +483,7 @@ export function normalizeSizeSb(
               if (elsToCurrent[c] instanceof HTMLElement) {
                 (elsToCurrent[c] as HTMLElement).style.width = `${(iniWid + validScbWid) / rem}rem`;
                 includeHeight && ((elsToCurrent[c] as HTMLElement).style.height = `${(iniHt + validScbHt) / rem}rem`);
-              } else
-                elementNotFound(
-                  elsToCurrent[c],
-                  "Element for defining current width in scrollbar normalization",
-                  extLine(new Error()),
-                );
+              }
             }
           }
         };
@@ -593,11 +497,11 @@ export function normalizeSizeSb(
             if (
               safeAcc < includeChilds[1] &&
               Array.from(el.children).some(
-                child => getComputedStyle(child).overflow === "auto" && child.classList.contains("form-padded"),
+                child => getComputedStyle(child).overflow === "auto" && child.classList.contains("formPadded"),
               )
             ) {
               Array.from(el.children)
-                .filter(children => children.classList.contains("form-padded") && children instanceof HTMLElement)
+                .filter(children => children.classList.contains("formPadded") && children instanceof HTMLElement)
                 .forEach(formPadded => {
                   (formPadded as HTMLElement).style.overflow = "unset";
                 });
@@ -613,8 +517,7 @@ export function normalizeSizeSb(
         }
       }
     });
-  } else
-    elementNotPopulated(els, "Elements for normalization of size based on scrollbar display", extLine(new Error()));
+  }
 }
 export function convertToHex(
   arrColors: Array<[string, Map<string, string>]>,
@@ -691,7 +594,6 @@ export function convertToHex(
             elValidations.push(true);
             hexValidations.push(true);
           } else {
-            console.error(`Value for color scheme not supported. Aborting process`);
             propsValidations.push(false);
             elValidations.push(false);
             hexValidations.push(false);
@@ -779,5 +681,5 @@ export function expandContent(el: targEl): void {
         }, 6000);
       }, 100);
     }, 100);
-  } else elementNotFound(el, `element for applying expandContent()`, extLine(new Error()));
+  }
 }

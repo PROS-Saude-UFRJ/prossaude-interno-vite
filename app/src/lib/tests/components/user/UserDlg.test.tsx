@@ -1,7 +1,29 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import UserDlg from "../../../../../components/user/UserDlg";
 describe("UserDlg", (): void => {
+  const mockRouter: Partial<NextRouter> = {
+    push: jest.fn() as jest.Mock,
+    route: "/",
+    pathname: "/",
+    query: {},
+    asPath: "/",
+    basePath: "",
+    isFallback: false,
+    isLocaleDomain: false,
+    isReady: true,
+    locale: undefined,
+    locales: [],
+    defaultLocale: undefined,
+    events: {
+      on: jest.fn() as jest.Mock,
+      off: jest.fn() as jest.Mock,
+      emit: jest.fn() as jest.Mock,
+    },
+    beforePopState: jest.fn() as jest.Mock,
+    back: jest.fn() as jest.Mock,
+    reload: jest.fn() as jest.Mock,
+    prefetch: jest.fn() as jest.Mock,
+  };
   const defaultProps = {
     user: { userClass: "coordenador", userArea: "nutrição", userEmail: "test@test.com", userTel: "123456789" },
     setDropdown: jest.fn() as jest.Mock,
@@ -13,6 +35,7 @@ describe("UserDlg", (): void => {
     shouldDisplayContact: false,
     shouldDisplayUserDlg: true,
     callLogout: jest.fn() as jest.Mock,
+    router: mockRouter as NextRouter,
   };
   it("renders user details", (): void => {
     render(<UserDlg {...defaultProps} />);
@@ -26,10 +49,10 @@ describe("UserDlg", (): void => {
     fireEvent.click(screen.getByRole<HTMLButtonElement>("button", { name: /alteração/i })) as boolean;
     expect(defaultProps.setPropDlg).toHaveBeenCalledWith<Parameters<typeof defaultProps.setPropDlg>>(true) as void;
   }) as void;
-  it("calls Location push on logout", (): void => {
+  it("calls router push on logout", (): void => {
     render(<UserDlg {...defaultProps} />);
     const link = screen.getByRole<HTMLAnchorElement>("link", { name: /login/i });
     fireEvent.click(link) as boolean;
-    expect(location.pathname).toEqual("/login") as void;
+    expect(defaultProps.router.push).toHaveBeenCalledWith<[string]>("/login") as void;
   }) as void;
 }) as void;

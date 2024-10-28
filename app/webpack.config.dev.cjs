@@ -19,6 +19,9 @@ module.exports = {
     publicPath: "",
     crossOriginLoading: "anonymous",
   },
+  alias: {
+    "@": path.resolve(__dirname, "src"),
+  },
   module: {
     rules: [
       {

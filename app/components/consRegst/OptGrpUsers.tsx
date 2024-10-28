@@ -1,13 +1,14 @@
-import { formCases, nullishOptGrp, validAreas } from "../../src/lib/global/declarations/types";
-import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
-import { registerRoot, syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
-import { UserProps } from "../../src/lib/global/declarations/interfacesCons";
-import { handleFetch } from "../../src/lib//locals/panelPage/handlers/handlers";
+import { formCases, nullishOptGrp, validAreas } from "@/lib/global/declarations/types";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import { UserProps } from "@/lib/global/declarations/interfacesCons";
+import { handleFetch } from "@/lib/global/data-service";
 import { useEffect, useRef } from "react";
-import { panelRoots } from "../../src/vars";
+import { panelRoots } from "@/vars";
+import { createRoot } from "react-dom/client";
 import { ErrorBoundary } from "react-error-boundary";
 import GenericErrorComponent from "../error/GenericErrorComponent";
-import { textTransformPascal } from "../../src/lib/global/gModel";
+import { textTransformPascal } from "@/lib/global/gModel";
 export default function OptGrpUsers({ grp, area }: { grp: formCases; area: validAreas }): JSX.Element {
   const optGrpRef = useRef<nullishOptGrp>(null);
   const users: UserProps[] = [];
@@ -31,21 +32,21 @@ export default function OptGrpUsers({ grp, area }: { grp: formCases; area: valid
           });
           if (!(optGrpRef.current instanceof HTMLOptGroupElement))
             throw elementNotFound(optGrpRef.current, `Validation of Optgroup instance`, extLine(new Error()));
-          if (panelRoots[optGrpRef.current.id] && !(panelRoots[optGrpRef.current.id] as any)["_internalRoot"]) {
+          if (
+            panelRoots[`${optGrpRef.current.id}`] &&
+            !(panelRoots[`${optGrpRef.current.id}`] as any)["_internalRoot"]
+          ) {
             setTimeout(() => {
               try {
                 if (!(optGrpRef.current instanceof HTMLElement))
                   throw elementNotFound(optGrpRef.current, `Validation of Table Body Reference`, extLine(new Error()));
                 if (optGrpRef.current.querySelector("option")) return;
-                panelRoots[optGrpRef.current.id]?.unmount();
-                delete panelRoots[optGrpRef.current.id];
+                panelRoots[`${optGrpRef.current.id}`]?.unmount();
+                delete panelRoots[`${optGrpRef.current.id}`];
                 optGrpRef.current.remove() as void;
-                panelRoots[optGrpRef.current.id] = registerRoot(
-                  panelRoots[optGrpRef.current.id],
-                  `#${optGrpRef.current.id}`,
-                  optGrpRef,
-                );
-                panelRoots[optGrpRef.current.id]?.render(
+                if (!panelRoots[`${optGrpRef.current.id}`])
+                  panelRoots[`${optGrpRef.current.id}`] = createRoot(optGrpRef.current);
+                panelRoots[`${optGrpRef.current.id}`]?.render(
                   <ErrorBoundary
                     FallbackComponent={() => (
                       <GenericErrorComponent message='Error reloading replacement for opt group' />
@@ -58,13 +59,10 @@ export default function OptGrpUsers({ grp, area }: { grp: formCases; area: valid
                 ) as nullishOptGrp;
                 if (!(optGrpRef.current instanceof HTMLElement))
                   throw elementNotFound(optGrpRef.current, `Validation of replaced tbody`, extLine(new Error()));
-                panelRoots[optGrpRef.current.id] = registerRoot(
-                  panelRoots[optGrpRef.current.id],
-                  `#${optGrpRef.current.id}`,
-                  optGrpRef,
-                );
+                if (!panelRoots[`${optGrpRef.current.id}`])
+                  panelRoots[`${optGrpRef.current.id}`] = createRoot(optGrpRef.current);
                 if (!optGrpRef.current.querySelector("option"))
-                  panelRoots[optGrpRef.current.id]?.render(
+                  panelRoots[`${optGrpRef.current.id}`]?.render(
                     users.map(
                       (user, i) =>
                         new RegExp(area.slice(0, area.indexOf(" ")), "gi").test(user.area) && (
@@ -80,14 +78,9 @@ export default function OptGrpUsers({ grp, area }: { grp: formCases; area: valid
                 );
               }
             }, 1000);
-          } else
-            panelRoots[optGrpRef.current.id] = registerRoot(
-              panelRoots[optGrpRef.current.id],
-              `#${optGrpRef.current.id}`,
-              optGrpRef,
-            );
+          } else panelRoots[`${optGrpRef.current.id}`] = createRoot(optGrpRef.current);
           if (!optGrpRef.current.querySelector("option"))
-            panelRoots[optGrpRef.current.id]?.render(
+            panelRoots[`${optGrpRef.current.id}`]?.render(
               users.map(
                 (user, i) =>
                   new RegExp(area.slice(0, area.indexOf(" ")), "gi").test(user.area) && (

@@ -1,9 +1,9 @@
 import { render, fireEvent, RenderResult } from "@testing-library/react";
-import { addExportFlags } from "../../../src/lib/global/gController";
-import { autoCapitalizeInputs } from "../../../src/lib/global/gModel";
+import { addExportFlags } from "@/lib/global/gController";
+import { autoCapitalizeInputs } from "@/lib/global/gModel";
 import StudentForm from "../../../../../../components/panelForms/studs/StudentForm";
 jest.mock(
-  "../../../src/lib/global/gController",
+  "@/lib/global/gController",
   (): {
     addExportFlags: jest.Mock<any, any, any>;
   } => ({
@@ -19,7 +19,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/gModel",
+  "@/lib/global/gModel",
   (): {
     autoCapitalizeInputs: jest.Mock<any, any, any>;
     formatCPF: jest.Mock<any, any, any>;

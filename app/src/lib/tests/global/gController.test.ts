@@ -20,7 +20,7 @@ import {
   xlsHandler,
 } from "../testVars";
 //@ts-ignore
-import { targEl } from "../../../src/lib/global/declarations/types";
+import { targEl } from "@/lib/global/declarations/types";
 describe("getGlobalEls", (): void => {
   let addListenerTextsSpy: jest.SpyInstance,
     addListenerRadiosSpy: jest.SpyInstance,
@@ -656,10 +656,10 @@ describe("addCanvasListeners", (): void => {
     expect(mockContext.beginPath).toHaveBeenCalledTimes(2) as void;
   }) as void;
 }) as void;
-describe("getCanvasCoords", () => {
+describe('getCanvasCoords', () => {
   let canvas: HTMLCanvasElement, getBoundingClientRectMock: jest.Mock;
   beforeEach(() => {
-    canvas = document.createElement("canvas");
+    canvas = document.createElement('canvas');
     canvas.width = 500;
     canvas.height = 300;
     getBoundingClientRectMock = jest.fn().mockReturnValue({
@@ -670,10 +670,10 @@ describe("getCanvasCoords", () => {
     });
     canvas.getBoundingClientRect = getBoundingClientRectMock;
   });
-  it("should calculate correct coordinates based on canvas and screen position", () => {
+  it('should calculate correct coordinates based on canvas and screen position', () => {
     expect(gController.getCanvasCoords(150, 100, canvas)).toEqual({ x: 50, y: 50 });
   });
-  it("should handle scale factors when the canvas is scaled", () => {
+  it('should handle scale factors when the canvas is scaled', () => {
     getBoundingClientRectMock.mockReturnValue({
       left: 100,
       top: 50,
@@ -682,7 +682,7 @@ describe("getCanvasCoords", () => {
     });
     expect(gController.getCanvasCoords(200, 150, canvas)).toEqual({ x: 50, y: 50 });
   });
-  it("should use canvas width/height as fallback when scale factors are not finite", () => {
+  it('should use canvas width/height as fallback when scale factors are not finite', () => {
     getBoundingClientRectMock.mockReturnValue({
       left: 100,
       top: 50,
@@ -691,7 +691,7 @@ describe("getCanvasCoords", () => {
     });
     expect(gController.getCanvasCoords(200, 150, canvas)).toEqual({ x: 200, y: 150 });
   });
-  it("should return (0, 0) if x and y are the same as rect.left and rect.top", () => {
+  it('should return (0, 0) if x and y are the same as rect.left and rect.top', () => {
     expect(gController.getCanvasCoords(100, 50, canvas)).toEqual({ x: 0, y: 0 });
   });
 }) as void;

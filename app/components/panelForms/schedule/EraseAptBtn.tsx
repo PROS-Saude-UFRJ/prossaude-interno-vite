@@ -1,6 +1,6 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nlBtn } from "../../../src/lib/global/declarations/types";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { nlBtn } from "@/lib/global/declarations/types";
 import { useContext, useEffect, useRef, useState } from "react";
 import ExcludeConsDlg from "../../alerts/ExcludeConsDlg";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
@@ -18,8 +18,7 @@ export default function EraseAptBtn(): JSX.Element {
         throw elementNotFound(relSlot, "slot for erase appointment btn", extLine(new Error()));
       btnRef.current.id = btnRef.current.id.replace("unfilled", relSlot.id.replace("slot_", ""));
     } catch (err) {
-      console.warn(`Error with reference for button:
-      ${(err as Error).message}`);
+      return;
     }
   }, [btnRef]);
   return (

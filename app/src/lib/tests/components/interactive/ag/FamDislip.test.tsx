@@ -1,6 +1,6 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import FamDislip from "../../../../../../components/interactive/ag/FamDislip";
-import React from "react";
 import { handleDivAddShow } from "../../../../../lib/locals/aGPage/aGHandlers";
 jest.mock(
   "../../../../../pages/ag",

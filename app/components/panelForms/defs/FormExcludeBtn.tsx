@@ -1,7 +1,7 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { formCases, nlBtn } from "../../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { formCases, nlBtn } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState } from "react";
 import ExcludeDlg from "../../alerts/ExcludeDlg";
 import GenericErrorComponent from "../../error/GenericErrorComponent";

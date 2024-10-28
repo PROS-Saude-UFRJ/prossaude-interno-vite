@@ -1,7 +1,7 @@
 import { render, fireEvent, RenderResult } from "@testing-library/react";
 import PacTabForm from "../../../../../../components/panelForms/pacs/PacTabForm";
 jest.mock(
-  "../../../src/lib/global/gController",
+  "@/lib/global/gController",
   (): {
     addExportFlags: jest.Mock<any, any, any>;
   } => ({
@@ -9,7 +9,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/handlers/errorHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
     extLine: jest.Mock<any, any, any>;
@@ -19,7 +19,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/gStyleScript",
+  "@/lib/global/gStyleScript",
   (): {
     normalizeSizeSb: jest.Mock<any, any, any>;
   } => ({
@@ -27,7 +27,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/handlers/gHandlers",
+  "@/lib/global/handlers/gHandlers",
   (): {
     syncAriaStates: jest.Mock<any, any, any>;
   } => ({

@@ -1,36 +1,20 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { addExportFlags } from "../../../src/lib/global/gController";
-import { clearPhDates, normalizeSizeSb } from "../../../src/lib/global/gStyleScript";
-import { exporters, panelRoots, providers } from "../../../src/vars";
-import { handleClientPermissions } from "../../../src/lib/locals/panelPage/handlers/consHandlerUsers";
-import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
+import { addExportFlags } from "@/lib/global/gController";
+import { clearPhDates, normalizeSizeSb } from "@/lib/global/gStyleScript";
+import { providers, panelRoots, exporters } from "@/vars";
+import { handleClientPermissions } from "@/lib/locals/panelPage/handlers/consHandlerUsers";
+import { handleSubmit } from "@/lib/global/data-service";
 import { panelFormsVariables } from "../panelFormsData";
 import { useEffect, useRef, useState, useCallback, useContext } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import ReseterBtn from "../defs/ReseterBtn";
-import { nlBtn, nlFm, nlInp } from "../../../src/lib/global/declarations/types";
-import {
-  addEmailExtension,
-  assignFormAttrs,
-  autoCapitalizeInputs,
-  formatCPF,
-  formatTel,
-} from "../../../src/lib/global/gModel";
-import {
-  elementNotFound,
-  elementNotPopulated,
-  extLine,
-  inputNotFound,
-} from "../../../src/lib/global/handlers/errorHandler";
-import {
-  handleCondtReq,
-  handleEventReq,
-  validateForm,
-  syncAriaStates,
-} from "../../../src/lib/global/handlers/gHandlers";
+import { nlBtn, nlFm, nlInp } from "@/lib/global/declarations/types";
+import { addEmailExtension, assignFormAttrs, autoCapitalizeInputs, formatCPF, formatTel } from "@/lib/global/gModel";
+import { elementNotFound, elementNotPopulated, extLine, inputNotFound } from "@/lib/global/handlers/errorHandler";
+import { handleCondtReq, handleEventReq, validateForm, syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { PanelCtx } from "../defs/client/SelectLoader";
-import { ExportHandler } from "../../../src/lib/global/declarations/classes";
-import useExportHandler from "../../../src/lib/hooks/useExportHandler";
+import { ExportHandler } from "@/lib/global/declarations/classes";
+import useExportHandler from "@/lib/hooks/useExportHandler";
 export default function StudentForm(): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     [showForm] = useState<boolean>(true),
@@ -40,7 +24,7 @@ export default function StudentForm(): JSX.Element {
     btnExportStudsRef = useRef<nlBtn>(null),
     callbackNormalizeSizeSb = useCallback(() => {
       normalizeSizeSb([
-        ...document.querySelectorAll(".form-padded"),
+        ...document.querySelectorAll(".formPadded"),
         ...document.querySelectorAll(".ovFlAut"),
         ...document.querySelectorAll("[scrollbar-width=none]"),
       ]);
@@ -164,7 +148,7 @@ export default function StudentForm(): JSX.Element {
               validation[0] ? handleSubmit("studs", validation[2], true) : ev.preventDefault(),
             )
           }>
-          <div role='group' id='formAddStudHDiv' className='mg-3b'>
+          <div role='group' id='formAddStudHDiv' className='mg__3b'>
             <h1 id='titleAddStudHBlock' className='bolded'>
               <strong>Cadastro de Aluno</strong>
             </h1>
@@ -418,10 +402,10 @@ export default function StudentForm(): JSX.Element {
                 required
               />
             </label>
-            <span role='group' id='spanDias' className='mg-3b flexNoWC rGap1v'>
+            <span role='group' id='spanDias' className='mg__3b flexNoWC rGap1v'>
               <strong className='forceInvert'>Dias de Atividade:</strong>
               <div role='group' id='divDiasAtv' className='flexSimple flexLineDiv flexQ460R'>
-                <label className='flexWR gapped1v' id='labQuarta'>
+                <label className='flexWR gap1v' id='labQuarta'>
                   <slot
                     className='bolded lcPersist'
                     role='textbox'
@@ -438,7 +422,7 @@ export default function StudentForm(): JSX.Element {
                     data-title='Quarta-feira'
                   />
                 </label>
-                <label className='flexWR gapped1v' id='labSexta'>
+                <label className='flexWR gap1v' id='labSexta'>
                   <slot
                     className='bolded lcPersist'
                     role='textbox'

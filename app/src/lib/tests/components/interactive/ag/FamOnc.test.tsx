@@ -1,6 +1,6 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import FamOnc from "../../../../../../components/interactive/ag/FamOnc";
-import React from "react";
 import { handleDivAddShow } from "../../../../../lib/locals/aGPage/aGHandlers";
 jest.mock(
   "../../../../../pages/ag",

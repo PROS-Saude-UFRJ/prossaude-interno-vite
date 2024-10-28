@@ -1,98 +1,101 @@
-import { changeToAstDigit } from "../../../src/lib/global/handlers/gHandlers";
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nullishCanvas } from "../../../src/lib/global/declarations/types";
-import { useEffect, useState, useRef, useCallback } from "react";
-import { addCanvasListeners, getCanvasCoords } from "../../../src/lib/global/gController";
-let ctx: CanvasRenderingContext2D | null = null;
+import { changeToAstDigit } from "@/lib/global/handlers/gHandlers";
+import { nullishCanvas, rMouseEvent } from "@/lib/global/declarations/types";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
+import { addCanvasListeners, getCanvasCoords } from "@/lib/global/gController";
+import { useLocation } from "react-router-dom";
+import s from "@/styles//modules/sharedComponents.module.scss";
 export default function Signature(): JSX.Element {
   const canvasRef = useRef<nullishCanvas>(null),
+    ctxRef = useRef<CanvasRenderingContext2D | null>(null),
     [isDrawing, setDrawing] = useState<boolean>(false),
+    location = useLocation(),
     startDrawing = (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void => {
       e.preventDefault();
       setDrawing(true);
       draw(e);
     },
     startDrawingTouch = (e: React.TouchEvent<HTMLCanvasElement>): void => {
-      e.preventDefault();
       setDrawing(true);
       drawTouch(e);
     },
+    memoizedCoords = useMemo(
+      () => (canvas: HTMLCanvasElement, e: React.Touch | Touch | rMouseEvent) => {
+        if (!(canvas instanceof HTMLCanvasElement)) return { x: e.clientX, y: e.clientY };
+        return getCanvasCoords(e.clientX, e.clientY, canvas);
+      },
+      [],
+    ),
     draw = useCallback(
       (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>): void => {
         try {
-          if (!(canvasRef.current instanceof HTMLCanvasElement))
-            throw elementNotFound(canvasRef.current, `Validation of Canvas Ref Instance`, extLine(new Error()));
-          if (!(ctx instanceof CanvasRenderingContext2D))
-            throw new Error(`Error getting Canvas Context:
-          Obtained Value: ${ctx ?? "nullish"}`);
+          const canvas = canvasRef.current;
+          if (!(canvas instanceof HTMLCanvasElement)) return;
+          const ctx = ctxRef.current ?? canvas.getContext("2d");
+          if (!ctx) throw new Error("Canvas context could not be obtained");
           if (!isDrawing) return;
-          const { x, y } = getCanvasCoords(e.clientX, e.clientY, canvasRef.current);
+          const { x, y } = memoizedCoords(canvas, e);
           ctx.lineTo(x, y);
           ctx.stroke();
           ctx.beginPath();
           ctx.moveTo(x, y);
         } catch (e) {
-          console.error(`Error executing draw():
-        ${(e as Error).message}`);
+          return;
         }
       },
-      [isDrawing],
+      [isDrawing, canvasRef, memoizedCoords],
     ),
-    drawTouch = (e: React.TouchEvent<HTMLCanvasElement>): void => {
-      try {
-        if (!(canvasRef.current instanceof HTMLCanvasElement))
-          throw elementNotFound(canvasRef.current, `Validation of Canvas Ref Instance`, extLine(new Error()));
-        if (!(ctx instanceof CanvasRenderingContext2D))
-          throw new Error(`Error getting Canvas Context:
-        Obtained Value: ${ctx ?? "nullish"}`);
-        if (!isDrawing) return;
-        const point = e.touches[0];
-        const { x, y } = getCanvasCoords(point.clientX, point.clientY, canvasRef.current);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-      } catch (e) {
-        console.error(`Error executing draw():
-      ${(e as Error).message}`);
-      }
-    },
+    drawTouch = useCallback(
+      (e: React.TouchEvent<HTMLCanvasElement>): void => {
+        try {
+          const canvas = canvasRef.current;
+          if (!(canvas instanceof HTMLCanvasElement)) return;
+          const ctx = ctxRef.current ?? canvas.getContext("2d");
+          if (!(ctx instanceof CanvasRenderingContext2D))
+            throw new Error(`Error getting Canvas Context:\nObtained Value: ${ctx ?? "nullish"}`);
+          if (!isDrawing) return;
+          const { x, y } = memoizedCoords(canvas, e.touches[0]);
+          ctx.lineTo(x, y);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+        } catch (e) {
+          return;
+        }
+      },
+      [isDrawing, canvasRef, memoizedCoords],
+    ),
     stopDrawing = (): void => {
       setDrawing(false);
-      ctx?.beginPath();
+      ctxRef.current?.beginPath();
     };
   useEffect(() => {
     const equalizeCanvas = (): void => {
       try {
-        if (!(canvasRef.current instanceof HTMLCanvasElement))
-          throw elementNotFound(canvasRef.current, `Validation of Canvas Instance`, extLine(new Error()));
-        try {
-          if (!(canvasRef.current instanceof HTMLCanvasElement))
-            throw elementNotFound(canvasRef.current, `Validation of Canvas Reference Instance`, extLine(new Error()));
-          canvasRef.current.height = 80;
-          ctx = canvasRef.current.getContext("2d");
-          if (!ctx)
-            throw new Error(`Error validating canvasRef.current context:
-              Obtained value: ${ctx ?? "nullish"}`);
-          ctx.fillRect(10, canvasRef.current.height - 10, canvasRef.current.width - 20, 1.5);
-          ctx.lineWidth = 4;
-          ctx.lineCap = "round";
-          ctx.strokeStyle = "#222";
-        } catch (e) {
-          console.error(`Error executing procedure for defining context for Canvas:\n${(e as Error).message}`);
-        }
+        if (!(canvasRef.current instanceof HTMLCanvasElement)) return;
+        canvasRef.current.height = 80;
+        const ctx = ctxRef.current ?? canvasRef.current.getContext("2d");
+        if (!ctx) return;
+        ctx.fillRect(10, canvasRef.current.height - 10, canvasRef.current.width - 20, 1.5);
+        ctx.lineWidth = 4;
+        ctx.lineCap = "round";
+        ctx.strokeStyle = "#222";
       } catch (e) {
-        console.error(
-          `Error executing equalizeCanvas for ${Signature.prototype.constructor.name}:${(e as Error).message}`,
-        );
+        return;
       }
     };
     equalizeCanvas();
     addEventListener("resize", equalizeCanvas);
     return removeEventListener("resize", equalizeCanvas);
   }, []);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) ctxRef.current = ctx;
+    }
+  }, []);
   return (
-    <div className='divSub divConfirm flexEl' id='divConfirm3' role='group'>
+    <fieldset className='divSub divConfirm flexEl' id='divConfirm3' role='group'>
       <span role='group' id='spanAstPct' className='labConfirm labAst widHalf bolded'>
         <span>Assinatura do Paciente:</span>
         <canvas
@@ -109,7 +112,9 @@ export default function Signature(): JSX.Element {
           data-name='signature'></canvas>
         <button
           type='button'
-          className='astDigtBtn autocorrect confirmBtn btn btn-secondary'
+          className={`astDigtBtn autocorrect confirmBtn btn btn-secondary ${
+            /edfis/gi.test(location.pathname) ? s.confirmAstDigtBtnEn : ""
+          }`}
           id='confirmAstDigtBtn'
           onClick={ev => changeToAstDigit(ev.currentTarget)}>
           Usar Assinatura Digital
@@ -121,11 +126,9 @@ export default function Signature(): JSX.Element {
           onClick={ev => {
             try {
               const divConfirm = ev.currentTarget.closest(".divConfirm");
-              if (!(divConfirm instanceof HTMLElement))
-                throw elementNotFound(divConfirm, `Main ancestral div for resetAstBtn`, extLine(new Error()));
+              if (!(divConfirm instanceof HTMLElement)) return;
               const astEl = divConfirm.querySelector("#inpAstConfirmId");
-              if (!(astEl instanceof HTMLCanvasElement || astEl instanceof HTMLInputElement))
-                throw elementNotFound(astEl, `Element for patient signing`, extLine(new Error()));
+              if (!(astEl instanceof HTMLCanvasElement || astEl instanceof HTMLInputElement)) return;
               if (astEl instanceof HTMLCanvasElement) {
                 const replaceCanvas = Object.assign(document.createElement("canvas"), {
                   id: "inpAstConfirmId",
@@ -143,16 +146,16 @@ export default function Signature(): JSX.Element {
                   }),
                 );
                 replaceInp.dataset.title = "Assinatura do Paciente";
-                replaceInp.classList.add("inpAst", "mg-07t", "form-control");
-                astEl.parentElement!.replaceChild(replaceInp, astEl);
+                replaceInp.classList.add("inpAst", "mg__07t", "form-control");
+                astEl.parentElement?.replaceChild(replaceInp, astEl);
               }
             } catch (e2) {
-              console.error(`Error handling click on Reset signature button`);
+              return;
             }
           }}>
           Resetar
         </button>
       </span>
-    </div>
+    </fieldset>
   );
 }

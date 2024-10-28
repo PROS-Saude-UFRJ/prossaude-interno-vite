@@ -1,4 +1,4 @@
-import { handleEventReq } from "../../../src/lib/global/handlers/gHandlers";
+import { handleEventReq } from "@/lib/global/handlers/gHandlers";
 export default function Nat(): JSX.Element {
   return (
     <input

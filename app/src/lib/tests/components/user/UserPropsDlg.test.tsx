@@ -1,19 +1,19 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import UserPropsDlg from "../../../../..//components/user/UserPropsDlg";
-import { validateForm, syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
-import { addEmailExtension, autoCapitalizeInputs, formatTel } from "../../../src/lib/global/gModel";
+import { validateForm, syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import { addEmailExtension, autoCapitalizeInputs, formatTel } from "@/lib/global/gModel";
 jest.mock(
-  "../../../src/lib/global/handlers/gHandlers",
+  "@/lib/global/handlers/gHandlers",
   (): {
     validateForm: jest.Mock<Promise<boolean[]>, [], any>;
     syncAriaStates: jest.Mock<any, any, any>;
   } => ({
     validateForm: jest.fn((): Promise<[true]> => Promise.resolve([true])),
     syncAriaStates: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/gModel",
+  "@/lib/global/gModel",
   (): {
     addEmailExtension: jest.Mock<any, any, any>;
     autoCapitalizeInputs: jest.Mock<any, any, any>;
@@ -22,7 +22,7 @@ jest.mock(
     addEmailExtension: jest.fn() as jest.Mock,
     autoCapitalizeInputs: jest.fn() as jest.Mock,
     formatTel: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("UserPropsDlg", (): void => {
   const defaultProps = {

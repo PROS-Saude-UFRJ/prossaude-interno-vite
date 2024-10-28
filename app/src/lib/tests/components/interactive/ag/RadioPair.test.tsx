@@ -1,14 +1,14 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { opRadioHandler } from "../../../src/lib/global/handlers/gHandlers";
+import { opRadioHandler } from "@/lib/global/handlers/gHandlers";
 import RadioPair from "../../../../../../components/interactive/ag/RadioPair";
 jest.mock(
-  "../../../src/lib/global/handlers/gHandlers",
+  "@/lib/global/handlers/gHandlers",
   (): {
     opRadioHandler: jest.Mock<any, any, any>;
   } => ({
     opRadioHandler: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("RadioPair", (): void => {
   it("renders two radio buttons for Yes and No", (): void => {
@@ -29,7 +29,7 @@ describe("RadioPair", (): void => {
     render(<RadioPair name='test_radio' add='ta' />);
     userEvent.click(screen.getByLabelText<HTMLInputElement>("Sim"));
     expect(
-      screen.getByPlaceholderText<HTMLTextAreaElement>("Escreva aqui os Test_radio específicos"),
+      screen.getByPlaceholderText<HTMLTextAreaElement>("Escreva aqui os Test_radio específicos")
     ).toBeInTheDocument() as void;
   }) as void;
 }) as void;

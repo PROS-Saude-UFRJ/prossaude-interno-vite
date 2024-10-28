@@ -1,7 +1,6 @@
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
 import { callbackAtvLvlElementNaf } from "../../../../../locals/edFisNutPage/edFisNutHandler";
-import { tabProps } from "../../../../../../vars";
-import React from "react";
+import { tabProps } from "../../../../../../../../../pro-saude-app-vite/app/src/vars";
 import GordCorpLvl from "../../../../../../../components/interactive/edfis/client/GordCorpLvl";
 jest.mock(
   "../../../../../locals/edFisNutPage/edFisNutHandler",

@@ -9,7 +9,7 @@ import {
   tryDetails,
 } from "../../../locals/loginPage/loginController";
 import { BootstrapIconClass, DOMEvent, EventTargetMethod } from "../../testVars";
-import { targEl } from "../../../src/lib/global/declarations/types";
+import { targEl } from "@/lib/global/declarations/types";
 describe("addListenerShowPw", (): void => {
   beforeEach((): void => {
     document.body.innerHTML = `
@@ -44,7 +44,7 @@ describe("callbackShowPw", (): void => {
     callbackShowPw(span);
     expect((document.getElementById("pw") as HTMLInputElement)?.type).toBe<InputType>("text") as void;
     expect(span?.querySelector<SVGElement>(".bi")?.outerHTML).toContain<BootstrapIconClass>(
-      "bi-eye-slash-fill",
+      "bi-eye-slash-fill"
     ) as void;
   }) as void;
   it("should change password input type back to password and switch the icon to eye-fill", (): void => {
@@ -62,7 +62,7 @@ describe("callbackShowPw", (): void => {
   it("should throw an error if the password input is not found", (): void => {
     document.body.innerHTML = `<span id="spanShowPw"></span>`;
     expect((): void => callbackShowPw(document.getElementById("spanShowPw"))).toThrow(
-      "Element not found: pwInp in callbackShowPw()",
+      "Element not found: pwInp in callbackShowPw()"
     );
   }) as void;
 }) as void;
@@ -105,7 +105,7 @@ describe("evaluateClickMovements", (): void => {
     clickAttempt.lastClickY = 100;
     const [message, suspicious] = evaluateClickMovements(mockEvent);
     expect(message).toBe<string>(
-      "Deslocamento de mouse não confiável. Por favor aguarde para tentar novamente.",
+      "Deslocamento de mouse não confiável. Por favor aguarde para tentar novamente."
     ) as void;
     expect(suspicious).toBe<boolean>(true) as void;
   }) as void;

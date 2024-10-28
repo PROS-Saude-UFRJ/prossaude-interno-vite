@@ -1,29 +1,157 @@
-import { SetStateAction } from "react";
-import { TabCelCtxs, ctxRot, looseNum, quadrCases, targEl, validTabLabs, vRoot, validSchedHours } from "./types";
+import { Dispatch, MutableRefObject, SetStateAction } from "react";
+import {
+  TabCelCtxs,
+  ctxRot,
+  looseNum,
+  quadrCases,
+  targEl,
+  validTabLabs,
+  vRoot,
+  nlSel,
+  nlHtEl,
+  nlFm,
+  NlMRef,
+  nlInp,
+  nlFs,
+  nlTab,
+  nlDiv,
+  NlrDispatch,
+  elCollection,
+} from "./types";
+import { BodyType, FactorAtletaValue, Gender, Intensity, NafTypeValue } from "@/lib/global/declarations/testVars";
 export interface DocumentNodeProps {
   html: string;
   head?: (JSX.Element | null)[];
   styles?: JSX.Element | ReactElement<any, string | JSXElementConstructor<any>>[] | ReactFragment;
 }
+export type MetaTag = {
+  content?: string;
+  id?: string;
+  name?: string;
+  property?: string;
+};
+export interface LinkTag {
+  rel?: string;
+  href?: string;
+  id?: string;
+  sizes?: string;
+}
 export interface ProSaudeAppProps extends AppProps {
   pageProps: Record<string, any>;
 }
-export interface AppRootContextType {
+export interface RootCtxType {
+  divModal: NlMRef<nlDiv | HTMLSpanElement>;
+  divModalSec: NlMRef<nlDiv | HTMLSpanElement>;
+  divModalTerc: NlMRef<nlDiv | HTMLSpanElement>;
   roots: {
     [k: string]: vRoot;
   };
 }
-export interface ENContextProps {
-  age: looseNum;
-  gen: Gender;
+export interface ENCtxProps {
+  refs: {
+    af: NlMRef<nlInp>;
+    f: NlMRef<nlFm>;
+    gar: NlMRef<nlSel>;
+    gbr: NlMRef<nlSel>;
+    gr: NlMRef<nlSel>;
+    fct: NlMRef<nlSel>;
+    fspr: NlMRef<nlFs>;
+    gl: NlMRef<nlSel>;
+    nafr: NlMRef<nlSel>;
+    sar: NlMRef<nlSel>;
+    txbr: NlMRef<nlSel>;
+  };
+  bt: {
+    s: BodyType;
+    d: NlrDispatch<BodyType>;
+  };
 }
-export interface ScheduleCtxProps {
-  nHrs: validSchedHours[];
-  nCols: number[];
-  month: number;
+export interface FspCtxProps {
+  cons: {
+    numCons: number;
+    setNumCons: NlrDispatch<number>;
+  };
+  refs: {
+    snc: NlMRef<nlSel>;
+    prt: NlMRef<nlSel>;
+    td: NlMRef<nlTab>;
+    tsv: NlMRef<nlTab>;
+    tma: NlMRef<nlTab>;
+    tip: NlMRef<nlTab>;
+  };
 }
-export interface ScheduleTbodyCtxProps {
-  entries: { [k: string]: string | JSX.Element };
+export interface UserPanelCtxProps {
+  setDropdown: NlrDispatch<boolean>;
+  shouldShowDropdown: boolean;
+}
+export interface UserProfileCtxProps {
+  user: UserState | null;
+  shouldDisplayPropDlg: boolean;
+  shouldDisplayContact: boolean;
+  setPropDlg: NlrDispatch<boolean>;
+  setContact: NlrDispatch<boolean>;
+}
+export interface CacheENProps {
+  ncthc?: HTMLCollectionOf<Element>;
+  tip?: HTMLCollectionOf<Element>;
+  fsptb?: HTMLCollectionOf<Element>;
+  fsptrs?: HTMLCollectionOf<Element>;
+  fspcols?: HTMLCollectionOf<Element>;
+  tsvis?: HTMLCollectionOf<Element>;
+  tmais?: HTMLCollectionOf<Element>;
+  dcis?: HTMLCollectionOf<Element>;
+  indis?: HTMLCollectionOf<Element>;
+  locksinds?: HTMLCollectionOf<Element>;
+  his?: HTMLCollectionOf<Element>;
+  wis?: HTMLCollectionOf<Element>;
+  dctrs?: HTMLCollectionOf<Element>;
+  lists: { [k: string]: HTMLCollectionOf<Element> };
+  targs: { [k: string]: HTMLCollectionOf<Element> };
+}
+export interface ActiveTargInps {
+  tiw: targEl;
+  tih: targEl;
+  tidc: targEl;
+  tiimc: targEl;
+  timlg: targEl;
+  titmb: targEl;
+  tiget: targEl;
+  tipgc: targEl;
+}
+export interface TargInps {
+  firstCol: {
+    tiw1: NlMRef<nlInp>;
+    tih1: NlMRef<nlInp>;
+    tiimc1: NlMRef<nlInp>;
+    timlg1: NlMRef<nlInp>;
+    titmb1: NlMRef<nlInp>;
+    tiget1: NlMRef<nlInp>;
+    tipgc1: NlMRef<nlInp>;
+    tidc1: NlMRef<nlInp>;
+  };
+  secondCol: {
+    tiw2: NlMRef<nlInp>;
+    tih2: NlMRef<nlInp>;
+    tiimc2: NlMRef<nlInp>;
+    timlg2: NlMRef<nlInp>;
+    titmb2: NlMRef<nlInp>;
+    tiget2: NlMRef<nlInp>;
+    tipgc2: NlMRef<nlInp>;
+    tidc2: NlMRef<nlInp>;
+  };
+  thirdCol: {
+    tiw3: NlMRef<nlInp>;
+    tih3: NlMRef<nlInp>;
+    tiimc3: NlMRef<nlInp>;
+    timlg3: NlMRef<nlInp>;
+    titmb3: NlMRef<nlInp>;
+    tiget3: NlMRef<nlInp>;
+    tipgc3: NlMRef<nlInp>;
+    tidc3: NlMRef<nlInp>;
+  };
+}
+export interface DTsCtxProps {
+  exeAutoFillCtx: ((targ: targEl, context: "cons" | "col") => autofillResult) | null;
 }
 export interface CounterAction {
   type: "INCREMENT" | "DECREMENT";
@@ -41,25 +169,31 @@ export interface ENTabsProps {
   areColGroupsSimilar: boolean;
   areNumConsOpsValid: boolean;
   numColsCons: number;
-  numCons: number;
   numConsLastOp: number;
   numCol: number;
-  IMC: number;
-  MLG: number;
-  TMB: number;
-  GET: number;
-  PGC: number;
-  factorAtvLvl: number;
-  factorAtleta: string;
-  edGenValue: string;
-  targInpWeigth: targEl;
-  targInpHeigth: targEl;
-  targInpIMC: targEl;
-  targInpMLG: targEl;
-  targInpTMB: targEl;
-  targInpGET: targEl;
-  targInpPGC: targEl;
-  targInpSumDCut: targEl;
+  numCons?: number;
+  IMC?: number;
+  MLG?: number;
+  TMB?: number;
+  GET?: number;
+  PGC?: number;
+  factorAtvLvl?: NafTypeValue;
+  factorAtleta?: FactorAtletaValue;
+  tiw?: targEl;
+  tih?: targEl;
+  tiimc?: targEl;
+  timlg?: targEl;
+  titmb?: targEl;
+  tiget?: targEl;
+  tipgc?: targEl;
+  tidc?: targEl;
+  fsp?: targEl;
+  gl?: targEl;
+  fct?: targEl;
+  sa?: targEl;
+  naf?: targEl;
+  spanFa?: targEl;
+  lockGl?: targEl;
 }
 export interface ChecksProps {
   name: string;
@@ -131,7 +265,9 @@ export interface ThProps extends TabCelProps {
 export interface TdProps extends TabCelProps {
   lab: validTabLabs;
 }
+/* eslint-disable */
 export interface ColProps extends Omit<ThProps, "nRow"> {}
+/* eslint-enable */
 export interface SpinnerComponentProps {
   spinnerClass?: "spinner-border" | "spinner-grow";
   spinnerColor?:

@@ -7,7 +7,7 @@ jest.mock(
     jest.fn((): JSX.Element => <div>Erro carregando modal de declaração</div>) as jest.Mock,
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/handlers/errorHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
   } => ({

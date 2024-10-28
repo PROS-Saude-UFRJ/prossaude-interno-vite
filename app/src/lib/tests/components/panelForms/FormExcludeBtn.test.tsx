@@ -1,22 +1,22 @@
 import { render, fireEvent, RenderResult } from "@testing-library/react";
 import FormExcludeBtn from "../../../../../components/panelForms/defs/FormExcludeBtn";
 jest.mock(
-  "../../../src/lib/global/handlers/gHandlers",
+  "@/lib/global/handlers/gHandlers",
   (): {
     syncAriaStates: jest.Mock<any, any, any>;
   } => ({
     syncAriaStates: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/handlers/errorHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
     extLine: jest.Mock<any, any, any>;
   } => ({
     elementNotFound: jest.fn() as jest.Mock,
     extLine: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("FormExcludeBtn Component", (): void => {
   test("renders the exclude button and toggles dialog", (): void => {

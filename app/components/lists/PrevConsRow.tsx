@@ -1,5 +1,5 @@
-import { HistoricRowProps } from "../../src/lib/locals/panelPage/declarations/interfacesCons";
-import { dateISOtoBRL } from "../../src/lib/global/gModel";
+import { HistoricRowProps } from "@/lib/global/declarations/interfacesCons";
+import { dateISOtoBRL } from "@/lib/global/gModel";
 export default function PrevConsRow({ historic, nRow, name = "Anônimo" }: HistoricRowProps): JSX.Element {
   const typeFullName = ((): string => {
     switch (historic.type) {
@@ -92,7 +92,6 @@ export default function PrevConsRow({ historic, nRow, name = "Anônimo" }: Histo
         <output
           className={`outputPrevCons outputPrevConsPac${nRow - 1} outputPrevConsPac${name}`}
           id={`outpStudPrevCons-${nRow}`}
-          //TODO AQUI TEM QUE SER REPASSADO PELO BANCO ALGUM IDENTIFICADOR...
           data-title={`Estudante de Consulta no Histórico ${nRow}`}
           data-row={nRow}
           data-col={5}>

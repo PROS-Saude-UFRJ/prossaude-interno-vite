@@ -1,53 +1,54 @@
+import { AvPacListDlgProps } from "@/lib/global/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
-import { AvPacListDlgProps } from "../../src/lib/global/declarations/interfacesCons";
-import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { nullishDlg } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { isClickOutside } from "@/lib/global/gStyleScript";
+import { nlDlg } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
 import PacList from "./PacList";
 export default function AvPacListDlg({ dispatch, state, shouldShowAlocBtn }: AvPacListDlgProps): JSX.Element {
-  const [shouldDisplayRowData, setDisplayRowData] = useState<boolean>(false);
-  const dialogRef = useRef<nullishDlg>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const [shouldDisplayRowData, setDisplayRowData] = useState<boolean>(false),
+    dialogRef = useRef<nlDlg>(null);
+  //push em history
   useEffect(() => {
-    if (searchParams.get("av-pac") !== "open") setSearchParams({ "av-pac": "open" });
+    !/av-pac=open/gi.test(location.search) &&
+      history.pushState({}, "", `${location.origin}${location.pathname}${location.search}&av-pac=open`);
+    setTimeout(() => {
+      history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+    }, 300);
     return (): void => {
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.delete("av-pac");
-      setSearchParams(newSearchParams);
+      history.pushState(
+        {},
+        "",
+        `${location.origin}${location.pathname}${location.search}`.replaceAll("&av-pac=open", ""),
+      );
+      setTimeout(() => {
+        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+      }, 300);
     };
-  }, [searchParams, setSearchParams]);
-
-  //listeners for dialog
+  }, []);
+  //listeners para dlg
   useEffect(() => {
     if (dialogRef?.current instanceof HTMLDialogElement) {
       dialogRef.current.showModal();
-      syncAriaStates([...dialogRef.current.querySelectorAll("*"), dialogRef.current]);
+      syncAriaStates([...dialogRef.current!.querySelectorAll("*"), dialogRef.current]);
       const handleKeyDown = (press: KeyboardEvent): void => {
-        if (press.key === "Escape") setDisplayRowData(shouldDisplayRowData => !shouldDisplayRowData);
+        press.key === "Escape" && setDisplayRowData(!shouldDisplayRowData);
       };
       addEventListener("keydown", handleKeyDown);
-      return () => removeEventListener("keydown", handleKeyDown);
-    } else {
-      elementNotFound(dialogRef.current, "dialogElement in AvPacListDlg", extLine(new Error()));
-    }
+      return (): void => removeEventListener("keydown", handleKeyDown);
+    } else elementNotFound(dialogRef.current, "dialogElement in AvStudListDlg", extLine(new Error()));
   }, [dialogRef]);
   return (
     <>
       {state && (
         <dialog
-          className='modal-content-stk2'
+          className='modalContent__stk2'
           id='avPacListDlg'
           ref={dialogRef}
           onClick={ev => {
-            if (isClickOutside(ev, ev.currentTarget).some(coord => coord === true)) {
-              dispatch(!state);
-              navigate("?", { replace: true });
-            }
+            isClickOutside(ev, ev.currentTarget).some(coord => coord === true) && dispatch(!state);
           }}>
           <ErrorBoundary
             FallbackComponent={() => (
@@ -57,7 +58,7 @@ export default function AvPacListDlg({ dispatch, state, shouldShowAlocBtn }: AvP
               />
             )}>
             <section className='flexRNoWBetCt widFull' id='headPacList'>
-              <h2 className='mg-1b noInvert'>
+              <h2 className='mg__1b noInvert'>
                 <strong>Pacientes Cadastrados</strong>
               </h2>
               <button className='btn btn-close forceInvert' onClick={() => dispatch(!state)}></button>

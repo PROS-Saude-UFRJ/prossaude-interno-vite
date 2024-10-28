@@ -1,37 +1,21 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { GlobalFormProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
-import { addExportFlags } from "../../../src/lib/global/gController";
-import { clearPhDates, normalizeSizeSb } from "../../../src/lib/global/gStyleScript";
-import { providers, panelRoots, exporters } from "../../../src/vars";
-import { handleClientPermissions } from "../../../src/lib/locals/panelPage/handlers/consHandlerUsers";
-import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
+import { GlobalFormProps } from "@/lib/global/declarations/interfacesCons";
+import { addExportFlags } from "@/lib/global/gController";
+import { clearPhDates, normalizeSizeSb } from "@/lib/global/gStyleScript";
+import { providers, panelRoots, exporters } from "@/vars";
+import { handleClientPermissions } from "@/lib/locals/panelPage/handlers/consHandlerUsers";
+import { handleSubmit } from "@/lib/global/data-service";
 import { panelFormsVariables } from "../panelFormsData";
 import { useEffect, useRef, useState, useCallback, useContext } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import ReseterBtn from "../defs/ReseterBtn";
-import { nlBtn, nlFm, nlInp } from "../../../src/lib/global/declarations/types";
-import {
-  addEmailExtension,
-  assignFormAttrs,
-  autoCapitalizeInputs,
-  formatCPF,
-  formatTel,
-} from "../../../src/lib/global/gModel";
-import {
-  elementNotFound,
-  elementNotPopulated,
-  extLine,
-  inputNotFound,
-} from "../../../src/lib/global/handlers/errorHandler";
-import {
-  handleCondtReq,
-  handleEventReq,
-  validateForm,
-  syncAriaStates,
-} from "../../../src/lib/global/handlers/gHandlers";
+import { nlBtn, nlFm, nlInp } from "@/lib/global/declarations/types";
+import { addEmailExtension, assignFormAttrs, autoCapitalizeInputs, formatCPF, formatTel } from "@/lib/global/gModel";
+import { elementNotFound, elementNotPopulated, extLine, inputNotFound } from "@/lib/global/handlers/errorHandler";
+import { handleCondtReq, handleEventReq, validateForm, syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { PanelCtx } from "../defs/client/SelectLoader";
-import { ExportHandler } from "../../../src/lib/global/declarations/classes";
-import useExportHandler from "../../../src/lib/hooks/useExportHandler";
+import { ExportHandler } from "@/lib/global/declarations/classes";
+import useExportHandler from "@/lib/hooks/useExportHandler";
 export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     [showForm] = useState(true),
@@ -41,7 +25,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
     btnExportProfForm = useRef<nlBtn>(null),
     callbackNormalizeSizeSb = useCallback(() => {
       normalizeSizeSb([
-        ...document.querySelectorAll(".form-padded"),
+        ...document.querySelectorAll(".formPadded"),
         ...document.querySelectorAll(".ovFlAut"),
         ...document.querySelectorAll("[scrollbar-width=none]"),
       ]);
@@ -161,7 +145,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
               validation[0] ? handleSubmit("profs", validation[2], true) : ev.preventDefault(),
             )
           }>
-          <div role='group' id='formAddProfHDiv' className='mg-3b'>
+          <div role='group' id='formAddProfHDiv' className='mg__3b'>
             <h1 id='titleAddProfHBlock' className='bolded'>
               <strong id='titleAddProfH'>Cadastro de Profissional</strong>
             </h1>

@@ -1,4 +1,4 @@
-import { addDblQuotes } from "../../../src/lib/locals/aGPage/aGModel";
+import { addDblQuotes } from "@/lib/locals/aGPage/aGModel";
 export default function QxPrinc(): JSX.Element {
   return (
     <textarea

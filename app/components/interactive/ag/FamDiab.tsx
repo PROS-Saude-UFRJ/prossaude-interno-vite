@@ -1,4 +1,4 @@
-import { handleDivAddShow } from "../../../src/lib/locals/aGPage/aGHandlers";
+import { handleDivAddShow } from "@/lib/locals/aGPage/aGHandlers";
 export default function FamDiab(): JSX.Element {
   return (
     <input

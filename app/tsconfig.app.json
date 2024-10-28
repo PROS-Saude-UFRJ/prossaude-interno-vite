@@ -22,7 +22,10 @@
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "alwaysStrict": true
+    "alwaysStrict": true,
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": [

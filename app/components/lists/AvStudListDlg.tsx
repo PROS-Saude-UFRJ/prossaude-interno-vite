@@ -1,56 +1,54 @@
+import { AvStudListDlgProps } from "@/lib/global/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
-import { AvStudListDlgProps } from "../../src/lib/global/declarations/interfacesCons";
-import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { nullishDlg } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { isClickOutside } from "@/lib/global/gStyleScript";
+import { nlDlg } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
 import StudList from "./StudList";
 export default function AvStudListDlg({ forwardedRef, dispatch, state = false }: AvStudListDlgProps): JSX.Element {
-  const dialogRef = useRef<nullishDlg>(null);
-  const sectTabRef = useRef<HTMLElement | null>(null);
-  const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const dialogRef = useRef<nlDlg>(null),
+    sectTabRef = useRef<HTMLElement | null>(null);
+  //push em history
   useEffect(() => {
-    if (searchParams.get("av-stud") !== "open") {
-      setSearchParams({ "av-stud": "open" });
-    }
+    !/av-stud=open/gi.test(location.search) &&
+      history.pushState({}, "", `${location.origin}${location.pathname}${location.search}&av-stud=open`);
+    setTimeout(() => {
+      history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+    }, 300);
     return (): void => {
-      const newSearchParams = new URLSearchParams(searchParams);
-      newSearchParams.delete("av-stud");
-      setSearchParams(newSearchParams);
+      history.pushState(
+        {},
+        "",
+        `${location.origin}${location.pathname}${location.search}`.replaceAll("&av-stud=open", ""),
+      );
+      setTimeout(() => {
+        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+      }, 300);
     };
-  }, [searchParams, setSearchParams]);
-
-  //listeners for dialog
+  }, []);
+  //listeners de dialog
   useEffect(() => {
     if (dialogRef?.current instanceof HTMLDialogElement) {
       dialogRef.current.showModal();
-      syncAriaStates([...dialogRef.current.querySelectorAll("*"), dialogRef.current]);
+      syncAriaStates([...dialogRef.current!.querySelectorAll("*"), dialogRef.current]);
       const handleKeyDown = (press: KeyboardEvent): void => {
-        if (press.key === "Escape") dispatch(state);
+        press.key === "Escape" && dispatch(state);
       };
       addEventListener("keydown", handleKeyDown);
-      return () => removeEventListener("keydown", handleKeyDown);
-    } else {
-      elementNotFound(dialogRef.current, "dialogElement in AvStudListDlg", extLine(new Error()));
-    }
+      return (): void => removeEventListener("keydown", handleKeyDown);
+    } else elementNotFound(dialogRef.current, "dialogElement in AvStudListDlg", extLine(new Error()));
   }, [forwardedRef, dialogRef, dispatch]);
-
   return (
     <>
       {state && (
         <dialog
-          className='modal-content-stk2'
+          className='modalContent__stk2'
           id='avStudListDlg'
           ref={dialogRef}
           onClick={ev => {
-            if (isClickOutside(ev, ev.currentTarget).some(coord => coord === true)) {
-              dispatch(!state);
-              navigate("?", { replace: true });
-            }
+            isClickOutside(ev, ev.currentTarget).some(coord => coord === true) && dispatch(!state);
           }}>
           <ErrorBoundary
             FallbackComponent={() => (
@@ -60,12 +58,12 @@ export default function AvStudListDlg({ forwardedRef, dispatch, state = false }:
               />
             )}>
             <section className='flexRNoWBetCt' id='headStudList'>
-              <h2 className='mg-1b noInvert'>
+              <h2 className='mg__1b noInvert'>
                 <strong>Estudantes Cadastrados</strong>
               </h2>
               <button className='btn btn-close forceInvert' onClick={() => dispatch(!state)}></button>
             </section>
-            <section className='form-padded' id='sectStudsTab' ref={sectTabRef}>
+            <section className='formPadded' id='sectStudsTab' ref={sectTabRef}>
               <StudList mainDlgRef={forwardedRef} state={state} dispatch={dispatch} />
             </section>
           </ErrorBoundary>

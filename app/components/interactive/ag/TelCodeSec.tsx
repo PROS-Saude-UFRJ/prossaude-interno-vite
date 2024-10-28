@@ -1,4 +1,4 @@
-import { handleCondtReq } from "../../../src/lib/global/handlers/gHandlers";
+import { handleCondtReq } from "@/lib/global/handlers/gHandlers";
 export default function TelCodeSec(): JSX.Element {
   return (
     <input

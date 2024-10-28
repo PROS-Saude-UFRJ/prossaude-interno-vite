@@ -1,7 +1,7 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { ErrorFallbackMainPanelProps } from "../../src/lib/global/declarations/interfacesCons";
-import { nlSel, panelOpts } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { ErrorFallbackMainPanelProps } from "@/lib/global/declarations/interfacesCons";
+import { nlSel, panelOpts } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState } from "react";
 import MainFormPanel from "../mainPanel/MainFormPanel";
 import { mainPanelVariables, resetErrorBoundary } from "../mainPanel/mainPanelVariables";
@@ -53,17 +53,17 @@ export default function ErrorFallbackMainPanel(props: ErrorFallbackMainPanelProp
           <option value='agenda'>Agendamento</option>
         </optgroup>
       </select>
-      <h2 className='mg-2bv widHalf'>
+      <h2 className='mg__2bv widHalf'>
         <strong>Oops, algo deu errado! 😨</strong>
       </h2>
       <h4>{props.renderError.message}</h4>
       <small>
-        Clique em <kbd className='kbd kbd-primary vtAltxTop'>Tentar Novamente</kbd>
+        Clique em <kbd className='kbd kbdPrimary vtAltxTop'>Tentar Novamente</kbd>
         &nbsp;uma vez e tente trocar de opção ou clique <em>três vezes</em> para recarregar a página!
       </small>
       <br />
       <button
-        className='btn btn-info bolded widHalf mg-1t'
+        className='btn btn-info bolded widHalf mg__1t'
         id='retryRenderBtn'
         onClick={() => {
           props.resetErrorBoundary(props.mainRoot, "student", mainPanelVariables.tryAcc);

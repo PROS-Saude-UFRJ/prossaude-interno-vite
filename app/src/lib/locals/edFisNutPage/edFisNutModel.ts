@@ -1,80 +1,37 @@
-import { Person } from "../../global/declarations/classes";
-import { entryEl, targEl } from "../../global/declarations/types";
-import { filterIdsByGender } from "../../global/gModel";
-import { handleEventReq } from "../../global/handlers/gHandlers";
 //nesse file estão presentes principalmente as funções relacionadas à exigência de modelo textual e de visualização
-import {
-  extLine,
-  elementNotFound,
-  inputNotFound,
-  multipleElementsNotFound,
-  stringError,
-} from "../../global/handlers/errorHandler";
-export function checkInnerColGroups(parentEl: targEl, areAllColGroupsSimilar: boolean = false): [number, boolean] {
+import { Person } from "../../global/declarations/classes";
+import { entryEl, primitiveType, targEl } from "../../global/declarations/types";
+import { filterIdsByGender, parseNotNaN } from "../../global/gModel";
+import { handleEventReq } from "@/lib/global/handlers/gHandlers";
+import { BodyType, FactorAtletaValue, NafTypeValue } from "@/lib/global/declarations/testVars";
+import { person, tabProps } from "@/vars";
+export function checkInnerColGroups(parentEl: targEl): number {
   const validColGroupsChildCount: number[] = [],
     colGroups = Array.from(parentEl?.querySelectorAll("colgroup") ?? []);
-  if (parentEl instanceof HTMLElement && colGroups?.flat(1)?.length > 0) {
-    //popula arrays de colgroups com base em filtragem de instância
+  try {
+    if (!(parentEl instanceof HTMLElement && colGroups?.flat(1)?.length > 0)) return validColGroupsChildCount.length;
     for (let i = 0; i < colGroups.length; i++) {
       const arrColGrpChilds = Array.from(colGroups[i].children);
-      if (arrColGrpChilds?.every(col => col instanceof HTMLTableColElement))
-        validColGroupsChildCount.push(colGroups[i].childElementCount);
-      else {
-        //filtragem para incluir somente as instâncias validadas como colunas
-        validColGroupsChildCount.push(arrColGrpChilds.filter(col => col instanceof HTMLTableColElement).length);
-        console.warn(`Some children of <colgroup> are not HTMLTableColElement.
-        Number of valid children obtained: ${validColGroupsChildCount.length}.
-        Total of children: ${arrColGrpChilds?.length}`);
-
-        //descreve as instâncias achadas, para detalhar quais elementos não foram validados como colunas
-        const colsInstances: string[] = [];
-        arrColGrpChilds.forEach(arrColGrpChild => {
-          const childInstance = `${Object.prototype.toString.call(arrColGrpChild).slice(8, -1) ?? "null"}`;
-          colsInstances.push(childInstance);
-          if (childInstance !== `HTMLTableColElement`)
-            elementNotFound(arrColGrpChild, "child <col>", extLine(new Error()));
-        });
-      }
+      arrColGrpChilds.every(col => col instanceof HTMLTableColElement)
+        ? validColGroupsChildCount.push(colGroups[i].childElementCount)
+        : validColGroupsChildCount.push(arrColGrpChilds.filter(col => col instanceof HTMLTableColElement).length);
     }
-    //filtra array de colgroups válida com base em colunas de tamanho similar
     const pairedColGroupsValid: boolean[] = [];
-    for (let m = 0; m < validColGroupsChildCount.length; m++) {
-      if (m === 0) continue;
-      else {
-        if ((validColGroupsChildCount[m] = validColGroupsChildCount[m - 1])) pairedColGroupsValid.push(true);
-        else {
-          console.warn(`Erro validando par de Col Groups.
-          Par invalidado: ${validColGroupsChildCount[m] ?? "null"} com ${validColGroupsChildCount[m - 1] ?? "null"}`);
-          pairedColGroupsValid.push(false);
-        }
-      }
-    }
-    //verifica se todos os pares são válidos para, em caso negativo, fornecer warn
-    if (pairedColGroupsValid.every(pairedColGroup => pairedColGroup === true)) areAllColGroupsSimilar = true;
-    else console.warn(`Grupos de Colunas não são similares no número de children`);
-    areAllColGroupsSimilar = false;
-  } else
-    multipleElementsNotFound(
-      extLine(new Error()),
-      `arguments for checkInnerColGroups(), areColGroupValids: ${areAllColGroupsSimilar ?? false}`,
-      parentEl,
-      `${JSON.stringify(colGroups) || null}`,
-    );
-
-  return [validColGroupsChildCount?.length ?? 0, areAllColGroupsSimilar];
+    for (let m = 1; m < validColGroupsChildCount.length; m++)
+      (validColGroupsChildCount[m] = validColGroupsChildCount[m - 1]) && pairedColGroupsValid.push(true);
+    tabProps.areColGroupsSimilar = pairedColGroupsValid.every(pairedColGroup => pairedColGroup === true) ? true : false;
+  } catch (e) {
+    return validColGroupsChildCount.length;
+  }
+  return validColGroupsChildCount.length;
 }
 export function checkTabRowsIds(tab: targEl): string[] {
   const arrTabRowsIds: string[] = [];
-
-  tab instanceof HTMLTableElement && tab.id === "tabDCut"
-    ? Array.from(tab.querySelectorAll("tr.tabRowDCutMed")).forEach(tabRow => {
-        const rowId = tabRow?.id;
-        rowId?.match(/^row/)?.toString()
-          ? arrTabRowsIds?.push(rowId.slice(3).toLowerCase())
-          : stringError(`obtendo id da row ${tabRow}`, rowId, extLine(new Error()));
-      })
-    : elementNotFound(tab, "tabDC in checkTabRowsIds", extLine(new Error()));
-
+  if (tab instanceof HTMLTableElement && tab.id === "tabDCut")
+    Array.from(tab.querySelectorAll("tr.tabRowDCutMed")).forEach(tabRow => {
+      const rowId = tabRow?.id;
+      if (rowId?.match(/^row/)?.toString()) arrTabRowsIds?.push(rowId.slice(3).toLowerCase());
+    });
   return arrTabRowsIds || [""];
 }
 export function changeTabDCutLayout(protocolo: targEl, tabDC: targEl, bodyType: targEl): string {
@@ -93,9 +50,9 @@ export function changeTabDCutLayout(protocolo: targEl, tabDC: targEl, bodyType: 
         const arrayTabIds = checkTabRowsIds(tabDC);
         const genderedIds = filterIdsByGender(arrayTabIds, bodyType.value);
         /* eslint-disable */
-        /* após checagem de ids e filtragem por gênero da pessoa 
-          valida se de fato as rows sem informação (visuais) não estão sendo capturadas
-          e se a filtragem por gênero ocorreu corretamente */
+        /*após checagem de ids e filtragem por gênero da pessoa 
+        valida se de fato as rows sem informação (visuais) não estão sendo capturadas
+        e se a filtragem por gênero ocorreu corretamente*/
         /* eslint-enable */
         if (
           arrayTabIds?.length ===
@@ -108,7 +65,6 @@ export function changeTabDCutLayout(protocolo: targEl, tabDC: targEl, bodyType: 
               defineHiddenRows(tabDC, arrayTabIds, genderedIds);
             else if (bodyType.value === "neutro" && genderedIds.length === 5)
               defineHiddenRows(tabDC, arrayTabIds, genderedIds, "nb");
-            else stringError("validating .value of bodyType", bodyType?.value, extLine(new Error()));
           } else if ((protocolo as entryEl)?.value.match(/^pollock7$/i)?.toString()) {
             Array.from(tabDC.querySelectorAll("tr.tabRowDCutMed"))?.forEach(medTr => {
               if ((medTr as HTMLElement)?.hidden) {
@@ -118,29 +74,11 @@ export function changeTabDCutLayout(protocolo: targEl, tabDC: targEl, bodyType: 
               }
             });
             return "pollock7";
-          } else stringError("obtaining pollock value", (protocolo as entryEl)?.value, extLine(new Error()));
-        } else
-          console.warn(
-            `Error verifying number and/or id from rows. Row Elements ${
-              JSON.stringify(arrayTabIds) || null
-            }; Obtained number: ${arrayTabIds?.length}; Expected number: ${
-              Array.from(tabDC.rows).filter(row => row.classList.contains("tabRowDCutMed"))?.length
-            }
-            Gender-filtered elements ${JSON.stringify(genderedIds) || null}; Obtained number: ${
-              genderedIds?.length
-            }; Expected number: 3`,
-          );
+          }
+        }
       }
-    } else console.warn(`Error checking protocol options. Total of options validated: ${filteredOpsProtocolo.length}`);
-  } else
-    multipleElementsNotFound(
-      extLine(new Error()),
-      "validating elements for initial execution of changeTabDCutLayout()",
-      protocolo,
-      tabDC,
-      bodyType,
-    );
-
+    }
+  }
   return "pollock3";
 }
 export function defineHiddenRows(
@@ -195,84 +133,125 @@ export function defineHiddenRows(
                 : innerInp.removeAttribute("required");
               break;
             default:
-              stringError("context", context, extLine(new Error()));
+              break;
           }
         }
       }
     });
-  } else
-    multipleElementsNotFound(
-      extLine(new Error()),
-      "argumentos para defineHiddenRows",
-      tabDC,
-      `${JSON.stringify(arrayTabIds) || null}`,
-      `${JSON.stringify(genderedIds) || null}`,
-      context,
-    );
+  }
 }
 //correção para limitação da fórmula de PGC
-export function evaluatePGCDecay(person: Person, targInpPGC: targEl, PGC: number = 0): [boolean, number] {
+export function evalPGCDecay(tipgc: targEl): boolean {
   let foundDecayPoint = false;
-  if (
-    person instanceof Person &&
-    (targInpPGC instanceof HTMLInputElement ||
-      targInpPGC instanceof HTMLSelectElement ||
-      targInpPGC instanceof HTMLTextAreaElement) &&
-    typeof PGC === "number"
-  ) {
+  try {
+    if (!(person instanceof Person)) throw new Error(`Failed to validate instance of Person`);
+    if (
+      !(tipgc instanceof HTMLInputElement || tipgc instanceof HTMLSelectElement || tipgc instanceof HTMLTextAreaElement)
+    )
+      throw new Error(`Failed to validate Target Input for PGC`);
+    tabProps.PGC = evalPseudoNum(tabProps.PGC);
     const initSumDCut = person.sumDCut,
       decreasedPerson = new Person(person.gen, person.age, person.weight, person.height, person.sumDCut, person.atvLvl);
     decreasedPerson.sumDCut = decreasedPerson.sumDCut - 1;
-    let decreasedPGC = decreasedPerson.calcPGC(decreasedPerson)[0],
+    let decreasedPGC = decreasedPerson.calcPGC(decreasedPerson).pgc,
       sumAcc = 1;
     //caso padrão de decay
-    if (decreasedPGC > PGC) {
+    if (decreasedPGC > tabProps.PGC) {
       foundDecayPoint = true;
-      alertPGCRounding(targInpPGC);
       const arrDecreasedPGC: number[] = [];
       //busca pontos de decay anteriores
-      while (decreasedPerson?.sumDCut > 0) {
+      while (decreasedPerson.sumDCut > 0) {
+        if (sumAcc > 100) break;
         sumAcc++;
-        decreasedPerson.sumDCut = decreasedPerson.sumDCut - 1;
-        decreasedPGC = decreasedPerson.calcPGC(decreasedPerson)[0];
+        decreasedPerson.sumDCut -= -1;
+        decreasedPGC = decreasedPerson.calcPGC(decreasedPerson).pgc;
+        if (decreasedPGC < 0 || !Number.isFinite(decreasedPGC)) decreasedPGC = 0;
         arrDecreasedPGC.push(decreasedPGC);
-        if (decreasedPGC < PGC) break;
-        if (sumAcc > 999) break;
+        if (decreasedPGC < tabProps.PGC) break;
       }
       //caso ponto de decays sejam validados, normaliza valor para evitar anomalias de entrada
-      if (arrDecreasedPGC?.length > 0) {
-        decreasedPerson?.sumDCut > 515
-          ? (PGC = 60.5)
-          : (PGC = Math.ceil((Math.max(...arrDecreasedPGC) + 0.05) * 10) / 10 + ((initSumDCut - 260) / 100) * 5);
-      } else PGC = decreasedPGC;
-    }
-    /* eslint-disable */
-    /*casos específicos para handling de input anômalo (além do possível para um ser humano) 
+      if (arrDecreasedPGC.length > 0) {
+        decreasedPerson.sumDCut > 515
+          ? (tabProps.PGC = 60.5) //limite hardcodado
+          : (tabProps.PGC =
+              Math.ceil((Math.max(...arrDecreasedPGC) + 0.05) * 10) / 10 + ((initSumDCut - 260) / 100) * 5);
+      } else tabProps.PGC = decreasedPGC;
+    } else if (decreasedPGC <= tabProps.PGC && (tabProps.PGC > 100 || decreasedPerson.sumDCut > 514)) {
+      /* eslint-disable */
+      /*casos específicos para handling de input anômalo (além do possível para um ser humano) 
       evitando bugs nos listeners devido a NaN e loops de normalização */
-    /* eslint-enable */
-    if (decreasedPGC <= PGC && (PGC > 100 || decreasedPerson?.sumDCut > 514)) {
-      console.warn(`Valor anômalo de entrada para sumDCut e/ou PGC. Valor aproximado fornecido`);
+      /* eslint-enable */
       foundDecayPoint = true;
-      alertPGCRounding(targInpPGC);
-      PGC = 60.45 + 0.05 * ((decreasedPerson?.sumDCut ?? 514) - 513);
+      tabProps.PGC = 60.45 + 0.05 * (decreasedPerson.sumDCut - 513);
     }
-  } else
-    multipleElementsNotFound(
-      extLine(new Error()),
-      "argumentos para evaluatePGCDecay",
-      `${JSON.stringify(person) || null}`,
-      targInpPGC,
-      PGC,
-    );
-
-  if (PGC < 0 || Number.isNaN(PGC) || PGC === Math.abs(Infinity)) PGC = 0;
-  return [foundDecayPoint, PGC];
+    if (tabProps.PGC < 0 || !Number.isFinite(tabProps.PGC)) tabProps.PGC = 0;
+    if (person.sumDCut < 0 || !Number.isFinite(person.sumDCut)) person.sumDCut = 0;
+    if (foundDecayPoint) tipgc.style.color = "#ff59";
+    else tipgc.style.color = "rgb(33, 37, 41)";
+    return foundDecayPoint;
+  } catch (e) {
+    tabProps.PGC = 0;
+    person.sumDCut = 0;
+    return foundDecayPoint;
+  }
 }
-export function alertPGCRounding(targInpPGC: targEl): void {
-  if (targInpPGC instanceof HTMLInputElement) {
-    const spanRoundingAlertIcon = document.getElementById(`alert_${(targInpPGC as entryEl).id}`);
-    spanRoundingAlertIcon instanceof HTMLSpanElement && spanRoundingAlertIcon.hidden === false
-      ? (spanRoundingAlertIcon.hidden = true)
-      : elementNotFound(spanRoundingAlertIcon, "spanRoundingAlertIcon", extLine(new Error()));
-  } else inputNotFound(targInpPGC, "targInpPGC in alertPGCRounding", extLine(new Error()));
+export const evalBodyType = (g: string): g is BodyType => ["masculino", "feminino", "neutro"].includes(g);
+export function evalFactorAtleta(): boolean {
+  if (typeof tabProps.factorAtleta !== "string" || tabProps.factorAtleta === ("" as any))
+    tabProps.factorAtleta = "peso";
+  if (tabProps.factorAtleta !== ("peso" as any)) tabProps.factorAtleta = tabProps.factorAtleta.toLowerCase() as any;
+  if (tabProps.factorAtleta !== ("mlg" as any))
+    tabProps.factorAtleta = (tabProps.factorAtleta?.toLowerCase() as any) ?? "peso";
+  if (tabProps.factorAtleta !== "peso" && tabProps.factorAtleta !== "mlg") tabProps.factorAtleta = "peso";
+  return (["peso", "mlg"] as FactorAtletaValue[]).includes(tabProps.factorAtleta);
+}
+export function dispatchFactorAtleta(newValue: FactorAtletaValue): void {
+  if (["peso", "mlg"].includes(newValue)) tabProps.factorAtleta = newValue;
+  else tabProps.factorAtleta = "peso";
+}
+export function evalFactorAtvLvl(): boolean {
+  if (
+    (typeof tabProps.factorAtvLvl !== "string" && typeof tabProps.factorAtvLvl !== "number") ||
+    (typeof tabProps.factorAtvLvl === "number" && !Number.isFinite(tabProps.factorAtvLvl))
+  )
+    tabProps.factorAtvLvl = 1.4;
+  if (typeof tabProps.factorAtvLvl === "string")
+    tabProps.factorAtvLvl = parseNotNaN(tabProps.factorAtvLvl) as NafTypeValue;
+  if (![1.2, 1.4, 1.6, 1.9, 2.2].includes(tabProps.factorAtvLvl as number)) tabProps.factorAtvLvl = 1.4;
+  return ([1.2, 1.4, 1.6, 1.9, 2.2] as Omit<NafTypeValue, "1.2" | "1.4" | "1.6" | "1.9" | "2.2">[]).includes(
+    tabProps.factorAtvLvl as number,
+  );
+}
+export function dispatchFactorAtvLvl(newValue: NafTypeValue): void {
+  if (typeof newValue === "string") newValue = parseNotNaN(newValue) as NafTypeValue;
+  if ([1.2, 1.4, 1.6, 1.9, 2.2].includes(newValue as number)) tabProps.factorAtvLvl = newValue;
+  else tabProps.factorAtvLvl = 1.4;
+}
+export function evalActivityLvl(): boolean {
+  if (
+    typeof person.atvLvl !== "string" ||
+    !["sedentario", "leve", "moderado", "intenso", "muitoIntenso"].includes(person.atvLvl)
+  )
+    person.atvLvl = "leve";
+  return ["sedentario", "leve", "moderado", "intenso", "muitoIntenso"].includes(person.atvLvl);
+}
+export function evalIMC(): boolean {
+  if (typeof tabProps.IMC !== "number" || !Number.isFinite(tabProps.IMC)) tabProps.IMC = 0;
+  return typeof tabProps.IMC === "number" && Number.isFinite(tabProps.IMC);
+}
+export function evalPseudoNum(n: primitiveType): number {
+  if (typeof n === "number") {
+    if (!Number.isFinite(n)) return 0;
+    return n;
+  } else if (typeof n === "string") {
+    n = n.replaceAll(/[^0-9\.]/g, "");
+    if (n === "") n = "0";
+    return parseNotNaN(n);
+  } else if (typeof n === "boolean") return n ? 1 : 0;
+  else return 0;
+}
+export function evalMatchTMBElements(): boolean {
+  if (!(tabProps.lockGl instanceof Element)) tabProps.lockGl = document.getElementById("lockGordCorpLvl");
+  if (!(tabProps.spanFa instanceof HTMLElement)) tabProps.spanFa = document.getElementById("spanFactorAtleta");
+  return tabProps.lockGl instanceof Element && tabProps.spanFa instanceof HTMLElement;
 }

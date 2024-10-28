@@ -1,12 +1,12 @@
-import { clearQuadrInps } from "../../../src/lib/locals/odPage/odHandler";
-import { handleEventReq } from "../../../src/lib/global/handlers/gHandlers";
-import { qrInpProps } from "../../../src/lib/global/declarations/interfaces";
-import { resetAvDentValue } from "../../../src/lib/locals/odPage/odModel";
+import { clearQuadrInps } from "@/lib/locals/odPage/odHandler";
+import { handleEventReq } from "@/lib/global/handlers/gHandlers";
+import { qrInpProps } from "@/lib/global/declarations/interfaces";
+import { resetAvDentValue } from "@/lib/locals/odPage/odModel";
 export default function InpAvDent({ qr, num }: qrInpProps): JSX.Element {
   return (
     <label className={`labelAvDent labelAvDent${qr}`} id={`labD${num}`}>
       <span role='group' className='spanMain' id={`spanMain${num}`}>
-        <span role='textbox' className='spanSub DNum' id={`spanSubD${num}`}>
+        <span className='spanSub DNum' id={`spanSubD${num}`}>
           {num}
         </span>
       </span>

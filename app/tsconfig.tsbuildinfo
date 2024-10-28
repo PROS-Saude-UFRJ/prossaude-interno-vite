@@ -8710,7 +8710,7 @@
           "code": 2345,
           "category": 1,
           "messageText": {
-            "messageText": "Argument of type 'nullishDlg' is not assignable to parameter of type 'HTMLElement'.",
+            "messageText": "Argument of type 'nlDlg' is not assignable to parameter of type 'HTMLElement'.",
             "category": 1,
             "code": 2345,
             "next": [
@@ -8728,7 +8728,7 @@
           "code": 2345,
           "category": 1,
           "messageText": {
-            "messageText": "Argument of type 'nullishDlg' is not assignable to parameter of type 'HTMLElement'.",
+            "messageText": "Argument of type 'nlDlg' is not assignable to parameter of type 'HTMLElement'.",
             "category": 1,
             "code": 2345,
             "next": [
@@ -8751,7 +8751,7 @@
           "code": 2345,
           "category": 1,
           "messageText": {
-            "messageText": "Argument of type 'nullishDlg' is not assignable to parameter of type 'HTMLElement'.",
+            "messageText": "Argument of type 'nlDlg' is not assignable to parameter of type 'HTMLElement'.",
             "category": 1,
             "code": 2345,
             "next": [

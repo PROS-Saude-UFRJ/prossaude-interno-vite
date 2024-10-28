@@ -1,59 +1,90 @@
-import { TdProps } from "../../../../../src/lib/global/declarations/interfaces";
-import { handleCallbackWHS } from "../../../../../src/lib/locals/edFisNutPage/edFisNutHandler";
-import { tabProps } from "../../../../../src/vars";
-import { handleIndEv } from "../../../../../src/lib/locals/edFisNutPage/edFisNutHandler";
-import { textTransformPascal } from "../../../../../src/lib/global/gModel";
-import { handleCondtReq, handleEventReq } from "../../../../../src/lib/global/handlers/gHandlers";
+import { ENCtxProps, TargInps, TdProps } from "@/lib/global/declarations/interfaces";
+import { handleCallbackWHS } from "@/lib/locals/edFisNutPage/edFisNutHandler";
+import { handleIndEv } from "@/lib/locals/edFisNutPage/edFisNutHandler";
+import { applyFieldConstraints, textTransformPascal } from "@/lib/global/gModel";
+import { handleCondtReq, handleEventReq } from "@/lib/global/handlers/gHandlers";
+import { useRef, useContext } from "react";
+import { NlMRef, nlFs, nlSel } from "@/lib/global/declarations/types";
+import { MAX_SMALLINT, maxProps, tabProps } from "@/vars";
+import { ENCtx } from "../ENForm";
+import sEn from "@/styles//modules/enStyles.module.scss";
 export default function TabInpProg({ nRow, nCol, ctx, lab }: TdProps): JSX.Element {
-  const pascalLab = textTransformPascal(lab);
-  const fullName = ((): string => {
-    switch (lab) {
-      case "Abdominal":
-        return "Abdominais";
-      case "Antebraço":
-        return "do Antebraço";
-      case "Axilar Média":
-        return "Axilares Mediais";
-      case "Braço":
-        return "Braçais";
-      case "Cintura":
-        return "da Cintura";
-      case "Cintura / Quadril":
-        return "da Razão Cintadura por Quadril";
-      case "Coxa":
-        return "da Coxa";
-      case "Panturrilha":
-        return "da Panturrilha";
-      case "Peitoral":
-        return "Peitorais";
-      case "Quadril":
-        return "do Quadril";
-      case "Subescapular":
-        return "Subescapulares";
-      case "Suprailíaca":
-        return "Suprailíacas";
-      case "Tríciptal":
-        return "Tríciptais";
-      case "Tórax":
-        return "Toráxicas";
-      case "Soma":
-        return "(Soma)";
-      case "PA":
-        return "Pressão Arterial";
-      case "FC":
-        return "Frequência Cardíaca";
-      default:
-        return lab;
-    }
-  })();
+  let gl: NlMRef<nlSel> = null,
+    fspr: NlMRef<nlFs> = null,
+    fct: NlMRef<nlSel> = null,
+    targs: TargInps | null = null;
+  const ctx1 = useContext<ENCtxProps>(ENCtx),
+    trusted = useRef<boolean>(false),
+    pascalLab = textTransformPascal(lab),
+    fullName = ((): string => {
+      switch (lab) {
+        case "Abdominal":
+          return "Abdominais";
+        case "Antebraço":
+          return "do Antebraço";
+        case "Axilar Média":
+          return "Axilares Mediais";
+        case "Braço":
+          return "Braçais";
+        case "Cintura":
+          return "da Cintura";
+        case "Cintura / Quadril":
+          return "da Razão Cintadura por Quadril";
+        case "Coxa":
+          return "da Coxa";
+        case "Panturrilha":
+          return "da Panturrilha";
+        case "Peitoral":
+          return "Peitorais";
+        case "Quadril":
+          return "do Quadril";
+        case "Subescapular":
+          return "Subescapulares";
+        case "Suprailíaca":
+          return "Suprailíacas";
+        case "Tríciptal":
+          return "Tríciptais";
+        case "Tórax":
+          return "Toráxicas";
+        case "Soma":
+          return "(Soma)";
+        case "PA":
+          return "Pressão Arterial";
+        case "FC":
+          return "Frequência Cardíaca";
+        default:
+          return lab;
+      }
+    })(),
+    max = ((): number => {
+      switch (lab.toLowerCase()) {
+        case "peso":
+          return maxProps.weight;
+        case "altura":
+          return maxProps.height;
+        case "imc":
+          return maxProps.perc;
+        case "mlg":
+          return maxProps.perc;
+        case "pgc":
+          return maxProps.perc;
+        case "tmb":
+          return maxProps.tmb;
+        case "get":
+          return maxProps.get;
+        default:
+          return MAX_SMALLINT;
+      }
+    })();
+  if (ctx1?.refs) ({ gl, fspr, fct } = ctx1.refs);
   let medAntCase = "";
   if (ctx === "MedAnt") {
     medAntCase = ((): string => {
       switch (lab) {
         case "Peso":
-          return "Weigth";
+          return "Weight";
         case "Altura":
-          return "Heigth";
+          return "Height";
         case "Tórax":
           return "Torax";
         case "Cintura":
@@ -80,52 +111,44 @@ export default function TabInpProg({ nRow, nCol, ctx, lab }: TdProps): JSX.Eleme
       type='number'
       name={`${lab.toLowerCase()}_${nRow}_${nCol}`}
       id={`inp${pascalLab}${nCol - 1}Cel${nRow}_${nCol}`}
-      className={`form-control tabInpProg tabInpProgIndPerc inpInd inp${pascalLab} inpCol${nCol} sevenCharLongNum`}
-      min={nCol === 2 ? "0.05" : "0"}
+      className={`form-control tabInpProg tabInpProgIndPerc inpInd inp${pascalLab} inpCol${nCol} sevenCharLongNum ${sEn.tabInpProg}`}
+      maxLength={max.toString().length + 4}
+      data-max={max.toString().length + 4}
+      min='0'
+      max={max}
+      data-minnum='0'
+      data-maxnum={max}
       data-title={`${lab} (Consulta ${nCol - 1})`}
+      data-pattern='^[d,.]+$'
       data-row={nRow}
       data-col={nCol}
-      required={nCol === 2 ? true : false}
-      onInput={
-        lab === "IMC" || lab === "MLG" || lab === "PGC" || lab === "TMB" || lab === "GET"
-          ? (ev): void => {
-              handleIndEv(ev, lab);
-              if (ev.currentTarget.required) handleEventReq(ev.currentTarget);
-              else {
-                ev.currentTarget.type === "number"
-                  ? handleCondtReq(ev.currentTarget, {
-                      minNum: 0.05,
-                      maxNum: 999999,
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    })
-                  : handleCondtReq(ev.currentTarget as HTMLInputElement, {
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    });
-              }
-            }
-          : (ev): void => {
-              if (ev.currentTarget.required) handleEventReq(ev.currentTarget);
-              else {
-                ev.currentTarget.type === "number"
-                  ? handleCondtReq(ev.currentTarget, {
-                      minNum: 0.05,
-                      maxNum: 999999,
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    })
-                  : handleCondtReq(ev.currentTarget as HTMLInputElement, {
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    });
-              }
-            }
-      }
+      required={nCol - 1 === tabProps.numCons ? true : false}
+      onInput={ev => {
+        try {
+          if (ev.isTrusted) trusted.current = true;
+          if (!trusted.current) return;
+          tabProps.edIsAutoCorrectOn && applyFieldConstraints(ev.currentTarget);
+          if (ev.currentTarget.required) handleEventReq(ev.currentTarget);
+          else
+            handleCondtReq(ev.currentTarget, {
+              minNum: 0,
+              maxNum: 999999,
+              min: 1,
+              max: 99,
+              pattern: ["^[\\d,.]+$", ""],
+            });
+          if (!(lab === "IMC" || lab === "MLG" || lab === "PGC" || lab === "TMB" || lab === "GET")) return;
+          handleIndEv(lab, {
+            el: ev.currentTarget,
+            fsp: fspr?.current ?? document.getElementById("fsProgConsId"),
+            gl: gl?.current ?? document.getElementById("gordCorpLvl"),
+            fct: fct?.current ?? document.getElementById("formCalcTMBType"),
+            refs: targs,
+          });
+        } catch (e) {
+          return;
+        }
+      }}
     />
   ) : (
     ((): JSX.Element => {
@@ -135,59 +158,38 @@ export default function TabInpProg({ nRow, nCol, ctx, lab }: TdProps): JSX.Eleme
             type='number'
             name={`${lab.toLowerCase()}_${nRow}_${nCol}`}
             className={`form-control tabInpProg tabInpProg${ctx} tabInpProg${lab}${ctx} tabInpRow${ctx}${nRow} float sevenCharLongNum ${
-              medAntCase !== "" ? ` inp${medAntCase}` : ""
-            }`}
+              sEn.tabInpProg
+            } ${medAntCase !== "" ? ` inp${medAntCase}` : ""}`}
             id={`tabInpRow${ctx}${nRow}_${nCol}`}
-            min={nCol === 2 ? "0.05" : "0"}
-            max='65535'
+            maxLength={max.toString().length + 4}
+            data-max={max.toString().length + 4}
+            min='0'
+            max={max}
+            data-minnum='0'
+            data-maxnum={max}
+            data-pattern='^[d,.]+$'
             data-title={`Medidas Antropométricas ${fullName} (Consulta ${nCol - 1})`}
             data-row={nRow}
             data-col={nCol}
-            required={nCol === 2 ? true : false}
+            required={nCol - 1 === tabProps.numCons ? true : false}
             onInput={ev => {
-              if (ev.currentTarget.required) handleEventReq(ev.currentTarget);
-              else {
-                ev.currentTarget.type === "number"
-                  ? handleCondtReq(ev.currentTarget, {
-                      minNum: 0.05,
-                      maxNum: 999999,
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    })
-                  : handleCondtReq(ev.currentTarget as HTMLInputElement, {
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    });
+              try {
+                if (ev.isTrusted) trusted.current = true;
+                if (!trusted.current) return;
+                tabProps.edIsAutoCorrectOn && applyFieldConstraints(ev.currentTarget);
+                if (ev.currentTarget.required) handleEventReq(ev.currentTarget);
+                else
+                  handleCondtReq(ev.currentTarget, {
+                    minNum: 0,
+                    maxNum: 999999,
+                    min: 1,
+                    max: 99,
+                    pattern: ["^[\\d,.]+$", ""],
+                  });
+                handleCallbackWHS(ev.currentTarget);
+              } catch (e) {
+                return;
               }
-              handleCallbackWHS(
-                [
-                  [
-                    document.getElementById("gordCorpLvl"),
-                    document.getElementById("formCalcTMBType"),
-                    document.getElementById("nafType"),
-                    [
-                      tabProps.targInpWeigth,
-                      tabProps.targInpHeigth,
-                      tabProps.targInpIMC,
-                      tabProps.targInpMLG,
-                      tabProps.targInpTMB,
-                      tabProps.targInpGET,
-                      tabProps.targInpSumDCut,
-                      tabProps.targInpPGC,
-                    ],
-                  ],
-                  [
-                    tabProps.numCol,
-                    tabProps.factorAtvLvl,
-                    tabProps.factorAtleta,
-                    [tabProps.IMC, tabProps.MLG, tabProps.TMB, tabProps.GET, tabProps.PGC],
-                  ],
-                ],
-                ev.currentTarget,
-                tabProps.isAutoFillActive,
-              );
             }}
           />
         );
@@ -196,30 +198,37 @@ export default function TabInpProg({ nRow, nCol, ctx, lab }: TdProps): JSX.Eleme
           <input
             type='number'
             name={`${lab.toLowerCase()}_${nRow}_${nCol}`}
-            className={`form-control tabInpProg tabInpProg${ctx} tabInpProg${lab}${ctx} tabInpRow${ctx}${nRow} float sevenCharLongNum`}
+            className={`form-control tabInpProg tabInpProg${ctx} tabInpProg${lab}${ctx} tabInpRow${ctx}${nRow} float sevenCharLongNum ${sEn.tabInpProg}`}
             id={`tabInpRow${ctx}${nRow}_${nCol}`}
-            min={nCol === 2 ? "0.05" : "0"}
-            max='65535'
+            maxLength={max.toString().length + 4}
+            data-max={max.toString().length + 4}
+            min='0'
+            max={max}
+            data-minnum='0'
+            data-maxnum={max}
+            data-pattern='^[d,.]+$'
             data-title={`${ctx === "DCut" ? "Dobras Cutâneas" : "Sinais Vitais"} ${fullName} (Consulta ${nCol - 1})`}
             data-row={nRow}
             data-col={nCol}
-            required={nCol === 2 ? true : false}
+            required={nCol - 1 === tabProps.numCons ? true : false}
+            style={{ transition: "height .5s ease-in-out" }}
             onInput={ev => {
-              if (ev.currentTarget.required) handleEventReq(ev.currentTarget);
-              else {
-                ev.currentTarget.type === "number"
-                  ? handleCondtReq(ev.currentTarget, {
-                      minNum: 0.05,
-                      maxNum: 999999,
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    })
-                  : handleCondtReq(ev.currentTarget as HTMLInputElement, {
-                      min: 1,
-                      max: 99,
-                      pattern: ["^[\\d,.]+$", ""],
-                    });
+              try {
+                if (ev.isTrusted) trusted.current = true;
+                if (!trusted.current) return;
+                tabProps.edIsAutoCorrectOn && applyFieldConstraints(ev.currentTarget);
+                if (ev.currentTarget.required) handleEventReq(ev.currentTarget);
+                else
+                  handleCondtReq(ev.currentTarget, {
+                    minNum: 0,
+                    maxNum: 999999,
+                    min: 1,
+                    max: 99,
+                    pattern: ["^[\\d,.]+$", ""],
+                  });
+                if (ev.currentTarget.classList.contains("tabInpProgDCut")) handleCallbackWHS(ev.currentTarget);
+              } catch (e) {
+                return;
               }
             }}
           />

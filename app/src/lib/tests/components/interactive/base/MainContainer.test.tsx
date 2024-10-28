@@ -1,106 +1,50 @@
-import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import MainContainer, { experimentalUser } from "../../../../../../components/interactive/base/MainContainer";
-import { User } from "../../../../../lib/global/declarations/classes";
-import { useDispatch } from "react-redux";
-import { AppRootContext } from "../../../../../App";
-jest.mock(
-  "react-redux",
-  (): {
-    useDispatch: jest.Mock<any, any, any>;
-  } => ({
-    useDispatch: jest.fn() as jest.Mock,
-  }),
-) as typeof jest;
-jest.mock(
-  "../../../../../components/user/UserProfilePanel",
-  (): (() => JSX.Element) => (): JSX.Element => <div>UserProfilePanel</div>,
-) as typeof jest;
-describe("MainContainer Component", (): void => {
-  const mockDispatch: jest.Mock<any, any, any> = jest.fn() as jest.Mock;
-  beforeEach((): void => {
-    (useDispatch as unknown as jest.Mock).mockReturnValue(mockDispatch) as jest.Mock;
-    localStorage.clear();
-  }) as void;
-  it("renders the cards and the work panel button", (): void => {
-    render(
-      <AppRootContext.Provider value={{ roots: { baseRootedUser: null } }}>
-        <MainContainer />
-      </AppRootContext.Provider>,
-    );
-    expect(screen.getByText<HTMLElement>("Geral & Saúde Mental")).toBeInTheDocument() as void;
-    expect(screen.getByText<HTMLElement>("Educação Física")).toBeInTheDocument() as void;
-    expect(screen.getByText<HTMLElement>("Nutrição")).toBeInTheDocument() as void;
-    expect(screen.getByText<HTMLElement>("Odontologia")).toBeInTheDocument() as void;
-    expect(screen.getByRole<HTMLButtonElement>("button", { name: /Painel de Trabalho/i })).toBeInTheDocument() as void;
-  }) as void;
-  it("renders the UserProfilePanel and fetches user data from localStorage", (): void => {
-    const mockUser: {
-      loadedData: {
-        name: string;
-        privilege: string;
-        area: string;
-        email: string;
-        telephone: string;
-      };
-    } = {
-      loadedData: {
-        name: "Test User",
-        privilege: "coordenador",
-        area: "nutrição",
-        email: "test@test.com",
-        telephone: "123456789",
-      },
-    };
-    localStorage.setItem("activeUser", JSON.stringify(mockUser));
-    render(
-      <AppRootContext.Provider value={{ roots: { baseRootedUser: null } }}>
-        <MainContainer />
-      </AppRootContext.Provider>,
-    );
-    expect(experimentalUser).toEqual<{
-      loadedData: {
-        name: string;
-        privilege: string;
-        area: string;
-        email: string;
-        telephone: string;
-      };
-    }>(mockUser);
-    expect(mockDispatch).toHaveBeenCalledWith<Parameters<typeof mockDispatch>>(expect.any(User) as any) as void;
-    expect(screen.getByText<HTMLElement>("UserProfilePanel")).toBeInTheDocument() as void;
-  }) as void;
-  it("calls a URL change when a card button is clicked", (): void => {
-    render(
-      <AppRootContext.Provider value={{ roots: { baseRootedUser: null } }}>
-        <MainContainer />
-      </AppRootContext.Provider>,
-    );
-    fireEvent.click(screen.getByRole<HTMLButtonElement>("button", { name: /Geral & Saúde Mental/i })) as boolean;
-    expect(location.pathname).toEqual("/ag") as void;
-    fireEvent.click(screen.getByRole<HTMLButtonElement>("button", { name: /Educação Física/i })) as boolean;
-    expect(location.pathname).toEqual("/edfis") as void;
-  }) as void;
-  it("logs a warning when no user is found in localStorage", (): void => {
-    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]], any> = jest
-      .spyOn<Console, "warn">(console, "warn")
-      .mockImplementation((): void => {}) as jest.SpyInstance;
-    render(
-      <AppRootContext.Provider value={{ roots: { baseRootedUser: null } }}>
-        <MainContainer />
-      </AppRootContext.Provider>,
-    );
-    expect(consoleSpy).toHaveBeenCalledWith<[string]>(
-      "Failed to fetch user from local storage. Default user displayed.",
-    );
-    consoleSpy.mockRestore() as void;
-  }) as void;
-  it("handles window resize events correctly", (): void => {
-    render(
-      <AppRootContext.Provider value={{ roots: { baseRootedUser: null } }}>
-        <MainContainer />
-      </AppRootContext.Provider>,
-    );
-    fireEvent(window, new Event("resize"));
-  }) as void;
-}) as void;
+import { RootCtx } from "@/App";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useContext, useRef } from "react";
+import { toast } from "react-hot-toast";
+import sMc from "@/styles/modules/mainContainer.module.scss";
+import NavCard from "./NavCard";
+import useMount from "@/lib/hooks/useMount";
+import EnhancedUserProfilePanel from "../../user/EnhancedUserProfilePanel";
+
+export default function MainContainer(): JSX.Element {
+  const ctx = useContext(RootCtx);
+  const navigate = useNavigate();
+  const toasted = useRef(false);
+  const mounted = useMount();
+
+  useEffect(() => {
+    if (mounted) {
+      const bg = document.getElementById("bgDiv");
+      if (!(bg instanceof HTMLElement)) return;
+      if (!/gradient/gi.test(getComputedStyle(bg).background)) {
+        window.location.reload();
+      }
+    }
+  }, [mounted]);
+
+  useEffect(() => {
+    if (!toasted.current) {
+      toast("Navigate through the pages using the cards!", { icon: "🧭" });
+      toasted.current = true;
+    }
+    const untoast = () => toast.dismiss();
+    addEventListener("popstate", untoast);
+    return () => removeEventListener("popstate", untoast);
+  }, [toasted]);
+
+  return (
+    <main className={sMc.mainContainer} id='main-container'>
+      <section id='cardsSect' className={sMc.cardsSect}>
+        {["/ag", "/edfis", "/nut", "/od"].map(href => (
+          <NavCard key={href} href={href} />
+        ))}
+      </section>
+      <section id='panelSect' className={sMc.panelSect} onMouseEnter={() => navigate("/panel")}>
+        <button type='button' id='panelBtn' className={sMc.panelBtn}>
+          Work Panel
+        </button>
+      </section>
+    </main>
+  );
+}

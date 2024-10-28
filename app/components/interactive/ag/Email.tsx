@@ -1,5 +1,5 @@
-import { addEmailExtension } from "../../../src/lib/global/gModel";
-import { handleCondtReq } from "../../../src/lib/global/handlers/gHandlers";
+import { addEmailExtension } from "@/lib/global/gModel";
+import { handleCondtReq } from "@/lib/global/handlers/gHandlers";
 export default function Email({
   name = "email",
   id = "email1Id",
@@ -11,7 +11,7 @@ export default function Email({
 }): JSX.Element {
   return (
     <input
-      type='text'
+      type='email'
       name={name}
       id={id}
       className='form-control inpIdentif noInvert inpEmail'

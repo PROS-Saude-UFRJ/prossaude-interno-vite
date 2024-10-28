@@ -1,24 +1,21 @@
+import { ExportHandler } from "@/lib/global/declarations/classes";
+import { nlBtn } from "@/lib/global/declarations/types";
+import { addExportFlags } from "@/lib/global/gController";
+import { checkForReset } from "@/lib/global/handlers/gHandlers";
+import { exporters } from "@/vars";
 import { useEffect, useRef } from "react";
-import { ExportHandler } from "../../../src/lib/global/declarations/classes";
-import { addExportFlags } from "../../../src/lib/global/gController";
-import { exporters } from "../../../src/vars";
-import { nlBtn } from "../../../src/lib/global/declarations/types";
-import { checkForReset } from "../../../src/lib/global/handlers/gHandlers";
-import { useLocation } from "react-router-dom";
-let exporter: ExportHandler | undefined = undefined;
+let exporter: ExportHandler | undefined;
 export default function SectConfirmBtns(): JSX.Element {
-  const btnRef = useRef<nlBtn>(null),
-    location = useLocation();
+  const btnRef = useRef<nlBtn>(null);
   useEffect(() => {
     exporter = (() => {
-      const pn = location.pathname;
-      if (/ag/gi.test(pn)) {
+      if (/ag/gi.test(location.pathname)) {
         if (!exporters.agExporter) exporters.agExporter = new ExportHandler();
         return exporters.agExporter;
-      } else if (/ed/gi.test(pn)) {
+      } else if (/ed/gi.test(location.pathname)) {
         if (!exporters.edExporter) exporters.edExporter = new ExportHandler();
         return exporters.edExporter;
-      } else if (/od/gi.test(pn)) {
+      } else if (/od/gi.test(location.pathname)) {
         if (!exporters.odExporter) exporters.odExporter = new ExportHandler();
         return exporters.odExporter;
       } else return new ExportHandler();
@@ -51,9 +48,9 @@ export default function SectConfirmBtns(): JSX.Element {
       handleUnload();
       removeEventListener("beforeunload", handleUnload);
     };
-  }, [location]);
+  }, []);
   return (
-    <section className='sectionMain sectionConfirm' id='sectConfirmBut'>
+    <fieldset className='sectionMain sectionConfirm' id='sectConfirmBut' style={{ overflow: "visible" }}>
       <button
         type='submit'
         name='submitFormButName'
@@ -83,6 +80,7 @@ export default function SectConfirmBtns(): JSX.Element {
         style={{
           backgroundColor: "rgba(0, 0, 255, 0.904)",
           borderColor: "rgba(0, 0, 255, 0.904)",
+          cursor: "alias",
         }}
         onClick={ev => {
           if (!exporter) {
@@ -116,6 +114,6 @@ export default function SectConfirmBtns(): JSX.Element {
         }}>
         Gerar Planilha
       </button>
-    </section>
+    </fieldset>
   );
 }

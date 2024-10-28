@@ -1,10 +1,10 @@
-import { handleEventReq, validateForm } from "../../../src/lib/global/handlers/gHandlers";
-import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
+import { handleEventReq, validateForm } from "@/lib/global/handlers/gHandlers";
+import { handleSubmit } from "@/lib/global/data-service";
 import { useState, useRef, useEffect } from "react";
 import RecoverAlert from "../../alerts/RecoverAlert";
-import { nlFm } from "../../../src/lib/global/declarations/types";
-import { assignFormAttrs } from "../../../src/lib/global/gModel";
 import { Link } from "react-router-dom";
+import { nlFm } from "@/lib/global/declarations/types";
+import { assignFormAttrs } from "@/lib/global/gModel";
 export default function RecoverForm(): JSX.Element {
   const formRef = useRef<nlFm>(null),
     [shouldShowAlert, setAlert] = useState<boolean>(false);
@@ -17,7 +17,6 @@ export default function RecoverForm(): JSX.Element {
       method='post'
       action=''
       encType='application/x-www-form-urlencoded'
-      //TODO TEM QUE ADICIONAR O ENDPOINT PRA ESSE FORM
       onSubmit={ev =>
         validateForm(ev).then(validation => {
           ev.preventDefault();
@@ -53,7 +52,6 @@ export default function RecoverForm(): JSX.Element {
           type='submit'
           id='submit-recover'
           className='btn btn-info'
-          //TODO PARA TESTE
           onClick={ev => {
             ev.preventDefault();
             setAlert(true);
@@ -61,9 +59,9 @@ export default function RecoverForm(): JSX.Element {
           Enviar
         </button>
         <button type='reset' id='login-return' className='btn btn-primary'>
-          <a href='#' id='login-anchor'>
-            <Link to='/login'>Retornar</Link>
-          </a>
+          <Link to='/' id='login-anchor'>
+            Retornar
+          </Link>
         </button>
       </section>
       <div id='modal-div'>{shouldShowAlert && <RecoverAlert dispatch={setAlert} state={shouldShowAlert} />}</div>

@@ -1,7 +1,7 @@
+import React from "react";
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
 import { callbackAtvLvlElementNaf } from "../../../../../locals/edFisNutPage/edFisNutHandler";
-import { tabProps } from "../../../../../../vars";
-import React from "react";
+import { tabProps } from "../../../../../../../../../pro-saude-app-vite/app/src/vars";
 import NafType from "../../../../../../../components/interactive/edfis/client/NafType";
 jest.mock(
   "../../../../../locals/edFisNutPage/edFisNutHandler",

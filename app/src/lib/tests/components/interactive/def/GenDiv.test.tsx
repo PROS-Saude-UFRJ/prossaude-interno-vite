@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import GenDiv from "../../../../../../components/interactive/def/GenDiv";
 describe("GenDiv Component", (): void => {

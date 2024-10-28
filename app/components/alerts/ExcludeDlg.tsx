@@ -1,18 +1,18 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { ExcludeDlgProps } from "../../src/lib//locals/panelPage/declarations/interfacesCons";
-import { handleDelete } from "../../src/lib//locals/panelPage/handlers/handlers";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { nullishDlg, nlFm } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { ExcludeDlgProps } from "@/lib/global/declarations/interfacesCons";
+import { handleDelete } from "@/lib/global/data-service";
+import { isClickOutside } from "@/lib/global/gStyleScript";
+import { nlDlg, nlFm } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
-import { assignFormAttrs } from "../../src/lib/global/gModel";
+import { assignFormAttrs } from "@/lib/global/gModel";
 export default function ExcludeDlg({
   route,
   setDisplayExcludeDlg,
   shouldDisplayExcludeDlg = true,
 }: ExcludeDlgProps): JSX.Element {
-  const excludeDlgRef = useRef<nullishDlg>(null),
+  const excludeDlgRef = useRef<nlDlg>(null),
     formRef = useRef<nlFm>(null),
     handleClick = (): void => {
       setDisplayExcludeDlg(!shouldDisplayExcludeDlg);
@@ -32,7 +32,9 @@ export default function ExcludeDlg({
     addEventListener("keydown", handleKeyDown);
     return (): void => removeEventListener("keydown", handleKeyDown);
   }, [excludeDlgRef, setDisplayExcludeDlg]);
-  useEffect(() => assignFormAttrs(formRef.current));
+  useEffect(() => {
+    assignFormAttrs(formRef.current);
+  });
   return (
     <>
       {shouldDisplayExcludeDlg && (
@@ -40,7 +42,7 @@ export default function ExcludeDlg({
           role='alertdialog'
           id='excludeAlertDlg'
           ref={excludeDlgRef}
-          className='modal-content modal-content-fit'
+          className='modal-content modalContent__fit'
           onClick={click => {
             if (isClickOutside(click, excludeDlgRef.current!).some(point => point === true)) {
               excludeDlgRef.current!.close();

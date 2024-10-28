@@ -1,11 +1,12 @@
-import { CounterAction } from "../../../src/lib/global/declarations/interfaces";
-import { addSubDivTrat } from "../../../src/lib/locals/odPage/odHandler";
+import { CounterAction } from "@/lib/global/declarations/interfaces";
+import { addSubDivTrat } from "@/lib/locals/odPage/odHandler";
 import { useEffect, useReducer, useRef } from "react";
-import { nlBtn, nullishFs, nlInp } from "../../../src/lib/global/declarations/types";
-import { elementNotFound, extLine, inputNotFound } from "../../../src/lib/global/handlers/errorHandler";
-import { changeToAstDigit, syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
+import { nlBtn, nlFs, nlInp } from "@/lib/global/declarations/types";
+import { changeToAstDigit, syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import sEn from "@/styles//modules/enStyles.module.scss";
+import { compProp } from "@/lib/global/gModel";
 export default function TratFs(props: { phCb?: () => void }): JSX.Element {
-  const mainRef = useRef<nullishFs>(null);
+  const mainRef = useRef<nlFs>(null);
   const btnRef = useRef<nlBtn>(null);
   const inpRef = useRef<nlInp>(null);
   const [blockCount, setBlockCount] = useReducer((s: number, a: CounterAction) => {
@@ -20,17 +21,13 @@ export default function TratFs(props: { phCb?: () => void }): JSX.Element {
   }, 2);
   useEffect(() => {
     try {
-      if (!(mainRef.current instanceof HTMLElement))
-        throw elementNotFound(mainRef.current, `Main reference for TratFs`, extLine(new Error()));
+      if (!(mainRef.current instanceof HTMLElement)) return;
       syncAriaStates([mainRef.current, ...mainRef.current.querySelectorAll("*")]);
       props.phCb && props.phCb();
-      if (!(btnRef.current instanceof HTMLButtonElement))
-        throw elementNotFound(btnRef.current, `Validation of Button Reference for Signature`, extLine(new Error()));
-      if (!(inpRef.current instanceof HTMLInputElement))
-        throw inputNotFound(inpRef.current, `Validation of Input Reference for Signature`, extLine(new Error()));
-      inpRef.current.style.width = `${getComputedStyle(btnRef.current).width.replace("px", "").trim()}px`;
+      if (!(btnRef.current instanceof HTMLButtonElement) || !(inpRef.current instanceof HTMLInputElement)) return;
+      inpRef.current.style.width = `${compProp(btnRef.current, "width")}px`;
     } catch (e) {
-      console.error(`Error executing useEffect for blockCount:\n${(e as Error).message}`);
+      return;
     }
   }, [blockCount]);
   return (
@@ -42,7 +39,9 @@ export default function TratFs(props: { phCb?: () => void }): JSX.Element {
             type='button'
             name='addTratName1'
             id='addTratId1'
+            style={{ transform: "scale(0.7)", cursor: "cell" }}
             className='addTrat countTrat biBtn'
+            aria-label='Adicionar Tratamento'
             defaultValue='addTrat'
             onClick={ev => {
               addSubDivTrat(ev, ev.currentTarget, blockCount);
@@ -53,7 +52,7 @@ export default function TratFs(props: { phCb?: () => void }): JSX.Element {
               width='16'
               height='16'
               fill='currentColor'
-              className='bi bi-plus'
+              className={`bi bi-plus ${sEn.bi} ${sEn.biPlus}`}
               viewBox='0 0 16 16'>
               <path d='M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4' />
             </svg>
@@ -62,8 +61,10 @@ export default function TratFs(props: { phCb?: () => void }): JSX.Element {
             type='button'
             name='removeTratName1'
             id='removeTratId1'
+            aria-label='Remover Tratamento'
             className='removeTrat countTrat biBtn'
             defaultValue='removeTrat'
+            style={{ transform: "translateY(-0.03rem) scale(0.8)", marginLeft: "0.5rem", cursor: "vertical-text" }}
             onClick={ev => {
               addSubDivTrat(ev, ev.currentTarget, blockCount);
               setBlockCount({ type: "DECREMENT" });
@@ -73,7 +74,7 @@ export default function TratFs(props: { phCb?: () => void }): JSX.Element {
               width='16'
               height='16'
               fill='currentColor'
-              className='bi bi-dash'
+              className={`bi bi-dash ${sEn.bi} ${sEn.biDash}`}
               viewBox='0 0 16 16'>
               <path d='M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8' />
             </svg>
@@ -83,10 +84,9 @@ export default function TratFs(props: { phCb?: () => void }): JSX.Element {
       <div role='group' className='tratDiv noInvert'>
         <table id='tratContainer'>
           <colgroup>
-            <col className='tratCol' />
-            <col className='tratCol' />
-            <col className='tratCol' />
-            <col className='tratCol' />
+            {Array.from({ length: 4 }, (_, i) => (
+              <col key={`trat_col__${i}`} id={`tratCol${i + 1}`}></col>
+            ))}
           </colgroup>
           <thead className='tratHead'>
             <tr className='tratHeader'>
@@ -131,7 +131,7 @@ export default function TratFs(props: { phCb?: () => void }): JSX.Element {
                   type='text'
                   name={`sig_${blockCount - 1}`}
                   id='inpAstTratId1'
-                  className='inpTrat inpAst mg-07t tratAst form-control'
+                  className='inpTrat inpAst mg__07t tratAst form-control'
                   data-title='Assinatura do Tratamento 1'
                   ref={inpRef}
                 />

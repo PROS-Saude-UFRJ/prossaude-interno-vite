@@ -1,24 +1,27 @@
-import { ContactDlgProps } from "../../src/lib/locals/panelPage/declarations/interfacesCons";
-import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { nlBtn, nullishDlg } from "../../src/lib/global/declarations/types";
-import { useEffect, useRef } from "react";
-import { validateForm, syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { ContactDlgProps } from "@/lib/global/declarations/interfacesCons";
+import { isClickOutside } from "@/lib/global/gStyleScript";
+import { nlBtn, nlDlg } from "@/lib/global/declarations/types";
+import { useContext, useEffect, useRef } from "react";
+import { validateForm, syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import { createPortal } from "react-dom";
+import { RootCtxType } from "@/lib/global/declarations/interfaces";
+import { RootCtx } from "@/App";
 export default function ContactDlg({ setContact, shouldDisplayContact = true }: ContactDlgProps): JSX.Element {
-  const contactDlgRef = useRef<nullishDlg>(null);
-  const contacBtnRef = useRef<nlBtn>(null);
+  const contactDlgRef = useRef<nlDlg>(null),
+    contacBtnRef = useRef<nlBtn>(null),
+    divModalSec = useContext<RootCtxType>(RootCtx)?.divModalSec;
   useEffect(() => {
     if (contactDlgRef.current instanceof HTMLDialogElement) {
       contactDlgRef.current.showModal();
       syncAriaStates([...contactDlgRef.current.querySelectorAll("*"), contactDlgRef.current]);
-    } else elementNotFound(contactDlgRef.current, "Dialog for contact request", extLine(new Error()));
+    }
   }, [contactDlgRef]);
-  return (
+  return createPortal(
     <>
       {shouldDisplayContact && (
         <dialog
           ref={contactDlgRef}
-          className='modal-content-fit flexAlItCt flexNoWC'
+          className='modalContent__fit flexAlItCt flexNoWC'
           id='contactDlg'
           onClick={ev => {
             if (isClickOutside(ev, ev.currentTarget).some(coord => coord === true)) {
@@ -26,7 +29,7 @@ export default function ContactDlg({ setContact, shouldDisplayContact = true }: 
               ev.currentTarget.closest("dialog")?.close();
             }
           }}>
-          <div className='flexNoW cGap2v widFull mg-3b'>
+          <div className='flexNoW cGap2v widFull mg__3b'>
             <h3 className='bolded'>Formulário de Contato</h3>
             <button
               className='btn btn-close'
@@ -35,7 +38,7 @@ export default function ContactDlg({ setContact, shouldDisplayContact = true }: 
                 contactDlgRef.current instanceof HTMLDialogElement && contactDlgRef.current?.close();
               }}></button>
           </div>
-          <div className='flexNoWC widFull mg-2bv'>
+          <div className='flexNoWC widFull mg__2bv'>
             <label className='bolded' htmlFor='contactOps'>
               Razão de contato
             </label>
@@ -45,7 +48,7 @@ export default function ContactDlg({ setContact, shouldDisplayContact = true }: 
               <option value='outro'>Outros</option>
             </select>
           </div>
-          <div className='flexNoWC widFull mg-2bv'>
+          <div className='flexNoWC widFull mg__2bv'>
             <label className='bolded' htmlFor='contactObs'>
               Detalhes
             </label>
@@ -54,7 +57,7 @@ export default function ContactDlg({ setContact, shouldDisplayContact = true }: 
           <button
             type='button'
             id='submitContactBtn'
-            className='btn btn-info widHalf bolded mg-1t'
+            className='btn btn-info widHalf bolded mg__1t'
             ref={contacBtnRef}
             onClick={ev => {
               validateForm(ev, ev.currentTarget.closest("dialog")!).then(
@@ -65,6 +68,7 @@ export default function ContactDlg({ setContact, shouldDisplayContact = true }: 
           </button>
         </dialog>
       )}
-    </>
+    </>,
+    divModalSec?.current ?? document.getElementById("divAddSec") ?? document.body,
   );
 }

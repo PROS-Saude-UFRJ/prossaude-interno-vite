@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
 import { callbackTextBodyEl } from "../../../../../locals/edFisNutPage/edFisNutHandler";
-import { person } from "../../../../../../vars";
 import React from "react";
+import { person } from "../../../../../../../../../pro-saude-app-vite/app/src/vars";
 import TextBodyType from "../../../../../../../components/interactive/edfis/client/TextBodyType";
 jest.mock(
-  "@/pages/edfis",
+  "../../../../../locals/edFisNutPage/edFisNutHandler",
   (): {
     callbackTextBodyEl: jest.Mock<any, any, any>;
     person: object;
@@ -14,7 +14,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../../../locals/edFisNutPage/edFisNutHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
   } => ({

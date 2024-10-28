@@ -1,26 +1,20 @@
-import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
-import { equalizeTabCells } from "../../src/lib/global/gStyleScript";
-import { handleFetch } from "../../src/lib/locals/panelPage/handlers/handlers";
-import { panelRoots } from "../../src/vars";
-import { strikeEntries } from "../../src/lib/locals/panelPage/consStyleScript";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { ErrorBoundary } from "react-error-boundary";
+import { createRoot } from "react-dom/client";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { equalizeTabCells } from "@/lib/global/gStyleScript";
+import { handleFetch } from "@/lib/global/data-service";
+import { panelRoots } from "@/vars";
+import { strikeEntries } from "@/lib/locals/panelPage/consStyleScript";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useContext, useEffect, useMemo, useRef } from "react";
 import GenericErrorComponent from "../error/GenericErrorComponent";
 import PacRow from "../panelForms/pacs/PacRow";
 import Spinner from "../icons/Spinner";
-import { nlHtEl, nullishTab, nullishTabSect } from "../../src/lib/global/declarations/types";
-import { PacInfo, PacListProps } from "../../src/lib/global/declarations/interfacesCons";
-import {
-  addListenerAlocation,
-  checkLocalIntervs,
-  fillTabAttr,
-  renderTable,
-} from "../../src/lib/locals/panelPage/handlers/consHandlerList";
-import { handleClientPermissions } from "../../src/lib/locals/panelPage/handlers/consHandlerUsers";
+import { nlHtEl, nlTab, nlTabSect } from "@/lib/global/declarations/types";
+import { PacInfo, PacListProps } from "@/lib/global/declarations/interfacesCons";
+import { addListenerAlocation, checkLocalIntervs, fillTabAttr } from "@/lib/locals/panelPage/handlers/consHandlerList";
+import { handleClientPermissions } from "@/lib/locals/panelPage/handlers/consHandlerUsers";
 import { PanelCtx } from "../panelForms/defs/client/SelectLoader";
-import { registerRoot } from "../../src/lib/global/handlers/gHandlers";
-import { ErrorBoundary } from "react-error-boundary";
-import { Link } from "react-router-dom";
 export default function PacList({
   shouldDisplayRowData,
   setDisplayRowData,
@@ -30,9 +24,9 @@ export default function PacList({
 }: PacListProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     pacs: PacInfo[] = useMemo(() => [], []),
-    tabPacRef = useRef<nullishTab>(null),
+    tabPacRef = useRef<nlTab>(null),
     sectTabRef = useRef<nlHtEl>(null),
-    tbodyRef = useRef<nullishTabSect>(null);
+    tbodyRef = useRef<nlTabSect>(null);
   useEffect(() => {
     try {
       if (!(tbodyRef.current instanceof HTMLTableSectionElement))
@@ -62,7 +56,10 @@ export default function PacList({
                 throw elementNotFound(tabPacRef.current, `Validation of Table reference`, extLine(new Error()));
               if (!(tbodyRef.current instanceof HTMLElement))
                 throw elementNotFound(tbodyRef.current, `Validation of Table Body Reference`, extLine(new Error()));
-              if (panelRoots[tbodyRef.current.id] && !(panelRoots[tbodyRef.current.id] as any)["_internalRoot"]) {
+              if (
+                panelRoots[`${tbodyRef.current.id}`] &&
+                !(panelRoots[`${tbodyRef.current.id}`] as any)["_internalRoot"]
+              ) {
                 setTimeout(() => {
                   try {
                     if (!(tabPacRef.current instanceof HTMLElement))
@@ -74,28 +71,23 @@ export default function PacList({
                         extLine(new Error()),
                       );
                     if (tbodyRef.current.querySelector("tr")) return;
-                    panelRoots[tbodyRef.current.id]?.unmount();
-                    delete panelRoots[tbodyRef.current.id];
+                    panelRoots[`${tbodyRef.current.id}`]?.unmount();
+                    delete panelRoots[`${tbodyRef.current.id}`];
                     tbodyRef.current.remove() as void;
-                    panelRoots[tabPacRef.current.id] = registerRoot(
-                      panelRoots[tabPacRef.current.id],
-                      `#${tabPacRef.current.id}`,
-                      tabPacRef,
-                    );
-                    panelRoots[tabPacRef.current.id]?.render(
+                    if (!panelRoots[`${tabPacRef.current.id}`])
+                      panelRoots[`${tabPacRef.current.id}`] = createRoot(tabPacRef.current);
+                    panelRoots[`${tabPacRef.current.id}`]?.render(
                       <ErrorBoundary
                         FallbackComponent={() => (
                           <GenericErrorComponent message='Error reloading replacement for table body' />
                         )}>
-                        <caption className='caption-t'>
+                        <caption className='caption_t'>
                           <strong>
                             <small role='textbox' className='noInvert'>
                               <em className='noInvert'>
                                 Lista Recuperada da Ficha de Pacientes registrados. Acesse
                                 <samp>
-                                  <Link
-                                    to={`${location.origin}/ag`}
-                                    style={{ display: "inline" }}>{`${location.origin}/ag`}</Link>
+                                  <a> ROTA_PLACEHOLDER </a>
                                 </samp>
                                 para cadastrar
                               </em>
@@ -103,12 +95,18 @@ export default function PacList({
                           </strong>
                         </caption>
                         <colgroup>
-                          {Array.from({ length: 8 }, (_, i) => (
-                            <col key={`pac_col__${i + 1}`} data-col={i + 1} />
-                          ))}
-                          {userClass === "coordenador" &&
-                            Array.from({ length: 3 }, (_, i) => <col key={`pac_col__${i + 9}`} data-col={i + 9} />)}
-                          {shouldShowAlocBtn && <col data-col={12} />}
+                          <col data-col={1}></col>
+                          <col data-col={2}></col>
+                          <col data-col={3}></col>
+                          <col data-col={4}></col>
+                          <col data-col={5}></col>
+                          <col data-col={6}></col>
+                          <col data-col={7}></col>
+                          <col data-col={8}></col>
+                          {userClass === "coordenador" && <col data-col={9}></col>}
+                          {userClass === "coordenador" && <col data-col={10}></col>}
+                          {userClass === "coordenador" && <col data-col={11}></col>}
+                          {shouldShowAlocBtn && <col data-col={12}></col>}
                         </colgroup>
                         <thead className='thead-dark'>
                           <tr id={`avPacs-rowUnfilled0`} data-row={1}>
@@ -117,17 +115,21 @@ export default function PacList({
                                 CPF
                               </th>
                             )}
-                            {["Nome", "E-mail", "Telefone", "Próximo Dia de Consulta", "Período de Acompanhamento"].map(
-                              (l, i) => (
-                                <th
-                                  scope='col'
-                                  key={`pac_th__${i}`}
-                                  data-row={1}
-                                  data-col={userClass === "coordenador" ? i + 2 : i + 1}>
-                                  {l}
-                                </th>
-                              ),
-                            )}
+                            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 2 : 1}>
+                              Nome
+                            </th>
+                            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 3 : 2}>
+                              E-mail
+                            </th>
+                            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 4 : 3}>
+                              Telefone
+                            </th>
+                            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 5 : 4}>
+                              Próximo Dia de Consulta
+                            </th>
+                            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 6 : 5}>
+                              Período de Acompanhamento
+                            </th>
                             {userClass === "coordenador" && (
                               <th scope='col' data-row={1} data-col={7}>
                                 Assinatura
@@ -167,7 +169,6 @@ export default function PacList({
                               position: "absolute",
                             }}>
                             <Spinner
-                              key={crypto.randomUUID()}
                               spinnerClass='spinner-border'
                               spinnerColor='text-info'
                               message='Loading Patients Table...'
@@ -179,13 +180,10 @@ export default function PacList({
                     tbodyRef.current = document.querySelector(".pacTbody");
                     if (!(tbodyRef.current instanceof HTMLElement))
                       throw elementNotFound(tbodyRef.current, `Validation of replaced tbody`, extLine(new Error()));
-                    panelRoots[tbodyRef.current.id] = registerRoot(
-                      panelRoots[tbodyRef.current.id],
-                      `#${tbodyRef.current.id}`,
-                      tbodyRef,
-                    );
+                    if (!panelRoots[`${tbodyRef.current.id}`])
+                      panelRoots[`${tbodyRef.current.id}`] = createRoot(tbodyRef.current);
                     if (!tbodyRef.current.querySelector("tr"))
-                      panelRoots[tbodyRef.current.id]?.render(
+                      panelRoots[`${tbodyRef.current.id}`]?.render(
                         pacs.map((pac, i) => (
                           <PacRow
                             nRow={i + 2}
@@ -215,14 +213,9 @@ export default function PacList({
                     );
                   }
                 }, 1000);
-              } else
-                panelRoots[tbodyRef.current.id] = registerRoot(
-                  panelRoots[tbodyRef.current.id],
-                  `#${tbodyRef.current.id}`,
-                  tbodyRef,
-                );
+              } else panelRoots[`${tbodyRef.current.id}`] = createRoot(tbodyRef.current);
               if (!tbodyRef.current.querySelector("tr"))
-                panelRoots[tbodyRef.current.id]?.render(
+                panelRoots[`${tbodyRef.current.id}`]?.render(
                   pacs.map((pac, i) => {
                     return Array.from(tbodyRef.current?.querySelectorAll("output") ?? []).some(
                       outp => outp.innerText === (pac as PacInfo)["idf"],
@@ -254,7 +247,13 @@ export default function PacList({
                   );
               }, 300);
               setTimeout(() => {
-                if (!document.querySelector("tr") && document.querySelector("table")) renderTable();
+                if (!document.querySelector("tr") && document.querySelector("table")) {
+                  if (!panelRoots[`${document.querySelector("table")!.id}`])
+                    panelRoots[`${document.querySelector("table")!.id}`] = createRoot(document.querySelector("table")!);
+                  panelRoots[`${document.querySelector("table")!.id}`]?.render(
+                    <GenericErrorComponent message='Failed to render table' />,
+                  );
+                }
               }, 5000);
             } catch (e) {
               console.error(`Error executing rendering of Table Body Content:\n${(e as Error).message}`);
@@ -321,15 +320,15 @@ export default function PacList({
     } else elementNotFound(sectTabRef.current, "sectTabRef in useEffect()", extLine(new Error()));
   }, [sectTabRef, setDisplayRowData]);
   return (
-    <section className='form-padded' id='sectPacsTab' ref={sectTabRef}>
+    <section className='formPadded' id='sectPacsTab' ref={sectTabRef}>
       <table className='table table-striped table-responsive table-hover tabPacs' id='avPacsTab' ref={tabPacRef}>
-        <caption className='caption-t'>
+        <caption className='caption_t'>
           <strong>
             <small role='textbox' className='noInvert'>
               <em className='noInvert'>
                 Lista Recuperada da Ficha de Pacientes registrados. Acesse
                 <samp>
-                  <Link to={`${location.origin}/ag`} style={{ display: "inline" }}>{`${location.origin}/ag`}</Link>
+                  <a> ROTA_PLACEHOLDER </a>
                 </samp>
                 para cadastrar
               </em>
@@ -337,12 +336,12 @@ export default function PacList({
           </strong>
         </caption>
         <colgroup>
-          {Array.from({ length: 8 }, (_, i) => (
-            <col key={`pacs_col__${i + 1}`} data-col={i + 1} />
+          {Array.from({ length: 9 }, (_, i) => (
+            <col key={`col__pac__${i}`} data-col={i + 1}></col>
           ))}
           {userClass === "coordenador" &&
-            Array.from({ length: 3 }, (_, i) => <col key={`pacs_col__${i + 9}`} data-col={i + 9} />)}
-          {shouldShowAlocBtn && <col key={12} data-col={12} />}
+            Array.from({ length: 3 }, (_, i) => <col key={`col__pac__${i + 10}`} data-col={i + 10}></col>)}
+          {shouldShowAlocBtn && <col data-col={userClass === "coordnador" ? 12 : 11}></col>}
         </colgroup>
         <thead className='thead-dark'>
           <tr id={`avPacs-rowUnfilled0`} data-row={1}>
@@ -351,11 +350,21 @@ export default function PacList({
                 CPF
               </th>
             )}
-            {["Nome", "E-mail", "Telefone", "Próximo Dia de Consulta", "Período de Acompanhamento"].map((l, i) => (
-              <th scope='col' key={`pac_th__${i}`} data-row={1} data-col={userClass === "coordenador" ? i + 2 : i + 1}>
-                {l}
-              </th>
-            ))}
+            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 2 : 1}>
+              Nome
+            </th>
+            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 3 : 2}>
+              E-mail
+            </th>
+            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 4 : 3}>
+              Telefone
+            </th>
+            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 5 : 4}>
+              Próximo Dia de Consulta
+            </th>
+            <th scope='col' data-row={1} data-col={userClass === "coordenador" ? 6 : 5}>
+              Período de Acompanhamento
+            </th>
             {userClass === "coordenador" && (
               <th scope='col' data-row={1} data-col={7}>
                 Assinatura
@@ -386,12 +395,7 @@ export default function PacList({
         </thead>
         <tbody className='pacTbody' ref={tbodyRef}>
           <span style={{ marginBlock: "2rem", position: "absolute" }}>
-            <Spinner
-              key={crypto.randomUUID()}
-              spinnerClass='spinner-border'
-              spinnerColor='text-info'
-              message='Loading Patients Table...'
-            />
+            <Spinner spinnerClass='spinner-border' spinnerColor='text-info' message='Loading Patients Table...' />
           </span>
         </tbody>
       </table>

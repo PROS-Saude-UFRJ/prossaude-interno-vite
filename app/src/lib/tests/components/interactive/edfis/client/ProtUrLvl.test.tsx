@@ -1,13 +1,13 @@
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
-import { handleCondtReq } from "../../../src/lib/global/handlers/gHandlers";
+import { handleCondtReq } from "@/lib/global/handlers/gHandlers";
 import ProtUrLvl from "../../../../../../../components/interactive/edfis/client/ProtUrLvl";
 jest.mock(
-  "../../../src/lib/global/handlers/gHandlers",
+  "@/lib/global/handlers/gHandlers",
   (): {
     handleCondtReq: jest.Mock<any, any, any>;
   } => ({
     handleCondtReq: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("ProtUrLvl Component", (): void => {
   it("should render the ProtUrLvl input", (): void => {
@@ -36,7 +36,7 @@ describe("ProtUrLvl Component", (): void => {
         min: 1,
         max: 6,
         pattern: ["^d+$", ""],
-      }) as any,
+      }) as any
     ) as void;
   }) as void;
 }) as void;

@@ -11,8 +11,8 @@ import FamOnc from "./FamOnc";
 import FamPulm from "./FamPulm";
 import RadioPairDoces from "./RadioPairDoces";
 import AntMedFs from "./AntMedFs";
-import { registerPersistInputs, validateForm } from "../../../src/lib/global/handlers/gHandlers";
-import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
+import { registerPersistInputs, validateForm } from "@/lib/global/handlers/gHandlers";
+import { handleSubmit } from "@/lib/global/data-service";
 import Name from "../def/Name";
 import SocialName from "../def/SocialName";
 import CPFElement from "./CPFElement";
@@ -41,8 +41,11 @@ import OtherD from "./OtherD";
 import FamDiab from "./FamDiab";
 import FamDislip from "./FamDislip";
 import { useRef, useEffect } from "react";
-import { nlFm, nlInp, nlSel } from "../../../src/lib/global/declarations/types";
-import useDataProvider from "../../../src/lib/hooks/useDataProvider";
+import { nlFm, nlInp, nlSel, nlSpan } from "@/lib/global/declarations/types";
+import useDataProvider from "@/lib/hooks/useDataProvider";
+import { agProps } from "@/vars";
+import { toast } from "react-hot-toast";
+import sAg from "@/styles//modules/agStyles.module.scss";
 export default function AgForm(): JSX.Element {
   const f = useRef<nlFm>(null),
     dnr = useRef<nlInp>(null),
@@ -50,7 +53,11 @@ export default function AgForm(): JSX.Element {
     sr = useRef<nlSel>(null),
     lnr = useRef<nlInp>(null),
     gr = useRef<nlSel>(null),
-    gbr = useRef<nlSel>(null);
+    gbr = useRef<nlSel>(null),
+    locSpan = useRef<nlSpan>(null),
+    street = useRef<nlInp>(null),
+    streetSpan = useRef<nlSpan>(null),
+    toasted = useRef<boolean>(false);
   useEffect(() => {
     registerPersistInputs({
       f: f.current,
@@ -59,19 +66,43 @@ export default function AgForm(): JSX.Element {
       inputTypes: ["date", "number", "text", "checkbox", "radio"],
       queriesToExclude: ['[role="switch"]'],
     });
-  }, [registerPersistInputs, f]);
+  }, [f]);
   useEffect(() => {
     const handleResize = (): void => {
-      if (!(dnr.current instanceof HTMLElement && ar.current instanceof HTMLElement)) return;
-      dnr.current.style.width = getComputedStyle(ar.current).width;
-      dnr.current.style.maxWidth = getComputedStyle(ar.current).width;
-      handleResize();
+      (() => {
+        try {
+          if (!(dnr.current instanceof HTMLElement && ar.current instanceof HTMLElement)) return;
+          dnr.current.style.width = getComputedStyle(ar.current).width;
+          dnr.current.style.maxWidth = getComputedStyle(ar.current).width;
+        } catch (e) {
+          return;
+        }
+      })();
+      ((): void => {
+        try {
+          locSpan.current ??= document.getElementById("locSpan");
+          street.current ??= document.getElementById("streetId") as nlInp;
+          if (!(locSpan.current instanceof HTMLElement && street.current instanceof HTMLInputElement)) return;
+          locSpan.current.style.maxWidth = getComputedStyle(street.current).width;
+        } catch (e) {
+          return;
+        }
+      })();
+      ((): void => {
+        try {
+          streetSpan.current ??= document.getElementById("streetSpan");
+          street.current ??= document.getElementById("streetId") as nlInp;
+          if (!(streetSpan.current instanceof HTMLElement && street.current instanceof HTMLInputElement)) return;
+          streetSpan.current.style.maxWidth = getComputedStyle(street.current).width;
+        } catch (e) {
+          return;
+        }
+      })();
     };
-    if (!document.body.dataset.equalizing || document.body.dataset.equalizing !== "true") {
-      addEventListener("resize", handleResize);
-      document.body.dataset.equalizing = "true";
-    }
-    (): void => removeEventListener("resize", handleResize);
+    handleResize();
+    addEventListener("resize", handleResize);
+    document.body.dataset.equalizing = "true";
+    return (): void => removeEventListener("resize", handleResize);
   }, [dnr, ar]);
   useEffect(() => {
     const handleResize = (): void => {
@@ -80,7 +111,6 @@ export default function AgForm(): JSX.Element {
         dnr.current.style.width = getComputedStyle(gr.current).width;
         dnr.current.style.maxWidth = getComputedStyle(gr.current).width;
         if (gbr.current) {
-          console.log(getComputedStyle(gbr.current).width);
           ar.current.style.width = getComputedStyle(gbr.current).width;
           ar.current.style.maxWidth = getComputedStyle(gbr.current).width;
         } else {
@@ -97,7 +127,39 @@ export default function AgForm(): JSX.Element {
       handleResize();
     }
     (): void => removeEventListener("resize", handleResize);
-  }, [sr, ar, gr.current]);
+  }, [sr, ar, gr]);
+  useEffect(() => {
+    agProps.agIsAutoCorrectOn = true;
+    return (): void => {
+      agProps.agIsAutoCorrectOn = true;
+    };
+  }, []);
+  useEffect(() => {
+    if (!toasted.current)
+      toast(t => (
+        <fieldset style={{ lineHeight: "1.6rem" }}>
+          <b>Dica!</b>
+          <hr />
+          <span>Você pode desativar ou ativar</span>
+          <br />a Autocorreção nos alternadores.
+          <hr />
+          <button
+            style={{ height: "2.1rem", fontSize: "0.8rem" }}
+            className='btn btn-secondary activatedButton'
+            onClick={() =>
+              setTimeout(() => {
+                toast.dismiss(t.id);
+              }, 500)
+            }>
+            Fechar
+          </button>
+        </fieldset>
+      ));
+    toasted.current = true;
+    const untoast = (): void => toast.dismiss();
+    addEventListener("popstate", untoast);
+    return (): void => removeEventListener("popstate", untoast);
+  }, []);
   useDataProvider(f.current);
   return (
     <form
@@ -116,7 +178,7 @@ export default function AgForm(): JSX.Element {
         )
       }>
       <fieldset name='fsAnamGName' id='fsAnamGIdId' className='fsMain'>
-        <legend id='fsAnamGLeg' className='legMain form-padded'>
+        <legend id='fsAnamGLeg' className='legMain formPadded'>
           Identificação
         </legend>
         <section className='sectionMain' id='fsAnamGSect'>
@@ -164,30 +226,37 @@ export default function AgForm(): JSX.Element {
               </span>
             </div>
             <hr />
-            <div className='flexDiv fsAnamGDiv alItSt900Q flexQ900NoWC gridTwoCol' id='fsAnamGDiv4' role='group'>
-              <span role='group' className='fsAnamGSpan mgr-3v' id='fsAnamGSpan11'>
-                <label htmlFor='dateBdayId' className='labelIdentif'>
+            <div
+              className={`flexDiv fsAnamGDiv alItSt900Q flexQ900NoWC gridTwoCol ${sAg.fsAnamGDiv4}`}
+              id='fsAnamGDiv4'
+              role='group'>
+              <span
+                role='group'
+                className={`fsAnamGSpan mgr__3v ${sAg.fsAGSpanGrid2x2}`}
+                id='fsAnamGSpan11'
+                style={{ width: "45.8%" }}>
+                <label htmlFor='dateBdayId' className={`labelIdentif ${sAg.birthInpLab} ${sAg.labelIdentif}`}>
                   Data de Nascimento:
                   <input
                     ref={dnr}
                     type='date'
                     name='birth'
                     id='dateBdayId'
-                    className='form-control inpIdentif noInvert maxCurrDate'
+                    className={`form-control inpIdentif noInvert maxCurrDate ${sAg.birthInp}`}
                     autoComplete='bday'
                     data-title='Nascimento'
                     required
                   />
                 </label>
               </span>
-              <span role='group' className='fsAnamGSpan' id='fsAnamGSpan12'>
-                <label htmlFor='dateAgeId' className='labelIdentif'>
+              <span role='group' className={`fsAnamGSpan`} id='fsAnamGSpan12'>
+                <label htmlFor='ageId' className={`labelIdentif ${sAg.ageInp} ${sAg.labelIdentif}`}>
                   <span>Idade:</span>
                   <AgeElement inpRef={ar} />
                 </label>
               </span>
             </div>
-            <GenDiv genRef={gr} genBirthRef={gbr} />
+            <GenDiv />
             <hr />
             <div
               className='divMain fsAnamGDiv alItSt900Q flexQ900NoWC gridAlItE gridTwoCol noGapDiv noEqualize'
@@ -255,73 +324,85 @@ export default function AgForm(): JSX.Element {
             className='divMain fsAnamGDiv alItSt900Q flexQ900NoWC gridAlItE gridTwoCol widFull900Q noEqualize'
             id='fsAnamGDiv3'
             role='group'>
-            <span role='group' className='fsAnamGSpan' id='fsAnamGSpan6'>
+            <fieldset style={{ display: "flex-inline" }} role='group' className='fsAnamGSpan' id='fsAnamGSpan6'>
               <label htmlFor='countryId' className='labelIdentif noInvert'>
                 <span>Nacionalidade:</span>
                 <Nac />
               </label>
               <br role='presentation' />
-            </span>
-            <span role='group' className='fsAnamGSpan' id='fsAnamGSpan10'>
-              <label htmlFor='streetId' className='labelIdentif noInvert'>
+            </fieldset>
+            <fieldset style={{ display: "flex-inline" }} role='group' className='fsAnamGSpan' id='fsAnamGSpan10'>
+              <label htmlFor='cityId' className='labelIdentif noInvert'>
                 <span>Cidade:</span>
                 <City />
               </label>
               <br role='presentation' />
-            </span>
-            <span role='group' className='fsAnamGSpan' id='fsAnamGSpan7'>
+            </fieldset>
+            <fieldset style={{ display: "flex-inline" }} role='group' className='fsAnamGSpan' id='fsAnamGSpan7'>
               <label htmlFor='munId' className='labelIdentif noInvert' id='labMunId'>
                 <span>Naturalidade:</span>
                 <Nat />
               </label>
               <br role='presentation' />
-            </span>
-            <span role='group' className='fsAnamGSpan' id='fsAnamGSpan12'>
+            </fieldset>
+            <fieldset
+              style={{ display: "flex-inline" }}
+              role='group'
+              className={`fsAnamGSpan ${sAg.fsAnamGSpan12}`}
+              id='fsAnamGSpanLoc'>
               <label htmlFor='streetId' className='labelIdentif noInvert'>
                 <span>Endereço | Logradouro | Rua:</span>
                 <Street />
               </label>
               <br role='presentation' />
-            </span>
-            <span role='group' className='fsAnamGSpan' id='fsAnamGSpan8'>
+            </fieldset>
+            <fieldset style={{ display: "flex-inline" }} role='group' className='fsAnamGSpan' id='fsAnamGSpan8'>
               <CepElements />
               <br role='presentation' />
-            </span>
-            <span role='group' className='fsAnamGSpan' id='fsAnamGSpan11'>
+            </fieldset>
+            <fieldset
+              style={{ display: "flex-inline" }}
+              role='group'
+              className={`fsAnamGSpan ${sAg.fsAGSpanGrid2x2} ${sAg.fsAGSpanNBh}`}
+              id='fsAnamGSpanNbh'>
               <label htmlFor='streetId' className='labelIdentif noInvert'>
                 <span>Bairro:</span>
                 <Nbh />
               </label>
               <br role='presentation' />
-            </span>
-            <span role='group' className='fsAnamGSpan' id='fsAnamGSpan9'>
+            </fieldset>
+            <fieldset style={{ display: "flex-inline" }} role='group' className='fsAnamGSpan' id='fsAnamGSpan9'>
               <label htmlFor='UFId' className='labelIdentif forceInvert'>
                 Unidade Federativa (Residência Atual):
                 <Uf />
               </label>
               <br role='presentation' />
-            </span>
-            <span role='group' className='fsAnamGSpan locSpan form-switch flexColumn noInvert' id='fsAnamGSpan13'>
-              <span role='textbox' style={{ marginLeft: "0.5rem" }}>
-                Número:
-              </span>
-              <span role='group' className='flexDiv spanLoc fitSpaced mg-07t'>
+            </fieldset>
+            <fieldset
+              style={{ display: "flex-inline" }}
+              role='group'
+              className='fsAnamGSpan locSpan form-switch flexColumn noInvert'
+              id='fsAnamGSpan13'>
+              <span style={{ marginLeft: "0.5rem" }}>Número:</span>
+              <span role='group' id='streetSpan' ref={streetSpan} className='flexDiv spanLoc fitSpaced mg__07t'>
                 <StreetNum />
               </span>
-            </span>
-            <span role='group' className='fsAnamGSpan locSpan form-switch flexColumn noInvert' id='fsAnamGSpan14'>
-              <span role='textbox' style={{ marginLeft: "0.5rem" }}>
-                Complemento:
-              </span>
-              <span role='group' className='flexDiv spanLoc fitSpaced mg-07t'>
+            </fieldset>
+            <fieldset
+              style={{ display: "flex-inline" }}
+              role='group'
+              className={`fsAnamGSpan locSpan form-switch flexColumn noInvert ${sAg.fsAnamGSpan14}`}
+              id='fsAnamGSpan14'>
+              <span style={{ marginLeft: "0.5rem" }}>Complemento:</span>
+              <span role='group' id='locSpan' ref={locSpan} className='flexDiv spanLoc fitSpaced mg__07t'>
                 <LocComp />
               </span>
-            </span>
+            </fieldset>
           </div>
         </section>
         <hr />
       </fieldset>
-      <fieldset name='fsSdGeralName' id='fsSdGeralId' className='fsMain form-padded'>
+      <fieldset name='fsSdGeralName' id='fsSdGeralId' className='fsMain formPadded'>
         <legend id='fsSdGeralLeg' className='legMain'>
           Dados de Saúde Geral
         </legend>
@@ -349,7 +430,7 @@ export default function AgForm(): JSX.Element {
           <hr />
         </section>
       </fieldset>
-      <fieldset name='fsAnamGRadName' id='fsAnamGRadId' className='fsMain form-padded'>
+      <fieldset name='fsAnamGRadName' id='fsAnamGRadId' className='fsMain formPadded'>
         <legend id='fsAnamGRadLegId' className='legMain'>
           Possíveis Doenças
         </legend>
@@ -881,7 +962,7 @@ export default function AgForm(): JSX.Element {
           <legend className='bolded' id='hFreq'>
             Frequências de Rotina
           </legend>
-          <div className='divMain divFreq gridTwoCol' id='divFreqOdont' role='group'>
+          <div className='divMain divFreq' id='divFreqOdont' role='group'>
             <span role='group' className='sectFreqSpan' id='spanFreqEscov'>
               <label htmlFor='escovNId' className='labDlist' id='labEscovN'>
                 Escovações por dia:
@@ -963,7 +1044,7 @@ export default function AgForm(): JSX.Element {
         </fieldset>
         <hr />
       </fieldset>
-      <fieldset name='fsConfirmName' id='fsConfirmId' className='fsMain form-padded'>
+      <fieldset name='fsConfirmName' id='fsConfirmId' className='fsMain formPadded'>
         <section className='sectionMain sectionConfirm' id='sectConfirmCheck'>
           <Declaration text='&#34;DECLARO SEREM VERDADEIRAS AS INFORMAÇÕES ACIMA&#34;' />
           <div className='divMain' id='divConfirm' role='group'>

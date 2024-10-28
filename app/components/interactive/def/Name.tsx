@@ -1,6 +1,6 @@
+import { nlInp } from "@/lib/global/declarations/types";
+import { cleanStorageName, handleCondtReq, handleEventReq } from "@/lib/global/handlers/gHandlers";
 import { MutableRefObject, useEffect } from "react";
-import { cleanStorageName, handleCondtReq, handleEventReq } from "../../../src/lib/global/handlers/gHandlers";
-import { nlInp } from "../../../src/lib/global/declarations/types";
 export default function Name({ lastNameRef }: { lastNameRef?: MutableRefObject<nlInp> }): JSX.Element {
   useEffect(() => {
     addEventListener("beforeunload", cleanStorageName);
@@ -8,13 +8,13 @@ export default function Name({ lastNameRef }: { lastNameRef?: MutableRefObject<n
       cleanStorageName();
       removeEventListener("beforeunload", cleanStorageName);
     };
-  }, [cleanStorageName]);
+  }, []);
   return (
     <div
       className='fsAnamGDiv alItSt900Q flexQ900NoWC flexAlItE flexNoW flexSimple wsNoW cGap0 ws900N'
       id='fsAnamGDiv1'
       role='group'>
-      <span role='group' className='fsAnamGSpan flexAlItCt col' id='fsAnamGSpan1'>
+      <span role='group' className={`fsAnamGSpan flexAlItCt col`} id='fsAnamGSpan1'>
         <label htmlFor='firstNameId' className='labelIdentif'>
           Primeiro Nome (Simples ou Composto):
           <input

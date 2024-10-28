@@ -1,5 +1,5 @@
-import { StudRowProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
-import { dateISOtoBRL } from "../../../src/lib/global/gModel";
+import { StudRowProps } from "@/lib/global/declarations/interfacesCons";
+import { dateISOtoBRL } from "@/lib/global/gModel";
 import { useContext, useState } from "react";
 import AlterFieldList from "../../lists/AlterFieldList";
 import FormExcludeBtn from "../defs/FormExcludeBtn";

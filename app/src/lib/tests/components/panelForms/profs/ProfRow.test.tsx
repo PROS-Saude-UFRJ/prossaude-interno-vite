@@ -1,9 +1,9 @@
 import { render, fireEvent, RenderResult } from "@testing-library/react";
 import { useRef, MutableRefObject } from "react";
 import ProfRow from "../../../../../../components/panelForms/profs/ProfRow";
-import { nullishTab } from "../../../src/lib/global/declarations/types";
+import { nlTab } from "@/lib/global/declarations/types";
 jest.mock(
-  "../../../src/lib/global/gModel",
+  "@/lib/global/gModel",
   (): {
     dateISOtoBRL: jest.Mock<string, [date: string], any>;
   } => ({
@@ -12,7 +12,7 @@ jest.mock(
 ) as typeof jest;
 describe("ProfRow Component", (): void => {
   test("renders ProfRow with default props", (): void => {
-    const tabRef: MutableRefObject<nullishTab> = useRef<nullishTab>(null);
+    const tabRef: MutableRefObject<nlTab> = useRef<nlTab>(null);
     (
       expect(
         (
@@ -39,7 +39,7 @@ describe("ProfRow Component", (): void => {
     ).toBeInTheDocument() as void;
   }) as void;
   test("calls toggle dialog for altering row data", (): void => {
-    const tabRef: MutableRefObject<nullishTab> = useRef<nullishTab>(null);
+    const tabRef: MutableRefObject<nlTab> = useRef<nlTab>(null);
     (
       expect(
         fireEvent.click(

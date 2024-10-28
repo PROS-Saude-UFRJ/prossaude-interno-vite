@@ -1,17 +1,17 @@
+import { ErrorBoundary } from "react-error-boundary";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import TipsBtn from "../def/TipsBtn";
+import GenericErrorComponent from "../../error/GenericErrorComponent";
 import OdTips from "./OdTips";
+import TipsBtn from "../def/TipsBtn";
 export default function OdTipsBtnWrapper(): JSX.Element {
   const [shouldShowTips, setTips] = useState<boolean>(false);
-  const [searchParams] = useSearchParams();
   useEffect(() => {
-    if (searchParams.get("tips") === "open") setTips(true);
-  }, [searchParams]);
+    /tips=open/gi.test(location.search) && setTips(true);
+  }, []);
   return (
-    <>
+    <ErrorBoundary FallbackComponent={() => <GenericErrorComponent message='Error Loading Tips Button' />}>
       <TipsBtn dispatch={setTips} state={shouldShowTips} />
       {shouldShowTips && <OdTips state={shouldShowTips} dispatch={setTips} />}
-    </>
+    </ErrorBoundary>
   );
 }

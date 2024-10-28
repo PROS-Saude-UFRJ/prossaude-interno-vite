@@ -1,11 +1,10 @@
-import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import BtnConformWrapper from "../../../../../../components/interactive/ag/BtnConformWrapper";
 jest.mock("../../../../../components/interactive/ag/AGDeclaration", (): (() => JSX.Element) =>
-  jest.fn((): JSX.Element => <div>AGDeclaration Component</div>),
+  jest.fn((): JSX.Element => <div>AGDeclaration Component</div>)
 ) as typeof jest;
 jest.mock("../../../../../components/interactive/def/BtnConform", (): (() => JSX.Element) =>
-  jest.fn((): JSX.Element => <div>BtnConform Component</div>),
+  jest.fn((): JSX.Element => <div>BtnConform Component</div>)
 ) as typeof jest;
 describe("BtnConformWrapper", (): void => {
   it("renders BtnConform component", (): void => {

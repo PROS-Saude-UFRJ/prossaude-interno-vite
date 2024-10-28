@@ -1,15 +1,15 @@
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
-import { handleEventReq, handleCondtReq } from "../../../src/lib/global/handlers/gHandlers";
+import { handleEventReq, handleCondtReq } from "@/lib/global/handlers/gHandlers";
 import Name from "../../../../../../components/interactive/def/Name";
 jest.mock(
-  "../../../src/lib/global/handlers/gHandlers",
+  "@/lib/global/handlers/gHandlers",
   (): {
     handleEventReq: jest.Mock<any, any, any>;
     handleCondtReq: jest.Mock<any, any, any>;
   } => ({
     handleEventReq: jest.fn() as jest.Mock,
     handleCondtReq: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("Name Component", (): void => {
   test("renders all input fields and calls handleEventReq on first and last name", (): void => {

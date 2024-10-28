@@ -1,13 +1,13 @@
 import { render, fireEvent, screen, RenderResult } from "@testing-library/react";
-import { handleCondtReq } from "../../../src/lib/global/handlers/gHandlers";
+import { handleCondtReq } from "@/lib/global/handlers/gHandlers";
 import SocialName from "../../../../../../components/interactive/def/SocialName";
 jest.mock(
-  "../../../src/lib/global/handlers/gHandlers",
+  "@/lib/global/handlers/gHandlers",
   (): {
     handleCondtReq: jest.Mock<any, any, any>;
   } => ({
     handleCondtReq: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("SocialName Component", (): void => {
   test("renders the social name input field and calls handleCondtReq on input", (): void => {

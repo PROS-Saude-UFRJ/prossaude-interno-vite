@@ -2,7 +2,7 @@ import React from "react";
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
 import { Person } from "../../../../../global/declarations/classes";
 import { exeAutoFill } from "../../../../../locals/edFisNutPage/edFisNutHandler";
-import { person, tabProps } from "../../../../../../vars";
+import { person, tabProps } from "../../../../../../../../../pro-saude-app-vite/app/src/vars";
 import { validateEvResultNum } from "../../../../../locals/edFisNutPage/edFisNutHandler";
 import { handleEventReq } from "../../../../../global/handlers/gHandlers";
 import { multipleElementsNotFound } from "../../../../../global/handlers/errorHandler";
@@ -26,14 +26,14 @@ jest.mock(
       TMB: number;
       GET: number;
       PGC: number;
-      targInpWeigth: targEl;
-      targInpHeigth: targEl;
-      targInpIMC: targEl;
-      targInpMLG: targEl;
-      targInpTMB: targEl;
-      targInpGET: targEl;
-      targInpSumDCut: targEl;
-      targInpPGC: targEl;
+      tiw: targEl;
+      tih: targEl;
+      tiimc: targEl;
+      timlg: targEl;
+      titmb: targEl;
+      tiget: targEl;
+      tidc: targEl;
+      tipgc: targEl;
     };
   } => ({
     exeAutoFill: jest.fn(),
@@ -46,14 +46,14 @@ jest.mock(
       TMB: 1600,
       GET: 2000,
       PGC: 15,
-      targInpWeigth: null,
-      targInpHeigth: null,
-      targInpIMC: null,
-      targInpMLG: null,
-      targInpTMB: null,
-      targInpGET: null,
-      targInpSumDCut: null,
-      targInpPGC: null,
+      tiw: null,
+      tih: null,
+      tiimc: null,
+      timlg: null,
+      titmb: null,
+      tiget: null,
+      tidc: null,
+      tipgc: null,
     },
   }),
 ) as typeof jest;

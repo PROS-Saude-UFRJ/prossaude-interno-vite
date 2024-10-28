@@ -1,12 +1,12 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { nullishDlg } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { nlDlg } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
-import { DlgProps } from "../../src/lib/global/declarations/interfaces";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
+import { DlgProps } from "@/lib/global/declarations/interfaces";
+import { isClickOutside } from "@/lib/global/gStyleScript";
 export default function RecoverAlert({ dispatch, state = true }: DlgProps): JSX.Element {
-  const FailRegstDlgRef = useRef<nullishDlg>(null);
+  const FailRegstDlgRef = useRef<nlDlg>(null);
   const toggleClose = (): void => {
     dispatch(!state);
     if (!state && FailRegstDlgRef.current instanceof HTMLDialogElement) FailRegstDlgRef.current.close();
@@ -15,9 +15,7 @@ export default function RecoverAlert({ dispatch, state = true }: DlgProps): JSX.
     if (state && FailRegstDlgRef.current instanceof HTMLDialogElement) FailRegstDlgRef.current.showModal();
     syncAriaStates([...FailRegstDlgRef.current!.querySelectorAll("*"), FailRegstDlgRef.current!]);
     const handleKeyDown = (press: KeyboardEvent): void => {
-      if (press.key === "Escape") {
-        toggleClose();
-      }
+      if (press.key === "Escape") toggleClose();
     };
     addEventListener("keydown", handleKeyDown);
     return (): void => removeEventListener("keydown", handleKeyDown);
@@ -28,7 +26,7 @@ export default function RecoverAlert({ dispatch, state = true }: DlgProps): JSX.
         <dialog
           role='alertdialog'
           ref={FailRegstDlgRef}
-          className='modal-content modal-content-fit wid80'
+          className='modal-content modalContent__fit wid80'
           id='recover-alert'
           onClick={ev => {
             if (isClickOutside(ev, ev.currentTarget).some(coord => coord === true)) {

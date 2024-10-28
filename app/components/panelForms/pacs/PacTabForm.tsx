@@ -1,14 +1,14 @@
-import { addExportFlags } from "../../../src/lib/global/gController";
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { normalizeSizeSb } from "../../../src/lib/global/gStyleScript";
-import { nlBtn, nlFm } from "../../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
+import { addExportFlags } from "@/lib/global/gController";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { normalizeSizeSb } from "@/lib/global/gStyleScript";
+import { nlBtn, nlFm } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState, useCallback } from "react";
 import PacList from "../../lists/PacList";
-import { assignFormAttrs } from "../../../src/lib/global/gModel";
-import { ExportHandler } from "../../../src/lib/global/declarations/classes";
-import { exporters } from "../../../src/vars";
-import useExportHandler from "../../../src/lib/hooks/useExportHandler";
+import { assignFormAttrs } from "@/lib/global/gModel";
+import { ExportHandler } from "@/lib/global/declarations/classes";
+import { exporters } from "@/vars";
+import useExportHandler from "@/lib/hooks/useExportHandler";
 export default function PacTabForm(): JSX.Element {
   const [shouldDisplayRowData, setDisplayRowData] = useState<boolean>(false),
     formRef = useRef<nlFm>(null),
@@ -16,7 +16,7 @@ export default function PacTabForm(): JSX.Element {
     callbackNormalizeSizesSb = useCallback(() => {
       normalizeSizeSb(
         [
-          ...document.querySelectorAll(".form-padded"),
+          ...document.querySelectorAll(".formPadded"),
           ...document.querySelectorAll(".ovFlAut"),
           ...document.querySelectorAll("[scrollbar-width=none]"),
         ],
@@ -48,13 +48,13 @@ export default function PacTabForm(): JSX.Element {
     <form
       id='formRemovePac'
       name='form_pacs_table'
-      className='form-padded-nosb wid101'
+      className='formPadded__nosb wid101'
       action='patients_table'
       method='get'
       target='_top'
       ref={formRef}>
       <div role='group' className='wsBs flexNoWC cGap1v'>
-        <h1 className='mg-3b bolded'>
+        <h1 className='mg__3b bolded'>
           <strong id='titleTabPacs'>Tabela de Pacientes Registrados</strong>
         </h1>
         <em>
@@ -64,13 +64,13 @@ export default function PacTabForm(): JSX.Element {
         </em>
         <hr />
       </div>
-      <section className='form-padded pdL0' id='sectPacsTab'>
+      <section className='formPadded pdL0' id='sectPacsTab'>
         <PacList
           setDisplayRowData={setDisplayRowData}
           shouldDisplayRowData={shouldDisplayRowData}
           shouldShowAlocBtn={false}
         />
-        <div role='group' className='form-padded pdL0 widQ460FullW '></div>
+        <div role='group' className='formPadded pdL0 widQ460FullW '></div>
       </section>
       <button
         type='button'

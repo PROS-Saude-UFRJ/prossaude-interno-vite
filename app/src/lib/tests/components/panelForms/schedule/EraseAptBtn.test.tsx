@@ -1,15 +1,15 @@
 import { render, fireEvent, RenderResult } from "@testing-library/react";
-import { elementNotFound } from "../../../src/lib/global/handlers/errorHandler";
+import { elementNotFound } from "@/lib/global/handlers/errorHandler";
 import EraseAptBtn from "../../../../../../components/panelForms/schedule/EraseAptBtn";
 jest.mock(
-  "../../../src/lib/global/handlers/errorHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
     extLine: jest.Mock<any, any, any>;
   } => ({
     elementNotFound: jest.fn() as jest.Mock,
     extLine: jest.fn() as jest.Mock,
-  }),
+  })
 ) as typeof jest;
 describe("EraseAptBtn Component", (): void => {
   test("renders button and toggles ExcludeConsDlg", (): void => {
@@ -24,7 +24,7 @@ describe("EraseAptBtn Component", (): void => {
   }) as void;
   test("throws error if button reference is incorrect", (): void => {
     const button = (render(<EraseAptBtn userClass='estudante' />) as RenderResult).getByTitle(
-      /Remova o agendamento relativo/i,
+      /Remova o agendamento relativo/i
     ) as HTMLButtonElement;
     button.closest = jest.fn((): null => null) as jest.Mock;
     fireEvent.click(button) as boolean;

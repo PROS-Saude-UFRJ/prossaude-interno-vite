@@ -1,7 +1,7 @@
+import React from "react";
 import { render, fireEvent, RenderResult } from "@testing-library/react";
 import { addExportFlags } from "../../../../global/gController";
-import { handleFetch } from "../../../../locals/panelPage/handlers/handlers";
-import React from "react";
+import { handleFetch } from "../../../../../../../../pro-saude-app-vite/app/src/lib/locals/panelPage/handlers/handlers";
 import TabStudForm from "../../../../../../components/panelForms/studs/TabStudForm";
 jest.mock(
   "../../../../global/gController",
@@ -11,7 +11,7 @@ jest.mock(
     addExportFlags: jest.fn() as jest.Mock,
   }),
 ) as typeof jest;
-jest.mock("../../../../locals/panelPage/handlers/handlers", () => ({
+jest.mock("../../../../../../../../pro-saude-app-vite/app/src/lib/locals/panelPage/handlers/handlers", () => ({
   handleFetch: jest.fn() as jest.Mock,
 })) as typeof jest;
 describe("TabStudForm Component", (): void => {

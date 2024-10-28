@@ -1,7 +1,7 @@
-import { RadioPairPros } from "../../../src/lib/global/declarations/interfaces";
-import { nullishSpan } from "../../../src/lib/global/declarations/types";
-import { opRadioHandler } from "../../../src/lib/global/handlers/gHandlers";
-import { textTransformPascal } from "../../../src/lib/global/gModel";
+import { RadioPairPros } from "@/lib/global/declarations/interfaces";
+import { nlSpan } from "@/lib/global/declarations/types";
+import { opRadioHandler } from "@/lib/global/handlers/gHandlers";
+import { textTransformPascal } from "@/lib/global/gModel";
 import { useEffect, useState, useRef } from "react";
 export default function RadioPair({
   name,
@@ -12,7 +12,7 @@ export default function RadioPair({
   required = false,
 }: RadioPairPros): JSX.Element {
   const [shouldShowAdd, setAdd] = useState(false);
-  const mainRef = useRef<nullishSpan>(null);
+  const mainRef = useRef<nlSpan>(null);
   useEffect(() => {
     if (required && mainRef.current instanceof HTMLElement) {
       for (const radio of mainRef.current.querySelectorAll('input[type="radio"]'))

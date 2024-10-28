@@ -1,9 +1,9 @@
+import React from "react";
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
 import DREFiller from "../../../../../components/consRegst/DREFiller";
 import { FillerProps } from "../../..//lib/global/declarations/interfacesCons";
 import { addListenerAvMembers } from "../../../../lib/locals/panelPage/handlers/consHandlerList";
-import { providers } from "@/vars";
-("../../../../../components/panelForms/defs/client/SelectPanel");
+import { providers } from "../../../../vars";
 import { syncAriaStates } from "../../../../lib/global/handlers/gHandlers";
 import "@testing-library/jest-dom/extend-expect";
 import { MutableRefObject, useRef } from "react";
@@ -26,18 +26,13 @@ jest.mock(
     syncAriaStates: jest.fn() as jest.Mock,
   }),
 ) as typeof jest;
-jest.mock(
-  "../../../../../components/panelForms/defs/client/SelectPanel",
-  (): {
-    providers.globalDataProvider: {
-      initPersist: jest.Mock<any, any, any>;
-    };
-  } => ({
-    providers.globalDataProvider: {
-      initPersist: jest.fn() as jest.Mock,
+jest.mock("../../../../vars", () => ({
+  providers: {
+    globalDataProvider: {
+      initPersist: jest.fn(),
     },
-  }),
-) as typeof jest;
+  },
+})) as typeof jest;
 describe("DREFiller Component", (): void => {
   const forwardedRef: MutableRefObject<nlHtEl> = useRef<nlHtEl>(null);
   const defaultProps: FillerProps = {
@@ -104,6 +99,8 @@ describe("DREFiller Component", (): void => {
   }) as void;
   test("calls initPersist from providers.globalDataProvider on mount", (): void => {
     renderComponent() as RenderResult<typeof import("@testing-library/dom/types/queries"), HTMLElement, HTMLElement>;
-    (expect(providers.globalDataProvider?.initPersist) as jest.JestMatchers<jest.SpyInstance>).toHaveBeenCalled() as void;
+    (
+      expect(providers.globalDataProvider?.initPersist) as jest.JestMatchers<jest.SpyInstance>
+    ).toHaveBeenCalled() as void;
   }) as void;
 }) as void;

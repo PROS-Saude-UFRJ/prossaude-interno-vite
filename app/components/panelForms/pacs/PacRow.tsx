@@ -1,7 +1,7 @@
-import { PacRowProps } from "../../../src/lib/locals/panelPage/declarations/interfacesCons";
-import { dateISOtoBRL } from "../../../src/lib/global/gModel";
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nlBtn } from "../../../src/lib/global/declarations/types";
+import { PacRowProps } from "@/lib/global/declarations/interfacesCons";
+import { dateISOtoBRL } from "@/lib/global/gModel";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { nlBtn } from "@/lib/global/declarations/types";
 import { useState, useRef, useContext } from "react";
 import AlterFieldList from "../../lists/AlterFieldList";
 import FormExcludeBtn from "../defs/FormExcludeBtn";
@@ -152,7 +152,6 @@ export default function PacRow({
               data-aloc={`UnfilledText-pac`}
               data-row={nRow}
               data-col={userClass === "coordenador" ? 7 : 6}>
-              {/* //TODO PRECISA DEFINIR COMO VAI SER FEITA A PASSAGEM DOS FILES */}
               <a className='astAnchor' id={`tagPhAstPac${nRow}`} href='../img/teste-exame-clinico.pdf' download>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'

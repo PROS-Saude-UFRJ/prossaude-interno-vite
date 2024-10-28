@@ -1,16 +1,16 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { FailedRegstProps } from "../../src/lib//locals/panelPage/declarations/interfacesCons";
-import { nullishDlg } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { FailedRegstProps } from "@/lib/global/declarations/interfacesCons";
+import { nlDlg } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
+import { isClickOutside } from "@/lib/global/gStyleScript";
 export default function FailRegstAlert({
   setDisplayFailRegstDlg,
   shouldDisplayFailRegstDlg = false,
   secondOp = "Arraste",
 }: FailedRegstProps): JSX.Element {
-  const FailRegstDlgRef = useRef<nullishDlg>(null);
+  const FailRegstDlgRef = useRef<nlDlg>(null);
   const toggleClose = (): void => {
     setDisplayFailRegstDlg(!shouldDisplayFailRegstDlg);
     if (!shouldDisplayFailRegstDlg && FailRegstDlgRef.current instanceof HTMLDialogElement)
@@ -25,14 +25,14 @@ export default function FailRegstAlert({
     };
     addEventListener("keydown", handleKeyDown);
     return (): void => removeEventListener("keydown", handleKeyDown);
-  }, [shouldDisplayFailRegstDlg, toggleClose, FailRegstDlgRef]);
+  }, [FailRegstDlgRef, toggleClose]);
   return (
     <>
       {shouldDisplayFailRegstDlg && (
         <dialog
           role='alertdialog'
           ref={FailRegstDlgRef}
-          className='modal-content modal-content-fit wid80'
+          className='modal-content modalContent__fit wid80'
           id='alert-dlg'
           onClick={ev => {
             if (isClickOutside(ev, ev.currentTarget).some(coord => coord === true)) {

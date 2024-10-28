@@ -1,5 +1,5 @@
-import { DivAntFamProps } from "../../../src/lib/global/declarations/interfaces";
-import { textTransformPascal } from "../../../src/lib/global/gModel";
+import { DivAntFamProps } from "@/lib/global/declarations/interfaces";
+import { textTransformPascal } from "@/lib/global/gModel";
 export default function DivAntFam({
   name,
   fullName = "",
@@ -19,7 +19,8 @@ export default function DivAntFam({
         role='group'
         className='spanSub spanSectAnt'
         id={`span${PascalName}FamG`}
-        style={{ marginBottom: "0.5rem" }}>
+        style={{ marginBottom: "0.5rem" }}
+      >
         <strong>Ascendentes com Diagnóstico(s) ou Suspeita(s):</strong>
       </span>
       <br role='presentation' />
@@ -178,7 +179,8 @@ export default function DivAntFam({
     <div
       className={gen ? `divGen container-lg` : `divAdd divAntFam`}
       id={gen ? `divGen${PascalName}` : `divAddFam${PascalName}`}
-      role='group'>
+      role='group'
+    >
       {ta && (
         <>
           <textarea
@@ -186,7 +188,8 @@ export default function DivAntFam({
             id={`${name}FamGeralId`}
             className={`form-control taOp ta${PascalName}`}
             placeholder={`Escreva aqui sobre a(s) ${fullName}`}
-            data-title={`Descrição — ${fullName}`}></textarea>
+            data-title={`Descrição — ${fullName}`}
+          ></textarea>
           <br role='presentation' />
         </>
       )}
@@ -195,7 +198,8 @@ export default function DivAntFam({
           role='group'
           className='spanSub spanSectAnt'
           id={`span${PascalName}FamG`}
-          style={{ marginBottom: "0.5rem" }}>
+          style={{ marginBottom: "0.5rem" }}
+        >
           <strong>Ascendentes com Diagnóstico(s) ou Suspeita(s):</strong>
         </span>
         <span role='listitem' className='cbDoencSubt'>

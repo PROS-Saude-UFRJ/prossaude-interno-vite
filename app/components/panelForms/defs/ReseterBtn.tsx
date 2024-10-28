@@ -1,16 +1,16 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { ReseterBtnProps } from "../../../src/lib/global/declarations/interfacesCons";
-import { nlBtn } from "../../../src/lib/global/declarations/types";
-import { panelRoots } from "../../../src/vars";
+import { ReseterBtnProps } from "@/lib/global/declarations/interfacesCons";
+import { nlBtn } from "@/lib/global/declarations/types";
+import { panelRoots } from "@/vars";
 import { scheduleReset } from "../panelFormsData";
-import { checkForReset, syncAriaStates } from "../../../src/lib/global/handlers/gHandlers";
+import { checkForReset, syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import ResetDlg from "../../alerts/ResetDlg";
 export default function ReseterBtn({ renderForm }: ReseterBtnProps): JSX.Element {
-  const [shouldDisplayResetDlg, setDisplayResetDlg] = useState(false),
-    toggleResetSchdDlg = (): void => setDisplayResetDlg(!shouldDisplayResetDlg),
-    resetBtnRef = useRef<nlBtn>(null);
+  const [shouldDisplayResetDlg, setDisplayResetDlg] = useState(false);
+  const toggleResetSchdDlg = (): void => setDisplayResetDlg(!shouldDisplayResetDlg);
+  const resetBtnRef = useRef<nlBtn>(null);
   useEffect(() => {
     const formBody = document.getElementById("formBodySchedSect") || document.querySelector("form");
     if (resetBtnRef.current instanceof HTMLButtonElement && formBody) {

@@ -1,12 +1,12 @@
-import { AlterFieldListProps } from "../../src/lib/global/declarations/interfacesCons";
+import { AlterFieldListProps } from "@/lib/global/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
-import { isClickOutside } from "../../src/lib/global/gStyleScript";
-import { nullishDlg, nlFm, nlSel } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { isClickOutside } from "@/lib/global/gStyleScript";
+import { nlDlg, nlFm, nlSel } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useRef, useState } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
 import GenericErrorComponent from "../error/GenericErrorComponent";
-import { elementNotFound, extLine, inputNotFound } from "../../src/lib/global/handlers/errorHandler";
+import { elementNotFound, extLine, inputNotFound } from "@/lib/global/handlers/errorHandler";
 import {
   addEmailExtension,
   assignFormAttrs,
@@ -14,26 +14,26 @@ import {
   camelToKebab,
   formatCPF,
   formatTel,
-} from "../../src/lib/global/gModel";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+} from "@/lib/global/gModel";
 export default function AlterFieldList({
   dispatch,
   tabRef,
   name = "anonimo",
   state = true,
 }: AlterFieldListProps): JSX.Element {
-  const alterFieldRef = useRef<nullishDlg>(null),
+  const alterFieldRef = useRef<nlDlg>(null),
     formRef = useRef<nlFm>(null),
     optsRef = useRef<nlSel>(null),
-    navigate = useNavigate(),
-    location = useLocation(),
-    [searchParams, setSearchParams] = useSearchParams(),
     [, setChosenOp] = useState(optsRef.current?.value || null),
     handleChange = (targ: HTMLSelectElement): void => {
-      const currentParams = new URLSearchParams(searchParams);
-      currentParams.set("alterDlg", camelToKebab(targ.value));
-      setSearchParams(currentParams);
-      setTimeout(() => setSearchParams(new URLSearchParams(searchParams)), 300);
+      history.pushState(
+        {},
+        "",
+        `${location.origin}${location.pathname}${location.search}${camelToKebab(targ.value)}${location.hash}`,
+      );
+      setTimeout(() => {
+        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+      }, 300);
     },
     toggleDisplayRowData = (state: boolean = true): void => dispatch(!state);
   useEffect(() => {
@@ -55,39 +55,49 @@ export default function AlterFieldList({
           dispatch(!state);
         }
       };
-      document.addEventListener("keydown", handleKeyDown);
-      return (): void => document.removeEventListener("keydown", handleKeyDown);
-    } else
-      elementNotFound(alterFieldRef.current, "Reference for Previous appointments list dialog", extLine(new Error()));
+      addEventListener("keydown", handleKeyDown);
+      return (): void => removeEventListener("keydown", handleKeyDown);
+    }
   }, [alterFieldRef, dispatch, toggleDisplayRowData]);
   //push em history
   useEffect(() => {
-    navigate({
-      pathname: location.pathname,
-      search: `${location.search}&alter-dlg=open`,
-      hash: `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`,
-    });
+    history.pushState(
+      {},
+      "",
+      `${location.origin}${location.pathname}${location.search}&alter-dlg=open#${btoa(
+        String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))),
+      )}`,
+    );
     optsRef.current instanceof HTMLSelectElement && handleChange(optsRef.current);
     setTimeout(() => {
-      navigate(`${window.location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"), { replace: true });
+      history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
     }, 300);
     return (): void => {
-      const currentParams = new URLSearchParams(searchParams);
-      currentParams.delete("alterDlg");
-      const newHash =
-        optsRef.current instanceof HTMLSelectElement
-          ? `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`
-          : "";
-      navigate(
-        {
-          pathname: location.pathname,
-          search: currentParams.toString(),
-          hash: newHash,
-        },
-        { replace: true },
-      );
+      optsRef.current instanceof HTMLSelectElement
+        ? history.pushState(
+            {},
+            "",
+            `${location.origin}${location.pathname}${location.search}`
+              .replaceAll(`&alter-dlg=open`, "")
+              .replaceAll(
+                `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`,
+                "",
+              )
+              .replaceAll(`${camelToKebab(optsRef.current.value)}${location.hash}`, ""),
+          )
+        : history.pushState(
+            {},
+            "",
+            `${location.origin}${location.pathname}${location.search}`
+              .replaceAll(`&alter-dlg=open`, "")
+              .replaceAll(`#${name.toLowerCase().replaceAll(" ", "-")}`, "")
+              .replaceAll(`${location.hash}`, ""),
+          );
+      setTimeout(() => {
+        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
+      }, 300);
     };
-  }, [name, location, navigate, searchParams]);
+  }, [name]);
   useEffect(() => {
     if (
       (optsRef?.current instanceof HTMLSelectElement || optsRef.current! instanceof HTMLInputElement) &&
@@ -124,9 +134,6 @@ export default function AlterFieldList({
           optsRef.current?.appendChild(newOpt);
         });
       if (optsRef.current.childElementCount < headers.length || optsRef.current.childElementCount === 0) {
-        console.error(
-          `Error generating options for <select> reflecting headers. Abort process and replacing by <input>`,
-        );
         const replaceInp = document.createElement("input") as HTMLInputElement;
         Object.assign(replaceInp, optsRef.current);
         Object.assign(replaceInp.style, optsRef.current);
@@ -138,11 +145,13 @@ export default function AlterFieldList({
     } else
       inputNotFound(optsRef?.current, "Reference for Field options in AlterFieldList component", extLine(new Error()));
   }, [optsRef, tabRef]);
-  useEffect(() => assignFormAttrs(formRef.current));
+  useEffect(() => {
+    assignFormAttrs(formRef.current);
+  });
   return (
     <ErrorBoundary FallbackComponent={() => <GenericErrorComponent message='Erro carregando modal de alteração' />}>
       <dialog
-        className='modal-content-stk2'
+        className='modalContent__stk2'
         ref={alterFieldRef}
         id='alterFieldDlg'
         onClick={ev => {
@@ -160,7 +169,7 @@ export default function AlterFieldList({
           )}>
           <fieldset id='fsAlterFieldStud' className='flexNoWC flexJSt flexAlItSt noInvert'>
             <section className='flexRNoWBetCt widFull' id='headFieldsHead'>
-              <h2 className='mg-1b'>
+              <h2 className='mg__1b'>
                 <strong>Campos Disponíveis</strong>
               </h2>
               <button className='btn btn-close forceInvert' onClick={() => toggleDisplayRowData(state)}></button>

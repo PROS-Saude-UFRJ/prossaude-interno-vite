@@ -1,8 +1,19 @@
-import { nlDsb, queryableNode, rMouseEvent, voidVal } from "./types";
+import { looseNum, nlDsb, queryableNode, rMouseEvent, voidVal } from "./types";
 import { WorkBook, utils, writeFile } from "xlsx";
 import { textTransformPascal } from "../gModel";
 import { exportSignaler } from "../gController";
 import JSZip from "jszip";
+import { maxProps, navigatorVars, person, tabProps } from "@/vars";
+import { BodyType, GordLvl, Intensity, NafTypeValue, TMBFormula } from "@/lib/global/declarations/testVars";
+import {
+  evalFactorAtleta,
+  evalBodyType,
+  evalPseudoNum,
+  evalActivityLvl,
+  dispatchFactorAtvLvl,
+} from "@/lib/locals/edFisNutPage/edFisNutModel";
+import { toast } from "react-hot-toast";
+import promptToast from "../../../../components/interactive/def/PromptToast";
 export interface UndefinedPerson {
   gen: string;
   age: number;
@@ -12,34 +23,42 @@ export interface UndefinedPerson {
   atvLvl: string;
 }
 export class Person {
-  gen;
-  age;
-  weight;
-  height;
-  sumDCut;
-  atvLvl;
+  gen: BodyType;
+  age: number;
+  weight: number;
+  height: number;
+  sumDCut: number;
+  atvLvl: Intensity;
   constructor(
-    gen: string = "masculino",
+    gen: BodyType = "masculino",
     age: number = 0,
     weight: number = 0,
     height: number = 0,
     sumDCut: number = 0,
-    atvLvl: string = "leve",
+    atvLvl: Intensity = "leve",
   ) {
-    this.gen = gen;
-    this.age = age;
-    this.weight = weight;
-    this.height = height;
-    this.sumDCut = sumDCut;
-    this.atvLvl = atvLvl;
+    this.gen = evalBodyType(gen) ? gen : "masculino";
+    this.age = evalPseudoNum(age);
+    this.weight = evalPseudoNum(weight);
+    this.height = evalPseudoNum(height);
+    this.sumDCut = evalPseudoNum(sumDCut);
+    this.atvLvl = evalActivityLvl() ? atvLvl : "leve";
   }
-  checkAtvLvl(personInfo: Person | string): number {
+  public resetPerson(): void {
+    person.gen = "masculino";
+    person.age = 0;
+    person.weight = 0;
+    person.height = 0;
+    person.sumDCut = 0;
+    person.atvLvl = "leve";
+  }
+  public checkAtvLvl(personInfo: Person | string): number {
     if (
-      (personInfo instanceof Person && "atvLvl" in personInfo && this.atvLvl !== "") ||
+      (personInfo instanceof Person && "atvLvl" in personInfo && this.atvLvl !== ("" as any)) ||
       typeof personInfo === "string"
     ) {
-      if (typeof personInfo === "string") this.atvLvl = personInfo;
-      switch (this.atvLvl) {
+      if (typeof personInfo === "string") this.dispatchAtvLvl(personInfo);
+      switch (person.atvLvl) {
         case "sedentario":
           return 1.2;
         case "leve":
@@ -51,208 +70,198 @@ export class Person {
         case "muitoIntenso":
           return 2.2;
         default:
-          console.error(
-            `Error validating case. Obtained this.atvLvl: ${
-              this.atvLvl ?? "null"
-            }; Accepted values: sedentário || leve || moderado || intenso || muitoIntenso`,
-          );
+          return 1.4;
       }
-    } else {
-      console.error(
-        `Error validating instance of person. Obtained value: ${personInfo ?? "null"}; instance ${
-          Object.prototype.toString.call(personInfo).slice(8, -1) ?? "null"
-        }; Value of Nível of Atividade Física obtained: ${this.atvLvl ?? "null"}`,
-      );
-      return 0;
-    }
-    return 0;
+    } else return 1.4;
   }
-  calcIMC(personInfo: Person | [number, number]): [string, number] {
+  public calcIMC(personInfo: Person | { weight: number; height: number }): {
+    l: GordLvl;
+    v: number;
+  } {
     try {
       if (
-        (personInfo instanceof Person &&
-          "weight" in personInfo &&
-          typeof this.weight === "number" &&
-          this.weight >= 0 &&
-          "height" in this &&
-          typeof this.height === "number" &&
-          this.height >= 0) ||
-        (Array.isArray(personInfo) && typeof personInfo[0] === "number" && typeof personInfo[1] === "number")
-      ) {
-        if (Array.isArray(personInfo)) {
-          [this.weight, this.height] = personInfo;
-        }
-        let IMC = this.weight / this.height ** 2;
-        if (Number.isNaN(IMC) || IMC === Math.abs(Infinity)) IMC = 0;
-        if (IMC >= 0) {
-          if (IMC < 18.5) return ["abaixo", IMC];
-          else if (IMC >= 18.5 && IMC < 25.0) return ["eutrofico", IMC];
-          else if (IMC >= 25.0 && IMC < 30) return ["sobrepeso", IMC];
-          else if (IMC >= 30 && IMC < 35) return ["obeso1", IMC];
-          else if (IMC >= 35 && IMC < 40) return ["obeso2", IMC];
-          else if (IMC > 40) return ["obeso3", IMC];
-          else throw new Error(`Error classifying IMC. Obtained value: ${IMC ?? 0}; Values have to be positive.`);
-        } else
-          throw new Error(
-            `Error calculating IMC. Used values: Weight ${this.weight ?? 0} and Height ${this.height ?? 0}`,
-          );
+        !(
+          personInfo instanceof Person ||
+          (typeof personInfo.weight !== "number" && typeof personInfo.height !== "number")
+        )
+      )
+        throw new Error(`Failed to valid arguments for calcIMC`);
+      let IMC = personInfo.weight / (personInfo.height / 100) ** 2;
+      if (!Number.isFinite(IMC) || IMC < 0) IMC = 0;
+      if (IMC >= 0) {
+        if (IMC < 18.5) return { l: "abaixo", v: IMC };
+        else if (IMC >= 18.5 && IMC < 25.0) return { l: "eutrofico", v: IMC };
+        else if (IMC >= 25.0 && IMC < 30) return { l: "sobrepeso", v: IMC };
+        else if (IMC >= 30 && IMC < 35) return { l: "obeso1", v: IMC };
+        else if (IMC >= 35 && IMC < 40) return { l: "obeso2", v: IMC };
+        else if (IMC > 40) return { l: "obeso3", v: IMC };
+        else throw new Error(`Error classifying IMC. Obtained value: ${IMC ?? 0}; Values have to be positive.`);
       } else
         throw new Error(
-          `Error validating data for person. 
-          Element person: ${Object.prototype.toString.call(personInfo).slice(8, -1) ?? "null"}; 
-          Weight present: ${"weight" in personInfo || "false"};
-          Weight obtained: ${this.weight ?? 0};
-          Height present: ${"height" in personInfo || "false"};
-          Height obtained: ${this.height ?? 0}`,
+          `Error calculating IMC. Used values: Weight ${this.weight ?? 0} and Height ${this.height ?? 0}`,
         );
-    } catch (IMCError) {
-      console.error((IMCError as Error).message);
+    } catch (e) {
+      return { l: "abaixo", v: tabProps.IMC ?? 0 };
     }
-    return ["", 0];
   }
-  calcPGC(person: Person): [number, number] {
-    if (person instanceof Person && "sumDCut" in person && typeof this.sumDCut === "number" && this.sumDCut >= 0) {
-      if (person.gen === "masculino") {
-        let DC = 1.10938 - 0.0008267 * this.sumDCut + 0.0000016 * this.sumDCut ** 2 - 0.0002574 * person.age;
-        if (DC <= 0 || Number.isNaN(DC)) DC = 0.01;
-        let PGC = 495 / DC - 450;
-        if (PGC <= 0 || Number.isNaN(PGC)) PGC = 0.01;
-        if (PGC > 100) PGC = 100;
-        let MLG = 100 - PGC > 0 ? 100 - PGC : 0;
-        if (Number.isNaN(MLG) || MLG === Math.abs(Infinity)) MLG = 0;
-        return [PGC, MLG];
-      } else if (person.gen === "feminino") {
-        let DC = 1.0994921 - 0.0009929 * this.sumDCut + 0.0000023 * this.sumDCut ** 2 - 0.0001392 * person.age;
-        if (DC <= 0 || Number.isNaN(DC)) DC = 0.01;
-        let PGC = 495 / DC - 450;
-        if (PGC <= 0 || Number.isNaN(PGC)) PGC = 0.01;
-        if (PGC > 100) PGC = 100;
-        let MLG = 100 - PGC > 0 ? 100 - PGC : 0;
-        if (Number.isNaN(MLG) || MLG === Math.abs(Infinity)) MLG = 0;
-        return [PGC, MLG];
-      } else if (person.gen === "neutro") {
-        let DC = 1.10443605 - 0.0009098 * this.sumDCut + 0.00000195 * this.sumDCut ** 2 - 0.0001983 * person.age;
-        if (DC <= 0 || Number.isNaN(DC)) DC = 0.01;
-
-        let PGC = 495 / DC - 450;
-        if (PGC <= 0 || Number.isNaN(PGC)) PGC = 0.01;
-        if (PGC > 100) PGC = 100;
-        let MLG = 100 - PGC > 0 ? 100 - PGC : 0;
-        if (Number.isNaN(MLG) || MLG === Math.abs(Infinity)) MLG = 0;
-        return [PGC, MLG];
-      } else
-        console.error(
-          `Invalid instance of object. Obtained instance: ${
-            Object.prototype.toString.call(person).slice(8, -1) ?? "null"
-          }`,
-        );
-    } else
-      console.warn(`Error validating .sumDCut:
-      It is present: ${"sumDCut" in person || false};
-      Obtained primitive type for .sumDCut: ${typeof this.sumDCut};
-      Obtained value: ${this.sumDCut ?? 0}`);
-    return [0, 0];
-  }
-  calcTMB(person: Person, IMC: number = 0, MLG: number = 0, factorAtleta: string = "Peso"): [string, number] {
-    if (factorAtleta === "peso") factorAtleta = "Peso";
-    if (factorAtleta === "mlg") factorAtleta = "MLG";
+  public calcPGC(person: Person): { pgc: number; mlg: number } {
     try {
-      if (
-        person instanceof Person &&
-        "atvLvl" in person &&
-        this.atvLvl &&
-        typeof this.atvLvl === "string" &&
-        typeof IMC === "number" &&
-        typeof MLG === "number" &&
-        typeof factorAtleta === "string"
-      ) {
-        if (this.atvLvl === "muitoIntenso" && (factorAtleta === "MLG" || factorAtleta === "Peso")) {
-          if (factorAtleta === "MLG") {
-            if (MLG && MLG >= 0) return ["tinsley", 25.9 * MLG + 284];
-            else
-              throw new Error(`Error validating MLG.
-              Obtained value: ${MLG ?? 0}`);
-          } else if (factorAtleta === "Peso") {
-            if ("weight" in person && this.weight >= 0) return ["tinsley", 24.8 * this.weight + 10];
-            else
-              throw new Error(`Error validating weight.
-              Obtained value: ${this.weight ?? 0}`);
-          }
-        } else if (
-          this.atvLvl === "sedentario" ||
-          this.atvLvl === "leve" ||
-          this.atvLvl === "moderado" ||
-          this.atvLvl === "intenso"
-        ) {
-          if ("weight" in person && this.weight >= 0 && "height" in person && this.height >= 0 && "age" in person) {
-            if (IMC < 25.0 && IMC >= 0) {
-              if (person.gen === "masculino")
-                return ["harrisBenedict", 66 + (13.8 * this.weight + 5.0 * this.height - 6.8 * this.age)];
-              else if (person.gen === "feminino")
-                return ["harrisBenedict", 655 + (9.6 * this.weight + 1.9 * this.height - 4.7 * this.age)];
-              else if (person.gen === "neutro")
-                return ["harrisBenedict", 360.5 + (11.7 * this.weight + 3.45 * this.height - 5.75 * this.age)];
-              else
+      person.sumDCut = Math.abs(person.sumDCut);
+      if (!("sumDCut" in person && typeof person.sumDCut === "number" && person.sumDCut >= 0))
+        throw new Error(`Failed to validate person props:
+        sumDCut in props: ${"sumDCut" in person}
+        Type of sumDCut: ${typeof person.sumDCut === "number"}
+        Value of sumDCut: ${person.sumDCut || "Falsish"}`);
+      const sdc = person.sumDCut,
+        g = person.gen;
+      let DC = 0,
+        PGC = 0,
+        MLG = 0;
+      if (g === "masculino") {
+        DC = 1.10938 - 0.0008267 * sdc + 0.0000016 * sdc ** 2 - 0.0002574 * person.age;
+        if (DC <= 0 || !Number.isFinite(DC)) DC = 0.01;
+        PGC = 495 / DC - 450;
+        if (PGC <= 0 || !Number.isFinite(PGC)) PGC = 0.01;
+        if (PGC > 100) PGC = 100;
+        MLG = 100 - PGC > 0 ? 100 - PGC : 0;
+      } else if (g === "feminino") {
+        DC = 1.0994921 - 0.0009929 * sdc + 0.0000023 * sdc ** 2 - 0.0001392 * person.age;
+        if (DC <= 0 || !Number.isFinite(DC)) DC = 0.01;
+        PGC = 495 / DC - 450;
+        if (PGC <= 0 || !Number.isFinite(PGC)) PGC = 0.01;
+        if (PGC > 100) PGC = 100;
+        MLG = 100 - PGC > 0 ? 100 - PGC : 0;
+      } else if (g === "neutro") {
+        DC = 1.10443605 - 0.0009098 * sdc + 0.00000195 * sdc ** 2 - 0.0001983 * person.age;
+        if (DC <= 0 || !Number.isFinite(DC)) DC = 0.01;
+        PGC = 495 / DC - 450;
+        if (PGC <= 0 || !Number.isFinite(PGC)) PGC = 0.01;
+        if (PGC > 100) PGC = 100;
+        MLG = 100 - PGC > 0 ? 100 - PGC : 0;
+      }
+      if (!Number.isFinite(MLG)) MLG = 0;
+      return { pgc: PGC, mlg: MLG };
+    } catch (e) {
+      return { pgc: tabProps.PGC ?? 0, mlg: tabProps.MLG ?? 0 };
+    }
+  }
+  public calcTMB(person: Person): { l: TMBFormula; v: number } {
+    evalFactorAtleta();
+    try {
+      if (!(person instanceof Person)) throw new Error(`Failed to validate Person instance.`);
+      const fa = tabProps.factorAtleta,
+        atv = person.atvLvl,
+        w = person.weight;
+      if (atv === "muitoIntenso" && (fa === "mlg" || fa === "peso")) {
+        if (fa === "mlg") {
+          const MLG = tabProps.MLG;
+          if (MLG && MLG >= 0) return { l: "tinsley", v: 25.9 * MLG + 284 };
+          else
+            throw new Error(`Error validating MLG.
+            Obtained value: ${MLG ?? 0}`);
+        } else if (fa === "peso") {
+          if ("weight" in person && w >= 0) return { l: "tinsley", v: 24.8 * w + 10 };
+          else
+            throw new Error(`Error validating weight.
+            Obtained value: ${w ?? 0}`);
+        } else throw new Error(`Failed to validate Factor for Athletes.\nObtained value: ${fa || "falsish"}`);
+      } else if (atv === "sedentario" || atv === "leve" || atv === "moderado" || atv === "intenso") {
+        const IMC = tabProps.IMC ?? 0,
+          a = person.age,
+          g = person.gen,
+          h = person.height;
+        if (
+          !(
+            "weight" in person &&
+            w >= 0 &&
+            "height" in person &&
+            h >= 0 &&
+            "age" in person &&
+            a >= 0 &&
+            "gen" in person &&
+            evalBodyType(g)
+          )
+        )
+          throw new Error(
+            `Failed to validate person props instance.\nObtained values: Age as ${a ?? "void"},\nWeight as ${
+              w ?? "void"
+            },\nHeight as ${h ?? "void"},\nGender: ${g || "falsish"}`,
+          );
+        switch (true) {
+          case IMC < 25.0 && IMC >= 0:
+            switch (g) {
+              case "masculino":
+                return { l: "harrisBenedict", v: 66 + (13.8 * w + 5.0 * h - 6.8 * a) };
+              case "feminino":
+                return { l: "harrisBenedict", v: 655 + (9.6 * w + 1.9 * h - 4.7 * a) };
+              case "neutro":
+                return { l: "harrisBenedict", v: 360.5 + (11.7 * w + 3.45 * h - 5.75 * a) };
+              default:
                 throw new Error(
                   `Error validating instance of Person. Obtained instance: ${
                     Object.prototype.toString.call(person).slice(8, -1) ?? "null"
                   }`,
                 );
-            } else if (IMC >= 25.0) {
-              if (person.gen === "masculino")
-                return ["mifflinStJeor", 10 * this.weight + 6.25 * this.height - 5.0 * this.age + 5];
-              else if (person.gen === "feminino")
-                return ["mifflinStJeor", 10 * this.weight + 6.25 * this.height - 5.0 * this.age - 161];
-              else if (person.gen === "neutro")
-                return ["mifflinStJeor", 10 * this.weight + 6.25 * this.height - 5.0 * this.age - 78];
-              else
+            }
+          case IMC >= 25.0:
+            switch (g) {
+              case "masculino":
+                return { l: "mifflinStJeor", v: 10 * w + 6.25 * h - 5.0 * a + 5 };
+              case "feminino":
+                return { l: "mifflinStJeor", v: 10 * w + 6.25 * h - 5.0 * a - 161 };
+              case "neutro":
+                return { l: "mifflinStJeor", v: 10 * w + 6.25 * h - 5.0 * a - 78 };
+              default:
                 throw new Error(
-                  `Error validating instance of Person. Obtained instance: ${Object.prototype.toString
-                    .call(person)
-                    .slice(8, -1)}`,
+                  `Error validating instance of Person. Obtained instance: ${
+                    Object.prototype.toString.call(person).slice(8, -1) ?? "null"
+                  }`,
                 );
-            } else
-              throw new Error(
-                `Error validating IMC. IMC obtained: ${IMC ?? 0}; Valor deve ser númerico, positivo e float`,
-              );
-          } else
-            throw new Error(`Error validating properties of person.
-            Weight present: ${"weight" in person || false};
-            Value of weight obtained: ${this.weight ?? 0};
-            Height present: ${"height" in person || false};
-            Value of height obtained: ${this.height || 0};
-            age present: ${"age" in person || false};
-            `);
-        } else {
-          throw new Error(
-            `Error validating atvLvl and/or factorAtleta.
-            atvLvl obtained: ${this.atvLvl ?? "null"}
-            Fator obtained: ${factorAtleta ?? "null"}; Fatores válidos: "MLG" || "Peso"`,
-          );
+            }
+          default:
+            throw new Error(
+              `Error validating IMC. IMC obtained: ${IMC ?? 0}; Valor deve ser numérico, positivo e float`,
+            );
         }
-      } else {
-        throw new Error(`Error validating person.
-        Elemento: ${person ?? "null"};
-        instance: ${Object.prototype.toString.call(person).slice(8, -1) ?? "null"};
-        atvLvl present: ${"atvLvl" in person || false};
-        Value of atvLvl obtained: ${this.atvLvl ?? "null"};
-        Primitive type of .atvLvl: ${typeof this.atvLvl};
-        Primitive type of IMC: ${typeof IMC};
-        Primitive type of MLG: ${typeof MLG};
-        Primitive type of factorAtleta: ${typeof factorAtleta}.`);
-      }
-    } catch (TMBError) {
-      console.error((TMBError as Error).message);
+      } else throw new Error(`Failed to validate Physical Activity level of person:\nObtained value: ${fa}`);
+    } catch (e) {
+      return {
+        l: (() =>
+          tabProps.fct instanceof HTMLSelectElement || tabProps.fct instanceof HTMLInputElement
+            ? (tabProps.fct.value as TMBFormula)
+            : "harrisBenedict")(),
+        v: tabProps.TMB ?? 0,
+      };
     }
-    return ["", 0];
   }
-  calcGET(TMB: number = 0, factorAtvLvl: number = 1.4): number {
-    if (TMB && factorAtvLvl) return TMB * factorAtvLvl;
-    else
-      console.error(`Error validating arguments.
-      TMB obtained: ${TMB ?? 0};
-      factorAtvLvl obtained: ${factorAtvLvl ?? 0}`);
-    return 0;
+  public calcGET(): number {
+    dispatchFactorAtvLvl(tabProps.factorAtvLvl as NafTypeValue);
+    return (tabProps.TMB ?? 0) * ((tabProps.factorAtvLvl ?? 0) as number);
+  }
+  public dispatchGen(g: string): void {
+    person.gen = evalBodyType(g) ? g : person.gen || "masculino";
+  }
+  public dispatchAge(a: looseNum): void {
+    const age = evalPseudoNum(a);
+    person.age = age > maxProps.age ? maxProps.age : age;
+  }
+  public dispatchWeight(w: looseNum): void {
+    const weight = Math.abs(evalPseudoNum(w));
+    person.weight = weight > maxProps.weight ? maxProps.weight : weight;
+  }
+  public dispatchHeight(h: looseNum): void {
+    const height = Math.abs(evalPseudoNum(h));
+    person.height = height > maxProps.height ? maxProps.height : height;
+  }
+  public dispatchDC(d: looseNum): void {
+    const dc = Math.abs(evalPseudoNum(d));
+    person.sumDCut = dc > maxProps.dc ? maxProps.dc : dc;
+  }
+  public dispatchAtvLvl(a: string): void {
+    person.atvLvl = ((a: string): a is Intensity =>
+      ["sedentario", "leve", "moderado", "intenso", "muitoIntenso"].includes(a))(a)
+      ? a
+      : person.atvLvl || "leve";
   }
 }
 export class UniqueMap extends Map {
@@ -266,7 +275,7 @@ export class UniqueMap extends Map {
         } else throw new Error(`NaN values are not qualified.`);
       } else throw new Error(`Map already has specified key.`);
     } catch (err) {
-      console.error(`Error adding entry to UniqueMap: ${(err as Error).message}`);
+      return this;
     }
     return this;
   }
@@ -380,13 +389,15 @@ export class ClickEvaluator {
     try {
       if (!("movementX" in ev)) throw new Error("Invalid instance for Event");
       if (
-        !this.#isTrustedEvent(ev) ||
-        (window &&
+        !this.#isTrustedEvent(ev) &&
+        !(
+          window &&
           localStorage.getItem("shouldTrustNavigate") &&
-          localStorage.getItem("shouldTrustNavigate") === "true")
+          localStorage.getItem("shouldTrustNavigate") === "true"
+        )
       ) {
         return [
-          navigator.language.startsWith("pt-")
+          navigatorVars.pt
             ? "Evento de mouse não confiável. Por favor aguarde para tentar novamente."
             : "Mouse event not trusted. Please wait and try again.",
           suspicious,
@@ -394,7 +405,7 @@ export class ClickEvaluator {
       }
       if (!this.#isMouseMovementZero(ev)) {
         return [
-          navigator.language.startsWith("pt-")
+          navigatorVars.pt
             ? "Movimento de mouse não confiável. Por favor aguarde para tentar novamente."
             : "Mouse movement not trusted. Please wait and try again.",
           suspicious,
@@ -402,7 +413,7 @@ export class ClickEvaluator {
       }
       if (this.#shouldEvaluateTime && this.#isSuspiciousTimeInterval()) {
         return [
-          navigator.language.startsWith("pt-")
+          navigatorVars.pt
             ? "Intervalo de movimento do mouse não confiável. Por favor aguarde para tentar novamente."
             : "Mouse interval tracked as suspicious. Please retry later.",
           suspicious,
@@ -412,7 +423,7 @@ export class ClickEvaluator {
       this.#setLastClickTime(new Date().getTime());
       if (this.#shouldEvaluateClient && this.#isSuspiciousClientMovement(ev)) {
         return [
-          navigator.language.startsWith("pt-")
+          navigatorVars.pt
             ? "Deslocamento de mouse não confiável. Por favor aguarde para tentar novamente."
             : "Mouse pattern tracked as suspicious. Please wait and try again.",
           suspicious,
@@ -421,13 +432,12 @@ export class ClickEvaluator {
       this.#enableEvaluateClient();
       this.#incrementClientAttempt();
       this.#setLastClickCoordinates(ev.clientX, ev.clientY);
-      localStorage.getItem("shouldTrustNavigate") && localStorage.removeItem("shouldTrustNavigate");
       suspicious = false;
+      localStorage.getItem("shouldTrustNavigate") && localStorage.removeItem("shouldTrustNavigate");
       return ["Attempt validated.", suspicious];
     } catch (e) {
-      console.error(`Error executing evaluateClickMovements: ${(e as Error).message}`);
       return [
-        navigator.language.startsWith("pt-")
+        navigatorVars.pt
           ? "Não foi possível validar a solicitação. Por favor aguarde para tentar novamente."
           : "It wasn't possible to validate the request. Please wait for trying again.",
         suspicious,
@@ -490,18 +500,28 @@ export class ExportHandler {
     }
     this.#setExports(this.#exports + 1);
     if (this.exports > 10 || suspicious) {
-      suspicious && alert(message);
+      suspicious && toast.error(message);
       this.#setTimeoutForExport(ev, idf);
       return;
     }
-    const pw = navigator.language.startsWith("pt-")
-      ? prompt("Por favor insira a senha:")
-      : prompt("Please input the password:");
-    if (!pw || btoa(pw) !== "cHJvc3NhdWRldWZyanhscw==") {
-      navigator.language.startsWith("pt-") ? alert("Senha incorreta") : alert("Wrong password");
-      return;
-    }
-    this.#processExportData(context, scope, namer);
+    promptToast(
+      navigatorVars.pt ? "Por favor insira a senha:" : "Please input the password:",
+      "Digite aqui a senha",
+    ).then(res => {
+      const pw = res;
+      if (!pw || btoa(pw) !== "cGFzc3dvcmQ=") {
+        if (navigatorVars.pt) {
+          toast.error("Senha incorreta");
+          toast("Esta versão de teste de UX usa a seguinte senha: password", { icon: "🗝" });
+        } else {
+          toast.error("Wrong password");
+          toast("This UX testing version uses the following password: password", { icon: "🗝" });
+        }
+        return;
+      }
+      navigatorVars.pt ? toast.success("Senha validada!") : toast.success("Password validated!");
+      this.#processExportData(context, scope, namer);
+    });
   }
   #getTarget(targ: nlDsb, idf: string): nlDsb {
     const el = targ || document.getElementById(idf) || document.getElementsByName(idf)[0];
@@ -518,9 +538,9 @@ export class ExportHandler {
       this.#setCurrTime(360000);
       clearInterval(interv);
     }, this.timer);
-    navigator.language.startsWith("pt-")
-      ? alert(`Você está em timeout para exportações. Por favor aguarde ${this.currTime} ou recarregue a página.`)
-      : alert(`You are in a timeout for exporting. Please wait for ${this.currTime} or reload the page.`);
+    navigatorVars.pt
+      ? toast.error(`Você está em timeout para exportações. Por favor aguarde ${this.currTime} ou recarregue a página.`)
+      : toast.error(`You are in a timeout for exporting. Please wait for ${this.currTime} or reload the page.`);
   }
   #processExportData(
     context: string = "undefined",
@@ -610,6 +630,24 @@ export class ExportHandler {
             if (file) {
               const rd = new FileReader();
               rd.onload = (): string | ArrayBuffer | null => (v = rd.result);
+              rd.onerror = (): string => {
+                toast?.error(
+                  navigatorVars.pt
+                    ? `Erro carregando arquivos para a planilha`
+                    : `Error loading files to the spreadsheet`,
+                );
+                return (v = `#ERRO: ${rd.error?.name ?? "Nome indefinido"} — ${
+                  rd.error?.message ?? "mensagem indefinida"
+                }`);
+              };
+              rd.onloadend = () => {
+                toast?.success(
+                  navigatorVars.pt
+                    ? `Sucesso carregando arquivos: ${file.name}`
+                    : `Success loading files: ${file.name}`,
+                  { duration: 1000 },
+                );
+              };
               rd.readAsDataURL(file);
               imageEls.push(el);
             } else v = "Não preenchido";
@@ -700,18 +738,9 @@ export class ExportHandler {
               exportSignaler.abort();
               this.#abortControl.abort();
             }
-            if (!res.ok) {
-              console.warn(`This is a UX testing only version:
-              Reaching: ${res.url}
-              Redirected: ${res.redirected}
-              Type: ${res.type}
-              Status: ${res.status} => ${res.ok ? "OK" : "NOT OK"}
-              Text: ${res.statusText}
-              `);
-              return;
-            }
+            if (!res.ok) return;
           } catch (e) {
-            console.error(`Error executing fetchProcess:\n${(e as Error).message}`);
+            return;
           }
         };
       if (namer) {
@@ -803,7 +832,7 @@ export class ExportHandler {
       }
       this.#processImages(imageEls, context);
     } catch (error) {
-      console.error("Error generating spreadsheet:", error);
+      return;
     }
   }
   async #processImages(els: (HTMLCanvasElement | HTMLInputElement)[], context: string = "") {
@@ -818,20 +847,17 @@ export class ExportHandler {
           if (file) canvasBlobs[el.id || el.name || el.className.replace(/\s/g, "__") || el.tagName] = file;
         }
       } catch (e) {
-        console.error(`Failed fetching Canvas: ${e}`);
+        return;
       }
     }
     const zip = new JSZip();
     for (const [idf, blob] of Object.entries(canvasBlobs)) {
       try {
-        if (!blob) {
-          console.warn(`No blob available for ${idf}`);
-          continue;
-        }
+        if (!blob) continue;
         const fileName = `image_${context || idf}.png`;
         zip.file(fileName, blob);
       } catch (e) {
-        console.error(`Error executing iteration for ${idf}:\n${e}`);
+        continue;
       }
     }
     try {
@@ -843,7 +869,7 @@ export class ExportHandler {
       zipLink.click();
       document.body.removeChild(zipLink);
     } catch (e) {
-      console.error(`Error placing link for .zip of images: ${e}`);
+      return;
     }
   }
 }
@@ -879,7 +905,7 @@ export class Validator {
       if (typeof p !== "string") throw new Error(`Failed to validate typeof p`);
       const res = await this.#matchUsersMap(u, p);
       if (!res.ok) {
-        if (navigator) alert(`Error ${res.status}: ${res.msg}`);
+        toast(`Error ${res.status}: ${res.msg}`, { icon: "❌" });
         console.warn(`Error ${res.status}: ${res.msg}`);
         return false;
       }

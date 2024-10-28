@@ -1,6 +1,6 @@
-import { userClasses } from "../../../src/lib/global/declarations/types";
-import { DataProvider } from "../../../../../../../../../pro-saude-app-netlify/app/src/lib/global/declarations/classesCons";
-import { DOMEvent, EventTargetMethod } from "../../../src/lib/tests/testVars";
+import { DataProvider } from "../../../../global/declarations/classesCons";
+import { userClasses } from "../../../../global/declarations/types";
+import { DOMEvent, EventTargetMethod } from "@/lib/tests/testVars";
 describe("DataProvider Class", (): void => {
   let dataProvider: DataProvider;
   let mockSessionStorage: { [key: string]: any };

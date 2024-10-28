@@ -1,20 +1,19 @@
-import { FillerProps } from "../../src/lib//locals/panelPage/declarations/interfacesCons";
-import { addListenerAvMembers } from "../../src/lib//locals/panelPage/handlers/consHandlerList";
-import { providers } from "../../src/vars";
-import { nlBtn, nlDiv } from "../../src/lib/global/declarations/types";
+import { FillerProps } from "@/lib/global/declarations/interfacesCons";
+import { addListenerAvMembers } from "@/lib/locals/panelPage/handlers/consHandlerList";
+import { providers } from "@/vars";
+("../panelForms/defs/client/SelectPanel");
+import { nlBtn, nlDiv } from "@/lib/global/declarations/types";
 import { useEffect, useRef, useState } from "react";
 import AvStudListDlg from "../lists/AvStudListDlg";
-import { handleCondtReq, syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
-import { useSearchParams } from "react-router-dom";
+import { handleCondtReq, syncAriaStates } from "@/lib/global/handlers/gHandlers";
 export default function DREFiller({ forwardedRef }: FillerProps): JSX.Element {
-  const btnStudListRef = useRef<nlBtn>(null),
-    fillerDivRef = useRef<nlDiv>(null),
-    [shouldDisplayStudList, setStudListDisplay] = useState<boolean>(false),
-    [searchParams] = useSearchParams(),
-    toggleStudListDisplay = (s: boolean = false): void => setStudListDisplay(!s);
+  const btnStudListRef = useRef<nlBtn>(null);
+  const fillerDivRef = useRef<nlDiv>(null);
+  const [shouldDisplayStudList, setStudListDisplay] = useState<boolean>(false);
+  const toggleStudListDisplay = (s: boolean = false): void => setStudListDisplay(!s);
   useEffect(() => {
-    if (searchParams.get("av-stud") === "open") setStudListDisplay(true);
-  }, [searchParams]);
+    /av-stud=open/gi.test(location.search) && setStudListDisplay(true);
+  }, []);
   useEffect(() => {
     if (fillerDivRef.current instanceof HTMLDivElement) {
       addListenerAvMembers(forwardedRef || fillerDivRef, false);
@@ -27,7 +26,7 @@ export default function DREFiller({ forwardedRef }: FillerProps): JSX.Element {
   }, [fillerDivRef, forwardedRef]);
   return (
     <>
-      <div role='group' className='flexNoWC flexBasis100 widFull mg-1b' id='CPFFillerDiv' ref={fillerDivRef}>
+      <div role='group' className='flexNoWC flexBasis100 widFull mg__1b' id='CPFFillerDiv' ref={fillerDivRef}>
         <label className='stLab' id='hRelStud'>
           CPF do Estudante Alocado:
         </label>
@@ -58,7 +57,7 @@ export default function DREFiller({ forwardedRef }: FillerProps): JSX.Element {
           </datalist>
         </div>
       </div>
-      <div role='group' className='flexNoWC flexBasis100 widFull mg-1b' id='DREFillerDiv'>
+      <div role='group' className='flexNoWC flexBasis100 widFull mg__1b' id='DREFillerDiv'>
         <label className='stLab' id='hRelStud'>
           DRE do Estudante Alocado:
         </label>

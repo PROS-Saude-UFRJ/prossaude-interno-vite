@@ -5,7 +5,7 @@ import DivRot from "../../../../../../components/interactive/edfis/DivRot";
 import InpRot from "../../../../../../components/interactive/edfis/client/InpRot";
 import GenericErrorComponent from "../../../../../../components/error/GenericErrorComponent";
 //@ts-ignore
-import { InpRotProps, RotProps } from "../../../src/lib/global/declarations/interfaces";
+import { InpRotProps, RotProps } from "@/lib/global/declarations/interfaces";
 jest.mock(
   "./client/InpRot",
   (): (() => JSX.Element) => jest.fn((): JSX.Element => <input />) as jest.Mock,

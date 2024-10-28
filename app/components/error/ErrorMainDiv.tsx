@@ -1,7 +1,7 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { elementNotFound, extLine } from "../../src/lib/global/handlers/errorHandler";
-import { nullishArtc } from "../../src/lib/global/declarations/types";
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
+import { nullishArtc } from "@/lib/global/declarations/types";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useRef, useEffect } from "react";
 import GenericErrorComponent from "./GenericErrorComponent";
 export default function ErrorMainDiv(): JSX.Element {
@@ -18,7 +18,7 @@ export default function ErrorMainDiv(): JSX.Element {
   return (
     <ErrorBoundary FallbackComponent={() => <GenericErrorComponent message='Erro carregando mensagem de erro!' />}>
       <article role='alert' id='errorMainDiv' ref={mainRef}>
-        <h2 className='mg-2bv widHalf'>
+        <h2 className='mg__2bv widHalf'>
           <strong>
             Oops, algo deu errado! 🤷‍♀️❗❓{" "}
             <svg xmlns='http://www.w3.org/2000/svg' x='0px' y='0px' width='100' height='100' viewBox='0 0 64 64'>

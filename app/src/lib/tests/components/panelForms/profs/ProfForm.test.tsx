@@ -3,10 +3,10 @@ import { render, fireEvent, RenderResult } from "@testing-library/react";
 //@ts-ignore
 import { handleSubmit } from "@/pages/api/ts/handlers";
 //@ts-ignore
-import { formatCPF, addEmailExtension } from "../../../src/lib/global/gModel";
+import { formatCPF, addEmailExtension } from "@/lib/global/gModel";
 import ProfForm from "../../../../../../components/panelForms/profs/ProfForm";
 jest.mock(
-  "../../../src/lib/global/handlers/errorHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
     extLine: jest.Mock<any, any, any>;
@@ -18,7 +18,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/gController",
+  "@/lib/global/gController",
   (): {
     addExportFlags: jest.Mock<any, any, any>;
   } => ({
@@ -26,7 +26,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/gModel",
+  "@/lib/global/gModel",
   (): {
     formatCPF: jest.Mock<any, any, any>;
     formatTel: jest.Mock<any, any, any>;

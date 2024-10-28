@@ -1,6 +1,6 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import FamPulm from "../../../../../../components/interactive/ag/FamPulm";
-import React from "react";
 import { handleDivAddShow } from "../../../../../lib/locals/aGPage/aGHandlers";
 jest.mock(
   "../../../../../pages/ag",

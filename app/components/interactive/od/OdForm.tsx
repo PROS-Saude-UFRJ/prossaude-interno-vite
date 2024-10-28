@@ -1,4 +1,4 @@
-import { nlFm, quadrCases } from "../../../src/lib/global/declarations/types";
+import { nlFm, quadrCases } from "@/lib/global/declarations/types";
 import ConfirmDate from "../def/ConfirmDate";
 import ConfirmLocId from "../def/ConfirmLocId";
 import Declaration from "../def/Declaration";
@@ -9,13 +9,16 @@ import QuadrMainDiv from "./QuadrMainDiv";
 import TratFs from "./TratFs";
 import SocialName from "../def/SocialName";
 import Name from "../def/Name";
-import { registerPersistInputs, validateForm } from "../../../src/lib/global/handlers/gHandlers";
-import { handleSubmit } from "../../../src/lib/locals/panelPage/handlers/handlers";
+import { registerPersistInputs, validateForm } from "@/lib/global/handlers/gHandlers";
+import { handleSubmit } from "@/lib/global/data-service";
 import InspDlgElements from "./InspDlgElements";
 import { useRef, useEffect } from "react";
-import useDataProvider from "../../../src/lib/hooks/useDataProvider";
+import useDataProvider from "@/lib/hooks/useDataProvider";
+import { odProps } from "@/vars";
+import { toast } from "react-hot-toast";
 export default function OdForm(): JSX.Element {
-  const f = useRef<nlFm>(null);
+  const f = useRef<nlFm>(null),
+    toasted = useRef<boolean>(false);
   useEffect(() => {
     registerPersistInputs({
       f: f.current,
@@ -25,9 +28,40 @@ export default function OdForm(): JSX.Element {
       queriesToExclude: ['[role="switch"]'],
     });
   }, []);
+  useEffect(() => {
+    odProps.odIsAutoCorrectOn = true;
+    return (): void => {
+      odProps.odIsAutoCorrectOn = true;
+    };
+  }, []);
+  useEffect(() => {
+    if (!toasted.current)
+      toast(t => (
+        <fieldset style={{ lineHeight: "1.6rem" }}>
+          <b>Dica!</b>
+          <hr />
+          <span>Você pode desativar ou ativar</span>
+          <br />a Autocorreção nos alternadores.
+          <br />
+          <span>Arraste os quadrantes para movê-los!</span>
+          <hr />
+          <button
+            style={{ height: "2.1rem", fontSize: "0.8rem" }}
+            className='btn btn-secondary'
+            onClick={() => toast.dismiss(t.id)}>
+            Fechar
+          </button>
+        </fieldset>
+      ));
+    toasted.current = true;
+    const untoast = (): void => toast.dismiss();
+    addEventListener("popstate", untoast);
+    return (): void => removeEventListener("popstate", untoast);
+  }, []);
   useDataProvider(f.current);
   return (
     <form
+      ref={f}
       name='od_form'
       action='submit_od_form'
       data-ep='od'
@@ -42,7 +76,7 @@ export default function OdForm(): JSX.Element {
         )
       }>
       <fieldset name='fsAnamGName' id='fsAnamGId' className='fsMain'>
-        <legend id='fsAnamGLeg' className='legMain form-padded'>
+        <legend id='fsAnamGLeg' className='legMain formPadded'>
           Identificação
         </legend>
         <section className='sectionMain' id='fsAnamGSect'>
@@ -75,9 +109,9 @@ export default function OdForm(): JSX.Element {
       <hr />
       <fieldset name='fsAvDentName' id='fsAvDentId' className='fsMain'>
         <legend className='legMain' id='fsAvDentLeg'>
-          <span className='mgr-1v bolded'>Avaliação Dentária</span>
+          <span className='mgr__1v bolded'>Avaliação Dentária</span>
         </legend>
-        <section className='sectionMain' id='sectAvDentId' itemScope itemProp='dentComp'>
+        <section className='sectionMain' id='sectAvDentId' itemScope>
           {["SupDir", "InfEsq", "SupEsq", "InfDir"].map((qr, i) => (
             <QuadrMainDiv qr={qr as quadrCases} key={`qr__${i}`} />
           ))}
@@ -97,7 +131,7 @@ export default function OdForm(): JSX.Element {
       <br role='presentation' />
       <hr />
       <TratFs />
-      <fieldset name='fsConfirmName' id='fsConfirmId' className='fsMain form-padded'>
+      <fieldset name='fsConfirmName' id='fsConfirmId' className='fsMain formPadded'>
         <section className='sectionMain sectionConfirm' id='sectConfirmCheck'>
           <Declaration text='&#34;DECLARO QUE CONCORDO COM OS TRATAMENTOS PROPOSTOS ACIMA&#34;' />
           <div className='divMain' id='divConfirm' role='group'>

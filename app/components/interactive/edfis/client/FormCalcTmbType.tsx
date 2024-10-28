@@ -1,29 +1,53 @@
-import { callbackAtvLvlElementNaf } from "../../../../src/lib/locals/edFisNutPage/edFisNutHandler";
-import { person, tabProps } from "../../../../src/vars";
+import { ENCtxProps } from "@/lib/global/declarations/interfaces";
+import { useContext, useEffect, useRef } from "react";
+import { ENCtx } from "./ENForm";
+import { TMBFormula } from "@/lib/global/declarations/testVars";
+import { tabProps } from "@/vars";
+import { callbackAtvLvlElementNaf, exeAutoFill } from "@/lib/locals/edFisNutPage/edFisNutHandler";
+import sEn from "@/styles//modules/enStyles.module.scss";
+import { NlMRef, nlSel } from "@/lib/global/declarations/types";
 export default function FormCalcTmbType(): JSX.Element {
+  const ctx1 = useContext<ENCtxProps>(ENCtx),
+    idf = "formCalcTMBType",
+    formulas: TMBFormula[] = ["harrisBenedict", "mifflinStJeor", "tinsley"];
+  let gl: NlMRef<nlSel> = null,
+    nafr: NlMRef<nlSel> = null,
+    fct: NlMRef<nlSel> = null,
+    sar: NlMRef<nlSel> = null;
+  if (ctx1?.refs) ({ gl, nafr, fct, sar } = ctx1.refs);
+  const trusted = useRef<boolean>(false);
+  useEffect(() => {
+    tabProps.fct = fct?.current ?? document.getElementById(idf);
+  }, [fct]);
   return (
     <select
-      id='formCalcTMBType'
+      ref={fct}
+      id={idf}
       name='form_tmb'
-      className='form-select noInvert lockSelect'
+      className={`form-select noInvert lockSelect ${sEn.select} ${sEn.formCalcTMBType}`}
       data-title='Fórmula para TMB'
+      disabled
       onChange={ev => {
-        [person.atvLvl, tabProps.factorAtvLvl] = callbackAtvLvlElementNaf(
-          [
-            [tabProps.factorAtvLvl, tabProps.IMC],
-            [
-              document.getElementById("selectLvlAtFis"),
-              document.getElementById("gordCorpLvl"),
-              ev.currentTarget,
-              document.getElementById("nafType"),
-            ],
-          ],
-          ev.currentTarget.id,
-        );
+        try {
+          if (ev.isTrusted) trusted.current = true;
+          if (!trusted.current) return;
+          callbackAtvLvlElementNaf(idf, {
+            sa: sar?.current ?? document.getElementById("selectLvlAtFis"),
+            gl: gl?.current ?? document.getElementById("gordCorpLvl"),
+            naf: nafr?.current ?? document.getElementById("nafType"),
+            fct: fct?.current ?? document.getElementById("formCalcTMBType"),
+          });
+          tabProps.edIsAutoCorrectOn && exeAutoFill(ev.currentTarget);
+        } catch (e) {
+          return;
+        }
       }}>
-      <option value='harrisBenedict'>Harris-Benedict</option>
-      <option value='mifflinStJeor'>Mifflin-St.Jeor</option>
-      <option value='tinsley'>Tinsley</option>
+      {formulas.map((f, i) => (
+        <option key={`formula__${i}`} value={f}>{`${f.charAt(0).toUpperCase()}${f
+          .slice(1)
+          .replace(/([a-z])([A-Z])/g, "$1-$2")
+          .replace(/st-jeor/gi, "St.Jeor")}`}</option>
+      ))}
     </select>
   );
 }

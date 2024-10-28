@@ -1,36 +1,84 @@
-import { Person } from "../../../../src/lib/global/declarations/classes";
-import { exeAutoFill } from "../../../../src/lib/locals/edFisNutPage/edFisNutHandler";
-import { handleEventReq } from "../../../../src/lib/global/handlers/gHandlers";
-import { looseNum, nlInp } from "../../../../src/lib/global/declarations/types";
-import { tabProps, person } from "../../../../src/vars";
-import { useState, useEffect, Dispatch, SetStateAction, MutableRefObject } from "react";
-import { validateEvResultNum } from "../../../../src/lib/locals/edFisNutPage/edFisNutHandler";
-import { multipleElementsNotFound, extLine } from "../../../../src/lib/global/handlers/errorHandler";
+import { exeAutoFill } from "@/lib/locals/edFisNutPage/edFisNutHandler";
+import { handleEventReq } from "@/lib/global/handlers/gHandlers";
+import { looseNum, nlInp } from "@/lib/global/declarations/types";
+import { person, tabProps, timers } from "@/vars";
+import { useState, useEffect, Dispatch, SetStateAction, MutableRefObject, useCallback, useRef } from "react";
+import { applyFieldConstraints, parseNotNaN } from "@/lib/global/gModel";
+import { PseudoNum } from "@/lib/global/declarations/testVars";
 export default function AgeElement({
   onSetAge,
   inpRef,
+  ageRef,
 }: {
   onSetAge?: Dispatch<SetStateAction<looseNum>>;
-  inpRef: MutableRefObject<nlInp>;
+  inpRef?: MutableRefObject<nlInp>;
+  ageRef?: MutableRefObject<number>;
 }): JSX.Element {
-  const [value, setValue] = useState<string>("");
-  const [prevValue, setPreValue] = useState<string>("");
+  const [age, setAge] = useState<PseudoNum | "">("30"),
+    trusted = useRef<boolean>(false),
+    evaluateNum = useCallback((a: string): PseudoNum => {
+      if (a.startsWith("0") && a.length > 1) a = parseNotNaN(a, 0, "int").toString();
+      if (a.length > 3) a = a.slice(0, 4);
+      const numValue = parseNotNaN(a, 0, "int");
+      if (!Number.isFinite(numValue)) a = "";
+      if (numValue > 255) a = "255";
+      return a as PseudoNum;
+    }, []);
   useEffect(() => {
-    if (inpRef.current && inpRef.current.value === "") inpRef.current.value = "30";
-  }, []);
+    try {
+      if (!(inpRef?.current instanceof HTMLInputElement) || !/edfis/gi.test(location.pathname.toLowerCase())) return;
+      person.age = parseNotNaN(inpRef.current.value, 0, "int");
+      setAge(person.age.toString() as PseudoNum);
+      if (ageRef) ageRef.current = person.age;
+      onSetAge && onSetAge(evaluateNum(person.age.toString()) as PseudoNum);
+    } catch (e) {
+      return;
+    }
+  }, [setAge, onSetAge, inpRef, ageRef, evaluateNum, trusted]);
   useEffect(() => {
-    if (inpRef.current && inpRef.current.value === "") inpRef.current.value = "0";
-    setValue(person.age.toString());
-  }, [value]);
+    try {
+      if (!trusted.current) return;
+      if (!(inpRef?.current && inpRef.current instanceof HTMLElement))
+        throw new Error(`Failed to validate instance of input`);
+      handleEventReq(inpRef.current);
+      if (!/edfis/gi.test(location.pathname.toLowerCase())) return;
+      const evaluatedNum = parseNotNaN(evaluateNum(age) || "0", 0, "int");
+      person.age = Number.isFinite(evaluatedNum) ? evaluatedNum : 0;
+      if (ageRef) ageRef.current = person.age;
+      tabProps.isAutoFillActive && exeAutoFill(inpRef.current, "cons");
+      if (ageRef) ageRef.current = person.age;
+    } catch (e) {
+      return;
+    }
+  }, [age, ageRef, inpRef, evaluateNum, trusted]);
+  useEffect(() => {
+    setTimeout(() => {
+      try {
+        person.age =
+          parseNotNaN(inpRef?.current?.value || "0", 0, "int") ||
+          parseNotNaN(
+            (document.getElementById("ageId") instanceof HTMLInputElement &&
+              (document.getElementById("ageId") as HTMLInputElement).value) ||
+              "0",
+            0,
+            "int",
+          ) ||
+          0;
+      } catch (e) {
+        return;
+      }
+    }, timers.personENTimer * 0.75);
+  }, [inpRef]);
   return (
     <input
+      value={age}
+      ref={inpRef}
       type='number'
       name='age'
-      id='dateAgeId'
+      id='ageId'
       className='form-control noInvert inpIdentif minText maxText minNum maxNum patternText'
       min='0'
       max='255'
-      ref={inpRef}
       required
       data-title='Idade'
       data-reqlength='1'
@@ -39,46 +87,21 @@ export default function AgeElement({
       data-maxnum='255'
       data-pattern='^[\d,.]+$'
       onInput={ev => {
-        const newValue = ev.currentTarget.value;
-        if (
-          person instanceof Person &&
-          "age" in person &&
-          typeof person.age === "number" &&
-          typeof tabProps.isAutoFillActive === "boolean"
-        ) {
-          setValue(newValue);
-          setPreValue(newValue);
-          person.age = validateEvResultNum(ev.currentTarget, person.age);
-          onSetAge && onSetAge(() => person.age);
-          //sem autofill, dá update somente em person.age
-          tabProps.isAutoFillActive && exeAutoFill(ev.currentTarget, tabProps.isAutoFillActive, "cons");
-        } else {
-          setValue(prevValue);
-          multipleElementsNotFound(
-            extLine(new Error()),
-            "argumentas for callbackAgeElement()",
-            `${JSON.stringify(person)}`,
-            person?.age,
-            ev.currentTarget,
-            `${[
-              tabProps.numCons || 1,
-              [person.weight, person.height, person.sumDCut],
-              [tabProps.IMC, tabProps.MLG, tabProps.TMB, tabProps.GET, tabProps.PGC],
-              [
-                tabProps.targInpWeigth,
-                tabProps.targInpHeigth,
-                tabProps.targInpIMC,
-                tabProps.targInpMLG,
-                tabProps.targInpTMB,
-                tabProps.targInpGET,
-                tabProps.targInpSumDCut,
-                tabProps.targInpPGC,
-              ],
-            ].toString()}`,
-            tabProps.isAutoFillActive,
-          );
+        if (ev.isTrusted) trusted.current = true;
+        if (!trusted.current) return;
+        try {
+          let newValue = ev.currentTarget.value.replace(/[^0-9]/g, "").trim();
+          applyFieldConstraints(ev.currentTarget);
+          if (newValue === "") {
+            setAge(() => newValue as PseudoNum);
+            onSetAge && onSetAge(() => evaluateNum(newValue) as PseudoNum);
+            return;
+          }
+          setAge(() => evaluateNum(newValue) as PseudoNum);
+          onSetAge && onSetAge(() => evaluateNum(newValue) as PseudoNum);
+        } catch (e) {
+          return;
         }
-        handleEventReq(ev.currentTarget);
       }}
     />
   );

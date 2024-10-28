@@ -1,37 +1,44 @@
 import { Context, createContext, lazy, Suspense } from "react";
-import { AppRootContextType } from "../src/lib/global/declarations/interfaces";
+import { RootCtxType } from "../src/lib/global/declarations/interfaces";
 import { Provider } from "react-redux";
 import "./styles/globals/gStyle.scss";
-import "./styles/locals/loginPageStyle.scss";
-import "./styles/locals/basePageStyle.scss";
-import "./styles/locals/aGPageStyle.scss";
-import "./styles/locals/edFisNutPageStyle.scss";
-import "./styles/locals/odPageStyle.scss";
-import "./styles/locals/panelPageStyle.scss";
-import "./styles/locals/recoverPageStyle.scss";
+import "./styles/globals/reactSpinner.scss";
+import "./styles/globals/loginPageStyle.scss";
 import mainStore from "./redux/mainStore";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Spinner from "../components/icons/Spinner";
 import PageNotFound from "./pages/404";
-const AGPage = lazy(() => import("./pages/ag"));
-const BasePage = lazy(() => import("./pages/base"));
-const EdFisNutPage = lazy(() => import("./pages/edfis"));
-const LoginPage = lazy(() => import("./pages/login"));
-const OdPage = lazy(() => import("./pages/od"));
-const PanelPage = lazy(() => import("./pages/panel"));
-const RecoverPage = lazy(() => import("./pages/recover"));
-export const AppRootContext: Context<AppRootContextType> = createContext<AppRootContextType>({
+const AGPage = lazy(() => import("./pages/ag")),
+  BasePage = lazy(() => import("./pages/base")),
+  EdFisNutPage = lazy(() => import("./pages/edfis")),
+  LoginPage = lazy(() => import("./pages/login")),
+  OdPage = lazy(() => import("./pages/od")),
+  PanelPage = lazy(() => import("./pages/panel")),
+  RecoverPage = lazy(() => import("./pages/recover"));
+export const RootCtx: Context<RootCtxType> = createContext<RootCtxType>({
+  divModal: {
+    current: null,
+  },
+  divModalSec: {
+    current: null,
+  },
+  divModalTerc: {
+    current: null,
+  },
   roots: {
-    mainRoot: undefined,
+    mainRoot: null,
   },
 });
 export default function ProSaudeApp(): JSX.Element {
   return (
     <Provider store={mainStore}>
-      <AppRootContext.Provider
+      <RootCtx.Provider
         value={{
+          divModal: { current: null },
+          divModalSec: { current: null },
+          divModalTerc: { current: null },
           roots: {
-            mainRoot: document.getElementById("root"),
+            mainRoot: null,
           },
         }}>
         <Router>
@@ -49,7 +56,7 @@ export default function ProSaudeApp(): JSX.Element {
             </Routes>
           </Suspense>
         </Router>
-      </AppRootContext.Provider>
+      </RootCtx.Provider>
     </Provider>
   );
 }

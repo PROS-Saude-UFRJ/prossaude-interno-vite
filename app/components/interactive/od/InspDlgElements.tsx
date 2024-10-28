@@ -1,10 +1,10 @@
 import { ErrorBoundary } from "react-error-boundary";
-import { InspProps } from "../../../src/lib/global/declarations/interfaces";
-import { searchNextSiblings } from "../../../src/lib/global/handlers/gHandlers";
+import { InspProps } from "@/lib/global/declarations/interfaces";
+import { searchNextSiblings } from "@/lib/global/handlers/gHandlers";
 import { useState } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import InspDlg from "./InspDlg";
-import { showInspDialogs, showInspSpanSub } from "../../../src/lib/locals/odPage/odHandler";
+import { showInspDialogs, showInspSpanSub } from "@/lib/locals/odPage/odHandler";
 export default function InspDlgElements({ count, ctx, fullName }: InspProps): JSX.Element {
   const [shouldShowDlg, setDlg] = useState<boolean>(false);
   return (
@@ -47,7 +47,7 @@ export default function InspDlgElements({ count, ctx, fullName }: InspProps): JS
               Não
             </label>
             <br role='presentation' />
-            <span role='group' className='spanSub inspSpanSub' id={`inspSpanSub${count}`}>
+            <fieldset role='group' className='spanSub inspSpanSub' id={`inspSpanSub${count}`}>
               <textarea
                 className='form-control inspTa noInvert'
                 id={`inspTa${count}`}
@@ -62,7 +62,7 @@ export default function InspDlgElements({ count, ctx, fullName }: InspProps): JS
                 Mostrar Sugestões
               </button>
               {shouldShowDlg && <InspDlg state={shouldShowDlg} dispatch={setDlg} ctx={ctx} count={count} />}
-            </span>
+            </fieldset>
           </span>
         </div>
       </fieldset>

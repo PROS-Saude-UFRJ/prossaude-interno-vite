@@ -2,12 +2,12 @@ import { render, fireEvent, RenderResult } from "@testing-library/react";
 import { useRef, MutableRefObject } from "react";
 import StudRow from "../../../../../../components/panelForms/studs/StudRow";
 import AlterFieldList from "../../../../../../components/lists/AlterFieldList";
-import { nullishTab } from "../../../../global/declarations/types";
 import React from "react";
-jest.mock("@/components/lists/AlterFieldList", (): jest.Mock<any, any, any> => jest.fn() as jest.Mock);
+import { nlTab } from "../../../../global/declarations/types";
+jest.mock("../../../../../../components/lists/AlterFieldList", (): jest.Mock<any, any, any> => jest.fn() as jest.Mock);
 describe("StudRow Component", (): void => {
   test("renders student row data", (): void => {
-    const tabRef: MutableRefObject<nullishTab> = useRef<nullishTab>(null);
+    const tabRef: MutableRefObject<nlTab> = useRef<nlTab>(null);
     const renderResult = render(
       <StudRow
         tabRef={tabRef}
@@ -32,7 +32,7 @@ describe("StudRow Component", (): void => {
     ).toBeInTheDocument() as void;
   }) as void;
   test("toggles alteration dialog on button click", (): void => {
-    const tabRef: MutableRefObject<nullishTab> = useRef<nullishTab>(null);
+    const tabRef: MutableRefObject<nlTab> = useRef<nlTab>(null);
     (
       expect(
         fireEvent.click(

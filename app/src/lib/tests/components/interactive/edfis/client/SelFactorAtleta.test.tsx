@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, RenderResult } from "@testing-library/react";
 import { handleCallbackWHS } from "../../../../../locals/edFisNutPage/edFisNutHandler";
-import { tabProps } from "../../../../../../vars";
+import { tabProps } from "../../../../../../../../../pro-saude-app-vite/app/src/vars";
 import React from "react";
 import SelFactorAtleta from "../../../../../../../components/interactive/edfis/client/SelFactorAtleta";
 jest.mock(
@@ -33,14 +33,14 @@ describe("SelFactorAtleta Component", (): void => {
           document.getElementById("formCalcTMBType") as HTMLSelectElement,
           document.getElementById("nafType") as HTMLSelectElement,
           [
-            tabProps.targInpWeigth,
-            tabProps.targInpHeigth,
-            tabProps.targInpIMC,
-            tabProps.targInpMLG,
-            tabProps.targInpTMB,
-            tabProps.targInpGET,
-            tabProps.targInpSumDCut,
-            tabProps.targInpPGC,
+            tabProps.tiw,
+            tabProps.tih,
+            tabProps.tiimc,
+            tabProps.timlg,
+            tabProps.titmb,
+            tabProps.tiget,
+            tabProps.tidc,
+            tabProps.tiget,
           ],
         ],
         [

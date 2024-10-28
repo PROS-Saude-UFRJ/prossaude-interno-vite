@@ -1,10 +1,10 @@
 import { render, fireEvent, RenderResult } from "@testing-library/react";
-import { addExportFlags } from "../../../src/lib/global/gController";
+import { addExportFlags } from "@/lib/global/gController";
 import { handleSubmit } from "@/pages/api/ts/handlers";
 import ScheduleForm from "../../../../../../components/panelForms/schedule/ScheduleForm";
 import { panelFormsVariables } from "../../../../../../components/panelForms/panelFormsData";
 jest.mock(
-  "../../../src/lib/global/gController",
+  "@/lib/global/gController",
   (): {
     addExportFlags: jest.Mock<any, any, any>;
   } => ({
@@ -12,7 +12,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/global/handlers/errorHandler",
+  "@/lib/global/handlers/errorHandler",
   (): {
     elementNotFound: jest.Mock<any, any, any>;
     extLine: jest.Mock<any, any, any>;
@@ -22,7 +22,7 @@ jest.mock(
   }),
 ) as typeof jest;
 jest.mock(
-  "../../../src/lib/locals/panelPage/consController",
+  "@/lib/locals/panelPage/consController",
   (): {
     fillScheduleState: {
       acc: number;

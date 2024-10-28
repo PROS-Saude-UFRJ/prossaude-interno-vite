@@ -30,7 +30,7 @@ import {
   elementNotFound,
   elementNotPopulated,
 } from "../../../global/handlers/errorHandler";
-import { handleSubmit } from "../../../locals/panelPage/handlers/handlers";
+import { handleSubmit } from "../../../../../src/lib/locals/panelPage/handlers/handlers";
 import { formCases } from "../../../../lib/global/declarations/types";
 import {
   CSSColor,

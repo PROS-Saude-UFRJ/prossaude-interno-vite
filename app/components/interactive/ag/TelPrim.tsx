@@ -1,9 +1,9 @@
-import { formatTel } from "../../../src/lib/global/gModel";
-import { handleEventReq } from "../../../src/lib/global/handlers/gHandlers";
+import { formatTel } from "@/lib/global/gModel";
+import { handleEventReq } from "@/lib/global/handlers/gHandlers";
 export default function TelPrim(): JSX.Element {
   return (
     <input
-      type='text'
+      type='tel'
       name='tel'
       id='telId'
       className='form-control inpIdentif noInvert inpTel minText maxText patternText'

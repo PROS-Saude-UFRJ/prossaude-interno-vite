@@ -1,7 +1,6 @@
-import { elementNotFound, extLine } from "../../../src/lib/global/handlers/errorHandler";
-import { nlDiv } from "../../../src/lib/global/declarations/types";
-import { orderLabels } from "../../../src/lib/locals/odPage/odModel";
-import { qrProps } from "../../../src/lib/global/declarations/interfaces";
+import { nlDiv } from "@/lib/global/declarations/types";
+import { orderLabels } from "@/lib/locals/odPage/odModel";
+import { qrProps } from "@/lib/global/declarations/interfaces";
 import { useEffect, useRef } from "react";
 import InpAvDent from "./InpAvDent";
 import {
@@ -12,7 +11,7 @@ import {
   dragOver,
   dragStart,
   resetLabels,
-} from "../../../src/lib/locals/odPage/odHandler";
+} from "@/lib/locals/odPage/odHandler";
 export default function QuadrMainDiv({ qr }: qrProps): JSX.Element {
   const subDivRef = useRef<nlDiv>(null);
   const teethList = ((): number[] => {
@@ -23,19 +22,17 @@ export default function QuadrMainDiv({ qr }: qrProps): JSX.Element {
   })();
   useEffect(() => {
     try {
-      if (!(subDivRef.current instanceof HTMLElement))
-        throw elementNotFound(subDivRef.current, `Validation of Sub Div Instance`, extLine(new Error()));
+      if (!(subDivRef.current instanceof HTMLElement)) return;
       orderLabels(subDivRef.current);
     } catch (e) {
-      console.error(`Error executing useEffect for QuadrMainDiv ${qr}:\n${(e as Error).message}`);
+      return;
     }
   }, [qr]);
   return (
-    <div
+    <fieldset
       role='group'
       className='quadrAvDent quadrMainDiv form-control'
       id={`divMain${qr}`}
-      itemProp='dentQuadr'
       draggable='true'
       onMouseMove={ev => dragHover(ev.currentTarget)}
       onDragStart={ev => dragStart(ev, Array.from(document.getElementsByClassName("quadrMainDiv")))}
@@ -64,12 +61,11 @@ export default function QuadrMainDiv({ qr }: qrProps): JSX.Element {
         role='group'
         className={`contInQuadrs divSub quadrAvDent quadrSubDiv tabCelBottom`}
         id={`divSub${qr}`}
-        itemProp='dentQuadr'
         ref={subDivRef}>
         {teethList.map(teethNum => (
           <InpAvDent qr={qr} num={teethNum} key={`${qr}_${teethNum}`} />
         ))}
       </div>
-    </div>
+    </fieldset>
   );
 }
