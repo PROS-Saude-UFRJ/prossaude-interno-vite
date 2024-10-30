@@ -10,7 +10,8 @@ export const PanelCtx = createContext<{
 });
 const SelectPanel = lazy(() => import("./SelectPanel"));
 export default function SelectPanelLoader(): JSX.Element {
-  const [userClass, setUserClass] = useState<string>("estudante");
+  //TODO ERRO NO DISPATCH
+  const [userClass, setUserClass] = useState<string>("coordenador");
   useEffect(() => {
     const active = localStorage.getItem("activeUser");
     if (active) {
