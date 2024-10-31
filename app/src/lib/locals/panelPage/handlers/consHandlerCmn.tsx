@@ -1,10 +1,10 @@
 import { Root, createRoot } from "react-dom/client";
 import { clearPhDates } from "../../../global/gStyleScript";
-import { entryEl, targEl, voidVal } from "../../../global/declarations/types";
+import { entryEl, queryableNode, rMouseEvent, targEl, vRoot, voidVal } from "../../../global/declarations/types";
 import { handleClientPermissions } from "./consHandlerUsers";
 import { isValidElement, Fragment, Dispatch, SetStateAction } from "react";
 import { parseNotNaN, textTransformPascal } from "../../../global/gModel";
-import { sessionScheduleState } from "../../../../../components/panelForms/panelFormsData";
+import { sessionScheduleState } from "@/vars";
 import ProviderAptDatList from "../../../../../components/lists/ProviderAptDatList";
 import {
   multipleElementsNotFound,
@@ -444,7 +444,7 @@ export function handleRenderRefLost(id: string, prevRef: HTMLElement, userClass:
     console.error(`Error executing handleRenderRefLost:\n${(e as Error).message}`);
   }
 }
-export function handleAptBtnClick(ev: MouseEvent, userClass: string): void {
+export function handleAptBtnClick(ev: rMouseEvent, userClass: string): void {
   try {
     if (!(ev.currentTarget instanceof HTMLElement && ev.currentTarget.id !== ""))
       throw new Error(
@@ -940,28 +940,28 @@ export function replaceRegstSlot(
 }
 export function checkRegstBtn(
   regstBtn: targEl,
-  scope: HTMLElement | Document = document,
-  failProps: [Root | undefined, boolean, Dispatch<SetStateAction<boolean>>, string],
+  scope: queryableNode = document,
+  failProps: [vRoot, boolean, Dispatch<SetStateAction<boolean>>, string],
   userClass: string = "estudante",
 ): boolean | undefined {
-  if (regstBtn instanceof HTMLButtonElement) {
+  if (regstBtn instanceof HTMLButtonElement && scope) {
     const daySel =
-        scope.querySelector("#changeDaySel") ||
-        scope.querySelector("[id$=ChangeDaySel]") ||
-        scope.querySelector("#formDayBodySchedSect")?.querySelector("select") ||
-        scope.querySelector("select"),
-      hourInp =
-        scope.querySelector("#hourDayInp") ||
-        scope.querySelector("[id$=HourDayInp]") ||
-        scope.querySelector("#formDayBodySchedSect")?.querySelector('input[type="time"]') ||
-        scope.querySelector('input[type="time"]'),
-      confirmInp =
-        scope.querySelector("#confirmDayInp") ||
-        scope.querySelector("#confirmPac") ||
-        scope.querySelector("#formDayBodySchedSect")?.querySelector('input[type="checkbox"]') ||
-        scope.querySelector('input[type="checkbox"]'),
-      dayTabRefs =
-        document.querySelectorAll(".dayTabRef") || document.querySelector("table")!.querySelectorAll(".dayTabRef");
+      scope.querySelector("#changeDaySel") ||
+      scope.querySelector("[id$=ChangeDaySel]") ||
+      scope.querySelector("#formDayBodySchedSect")?.querySelector("select") ||
+      scope.querySelector("select");
+    const hourInp =
+      scope.querySelector("#hourDayInp") ||
+      scope.querySelector("[id$=HourDayInp]") ||
+      scope.querySelector("#formDayBodySchedSect")?.querySelector('input[type="time"]') ||
+      scope.querySelector('input[type="time"]');
+    const confirmInp =
+      scope.querySelector("#confirmDayInp") ||
+      scope.querySelector("#confirmPac") ||
+      scope.querySelector("#formDayBodySchedSect")?.querySelector('input[type="checkbox"]') ||
+      scope.querySelector('input[type="checkbox"]');
+    const dayTabRefs =
+      document.querySelectorAll(".dayTabRef") || document.querySelector("table")?.querySelectorAll(".dayTabRef");
     //isso é só pra checar o número de colunas com datas nos headers
     const shownDayTabRefs = Array.from(dayTabRefs).filter(
       ref => ref instanceof HTMLElement && !(ref.hidden === true || ref.style.display === "none"),
@@ -975,8 +975,8 @@ export function checkRegstBtn(
     ) {
       //aqui é a pesquisa pros slots de fato
       const matchedPhInps = Array.from(document.querySelectorAll(".slotableDay"));
-      let matchedPhInp,
-        acc = 0;
+      let matchedPhInp;
+      let acc = 0;
       for (const phInp of matchedPhInps) {
         ++acc;
         if (phInp.id === `_${hourInp.value.replace(":", "-")}_${acc}`) {
@@ -987,8 +987,8 @@ export function checkRegstBtn(
           acc = 0;
         }
       }
-      const matchedSlot = matchedPhInp?.parentElement,
-        newAppointmentBtn = document.querySelector('[id*="appointmentBtn"]');
+      const matchedSlot = matchedPhInp?.parentElement;
+      const newAppointmentBtn = document.querySelector('[id*="appointmentBtn"]');
       if (
         matchedPhInp instanceof HTMLElement &&
         matchedSlot instanceof HTMLElement &&
@@ -1006,7 +1006,7 @@ export function checkRegstBtn(
           matchedSlot,
           newAppointmentBtn,
         );
-        if (typeof failProps[0] === "object" && "_internalRoot" in failProps[0]) return false;
+        if (failProps && typeof failProps[0] === "object" && "_internalRoot" in (failProps as any)[0]) return false;
       }
     } else
       multipleElementsNotFound(

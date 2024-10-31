@@ -1,3 +1,4 @@
+"use client";
 export default function ThDate({ nCol = NaN, last = false }: { nCol: number; last?: boolean }): JSX.Element {
   const fullName = ((): string => {
     switch (nCol) {

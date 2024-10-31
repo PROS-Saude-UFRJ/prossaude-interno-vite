@@ -1,6 +1,8 @@
+"use client";
 import { Dispatch, lazy, SetStateAction, Suspense, useState } from "react";
 import { createContext, useEffect } from "react";
 import ReactSpinner from "../../../icons/ReactSpinner";
+import useBsLink from "@/lib/hooks/useBsLink";
 export const PanelCtx = createContext<{
   userClass: string;
   setUserClass: Dispatch<SetStateAction<string>>;
@@ -10,8 +12,7 @@ export const PanelCtx = createContext<{
 });
 const SelectPanel = lazy(() => import("./SelectPanel"));
 export default function SelectPanelLoader(): JSX.Element {
-  //TODO ERRO NO DISPATCH
-  const [userClass, setUserClass] = useState<string>("coordenador");
+  const [userClass, setUserClass] = useState<string>("estudante");
   useEffect(() => {
     const active = localStorage.getItem("activeUser");
     if (active) {
@@ -19,6 +20,7 @@ export default function SelectPanelLoader(): JSX.Element {
       if (privilege) setUserClass(privilege);
     }
   }, []);
+  useBsLink();
   return (
     <PanelCtx.Provider value={{ userClass, setUserClass }}>
       <Suspense fallback={<ReactSpinner scale={0.7} />}>

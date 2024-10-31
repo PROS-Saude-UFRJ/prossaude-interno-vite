@@ -1,4 +1,4 @@
-import { thunkReqStatus, validSchedHours } from "../../lib/global/declarations/types";
+import { thunkReqStatus, validSchedHours } from "@/lib/global/declarations/types";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 export const isValidHour = (hour: number): hour is validSchedHours => [18, 19, 20, 21].includes(hour);
@@ -33,7 +33,7 @@ export const schedHoursSlice = createSlice({
     })
       .addCase(fetchSchedHours.fulfilled, (s, a) => {
         s.status = "fulfilled";
-        defSetHours(s, { payload: { hours: a.payload.filter(isValidHour) }, type: "fulfilled" });
+        defSetHours(s, { payload: { hours: a.payload?.filter(isValidHour) ?? [] }, type: "fulfilled" });
       })
       .addCase(fetchSchedHours.rejected, (s, a) => {
         s.status = "rejected";

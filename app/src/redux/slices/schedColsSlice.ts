@@ -1,4 +1,4 @@
-import { thunkReqStatus, validSchedCols } from "../../lib/global/declarations/types";
+import { thunkReqStatus, validSchedCols } from "@/lib/global/declarations/types";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 export const isValidCol = (col: number): col is validSchedCols => [1, 2, 3, 4, 5, 6, 7, 8, 9].includes(col);
@@ -31,7 +31,7 @@ export const schedColsSlice = createSlice({
       })
       .addCase(fetchSchedCols.fulfilled, (s, a) => {
         s.status = "fulfilled";
-        defSetCols(s, { payload: { cols: a.payload.filter(isValidCol) }, type: "fulfilled" });
+        defSetCols(s, { payload: { cols: a.payload?.filter(isValidCol) ?? [] }, type: "fulfilled" });
       })
       .addCase(fetchSchedCols.rejected, (s, a) => {
         s.status = "rejected";

@@ -321,23 +321,23 @@ export default function LoginInputs(): JSX.Element {
                 setTimeout(() => toast.dismiss(toastId), 1500);
                 formToasted.current = true;
                 setTimeout(() => (formToasted.current = false), 2000);
-              }
-              setTimeout(() => {
-                handleLogin(ev, loginForm, true).then(res => {
-                  if (res.valid) {
-                    localStorage.setItem("authorized", "true");
-                    exeLogin(spanRef.current);
-                    setFullUser({ v: defUser });
-                  } else {
-                    setMsg(res.message);
-                    if (handlerToasted.current) return;
-                    const toastId = toast.error(res.message);
-                    setTimeout(() => toast.dismiss(toastId), 1500);
-                    handlerToasted.current = true;
-                    setTimeout(() => (handlerToasted.current = false), 2000);
-                  }
-                });
-              }, 300);
+              } else
+                setTimeout(() => {
+                  handleLogin(ev, loginForm, true).then(res => {
+                    if (res.valid) {
+                      localStorage.setItem("authorized", "true");
+                      exeLogin(spanRef.current);
+                      setFullUser({ v: defUser });
+                    } else {
+                      setMsg(res.message);
+                      if (handlerToasted.current) return;
+                      const toastId = toast.error(res.message);
+                      setTimeout(() => toast.dismiss(toastId), 1500);
+                      handlerToasted.current = true;
+                      setTimeout(() => (handlerToasted.current = false), 2000);
+                    }
+                  });
+                }, 300);
             }}>
             Avançar
           </Link>

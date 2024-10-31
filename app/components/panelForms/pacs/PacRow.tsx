@@ -1,3 +1,4 @@
+"use client";
 import { PacRowProps } from "@/lib/global/declarations/interfacesCons";
 import { dateISOtoBRL } from "@/lib/global/gModel";
 import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";

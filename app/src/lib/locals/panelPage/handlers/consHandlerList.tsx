@@ -1,7 +1,8 @@
+//nesse arquivo estão as funções para handling de casos dos modais de listas tabeladas
 import { MutableRefObject } from "react";
 import { nlDlg, nlHtEl, personAbrvClasses, personAbrvUpperClasses, targEl } from "../../../global/declarations/types";
 import { parseNotNaN } from "../../../global/gModel";
-import { switchBtnBS } from "../../../global/gStyleScript";
+import { equalizeTabCells, switchBtnBS } from "../../../global/gStyleScript";
 import {
   multipleElementsNotFound,
   extLine,
@@ -9,10 +10,12 @@ import {
   elementNotFound,
   stringError,
 } from "../../../global/handlers/errorHandler";
-import { toast } from "react-hot-toast";
-
-//nesse arquivo estão as funções para handling de casos dos modais de listas tabeladas
-
+import { registerRoot, syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import { panelRoots } from "@/vars";
+import GenericErrorComponent from "../../../../../components/error/GenericErrorComponent";
+import { strikeEntries } from "../consStyleScript";
+import { handleClientPermissions } from "./consHandlerUsers";
+import { privilege } from "../../basePage/declarations/serverInterfaces";
 export function checkIntervDate(arrEls: Array<targEl>): void {
   if (Array.isArray(arrEls) && arrEls.length > 0 && arrEls.every(el => el instanceof Element)) {
     arrEls.forEach(el => {
@@ -292,7 +295,7 @@ export function addListenerAlocation(
                 state = transferDataAloc(btn, parentRef, forwardedRef, context.toLowerCase() as personAbrvClasses);
                 if (typeof state === "boolean" && dispatch) dispatch(!state);
                 else {
-                  toast.error(`Erro obtendo dados para alocação selecionada. Feche manualmente.`);
+                  alert(`Erro obtendo dados para alocação selecionada. Feche manualmente.`);
                 }
               });
           });
@@ -520,4 +523,29 @@ export function fillTabAttr(tab: targEl, context: string = "pac"): void {
         stringError("Reading context for fillTabAttr()", context, extLine(new Error()));
     }
   } else elementNotFound(tab, "Table called in fillTabAttr()", extLine(new Error()));
+}
+export function renderTable(): void {
+  const firstTable = document.querySelector("table");
+  if (!firstTable) return;
+  registerRoot(panelRoots[firstTable.id], `#${firstTable.id}`);
+  panelRoots[firstTable.id]?.render(<GenericErrorComponent message='Failed to render table' />);
+}
+export function initLoadedTab(ref: nlHtEl, userClass: privilege): void {
+  try {
+    setTimeout(() => {
+      if (!(ref instanceof HTMLElement)) return;
+      let tabRef = !(ref instanceof HTMLTableElement) ? ref : ref.querySelector("table");
+      if (!(tabRef instanceof HTMLTableElement)) return;
+      equalizeTabCells(tabRef);
+      fillTabAttr(ref);
+    }, 300);
+    if (!(ref instanceof HTMLElement)) return;
+    syncAriaStates([...ref.querySelectorAll("*"), ref]);
+    checkLocalIntervs(ref);
+    strikeEntries(ref);
+    document.getElementById("btnExport") &&
+      handleClientPermissions(userClass, ["coordenador"], ref, document.getElementById("btnExport"));
+  } catch (e) {
+    console.error(`Error executing initLoadedTab:\n${(e as Error).message}`);
+  }
 }

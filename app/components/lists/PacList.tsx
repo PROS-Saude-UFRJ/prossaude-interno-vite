@@ -1,18 +1,16 @@
 "use client";
 import { ErrorBoundary } from "react-error-boundary";
 import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
-import { equalizeTabCells } from "@/lib/global/gStyleScript";
-import { strikeEntries } from "@/lib/locals/panelPage/consStyleScript";
-import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useContext, useEffect, useRef } from "react";
 import GenericErrorComponent from "../error/GenericErrorComponent";
 import PacRow from "../panelForms/pacs/PacRow";
 import { nlHtEl, nlTab, nlTabSect } from "@/lib/global/declarations/types";
 import { PacInfo, PacListProps } from "@/lib/global/declarations/interfacesCons";
-import { addListenerAlocation, checkLocalIntervs, fillTabAttr } from "@/lib/locals/panelPage/handlers/consHandlerList";
-import { handleClientPermissions } from "@/lib/locals/panelPage/handlers/consHandlerUsers";
+import { addListenerAlocation, initLoadedTab } from "@/lib/locals/panelPage/handlers/consHandlerList";
 import { PanelCtx } from "../panelForms/defs/client/SelectLoader";
+import { Link } from "react-router-dom";
 import { useDataFetch } from "@/lib/hooks/useDataFetch";
+import { privilege } from "@/lib/locals/basePage/declarations/serverInterfaces";
 export default function PacList({
   shouldDisplayRowData,
   setDisplayRowData,
@@ -45,19 +43,10 @@ export default function PacList({
   useEffect(() => {
     try {
       if (!loaded) return;
-      setTimeout(() => {
-        if (!(tabPacRef?.current instanceof HTMLTableElement)) return;
-        equalizeTabCells(tabPacRef.current);
-        fillTabAttr(tabPacRef.current);
-      }, 300);
+      initLoadedTab(sectTabRef.current, userClass as privilege);
       try {
         if (!(sectTabRef?.current instanceof HTMLElement))
           throw elementNotFound(sectTabRef.current, "sectTabRef in useEffect()", extLine(new Error()));
-        syncAriaStates([...sectTabRef.current.querySelectorAll("*"), sectTabRef.current]);
-        checkLocalIntervs(sectTabRef.current);
-        strikeEntries(sectTabRef.current);
-        document.getElementById("btnExport") &&
-          handleClientPermissions(userClass, ["coordenador"], sectTabRef.current, document.getElementById("btnExport"));
         document.querySelectorAll(".outpPacStatus").forEach(status => {
           if (!(status instanceof HTMLElement)) return;
           if (status.innerText.toLowerCase().trim() === "em emergência") status.style.color = `red`;
@@ -84,9 +73,9 @@ export default function PacList({
               <em className='noInvert'>
                 Lista Recuperada da Ficha de Pacientes registrados. Acesse
                 <samp>
-                  <a href={`${location.origin}/ag`} target='_self' id='idLink' style={{ display: "inline" }}>
+                  <Link to={`${location.origin}/ag`} id='idLink' style={{ display: "inline" }}>
                     &nbsp;Anamnese Geral&nbsp;
-                  </a>
+                  </Link>
                 </samp>
                 para cadastrar
               </em>

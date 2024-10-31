@@ -1,6 +1,6 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import userSlice, { defUser } from "./slices/userSlice";
 import activeUserSlice from "./slices/activeUserSlice";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 const mainStore = configureStore({
   devTools: process.env.NODE_ENV !== "production",
   preloadedState: {

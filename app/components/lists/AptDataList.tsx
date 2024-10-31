@@ -2,17 +2,17 @@ import { ErrorBoundary } from "react-error-boundary";
 import { AptDataListProps } from "@/lib/global/declarations/interfacesCons";
 import { addExportFlags } from "@/lib/global/gController";
 import { consVariablesData } from "../consRegst/consVariables";
-import { createRoot } from "react-dom/client";
 import { elementNotFound, extLine } from "@/lib/global/handlers/errorHandler";
 import { isClickOutside } from "@/lib/global/gStyleScript";
-import { nlDlg } from "@/lib/global/declarations/types";
-import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
-import { useContext, useEffect, useRef } from "react";
+import { registerRoot, syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import { useContext, useEffect } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
 import { PanelCtx } from "../panelForms/defs/client/SelectLoader";
 import { ExportHandler } from "@/lib/global/declarations/classes";
 import { exporters } from "@/vars";
 import useExportHandler from "@/lib/hooks/useExportHandler";
+import { Link } from "react-router-dom";
+import useDialog from "@/lib/hooks/useDialog";
 export default function AptDataList({
   setDisplayAptList,
   data,
@@ -22,7 +22,7 @@ export default function AptDataList({
 }: AptDataListProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     transferBtn = document.querySelector(`[id*="${btnId}"]`),
-    aptDlgRef = useRef<nlDlg>(null),
+    { mainRef } = useDialog({ state: shouldDisplayAptList, dispatch: setDisplayAptList, param: `apt-data` }),
     renderDirectly = (): void => {
       try {
         shouldDisplayAptList = !shouldDisplayAptList;
@@ -42,7 +42,12 @@ export default function AptDataList({
           const fallbackRootDlg = document.getElementById("rootDlgList");
           if (!(fallbackRootDlg instanceof HTMLElement))
             throw elementNotFound(fallbackRootDlg, `attemp to recreate rootDlg`, extLine(new Error()));
-          createRoot(fallbackRootDlg).unmount();
+          registerRoot(
+            undefined,
+            `${fallbackRootDlg.id || fallbackRootDlg.className.replace(/\s/g, "__") || fallbackRootDlg.tagName}`,
+            undefined,
+            true,
+          )?.unmount();
         } catch (e2) {
           console.error(`Error rendering AptDataList:
         ${(e2 as Error).message};
@@ -70,7 +75,12 @@ export default function AptDataList({
           const fallbackRootDlg = document.getElementById("rootDlgList");
           if (!(fallbackRootDlg instanceof HTMLElement))
             throw elementNotFound(fallbackRootDlg, `attemp to recreate rootDlg`, extLine(new Error()));
-          createRoot(fallbackRootDlg).unmount();
+          registerRoot(
+            undefined,
+            `${fallbackRootDlg.id || fallbackRootDlg.className.replace(/\s/g, "__") || fallbackRootDlg.tagName}`,
+            undefined,
+            true,
+          )?.unmount();
         } catch (e2) {
           console.error(`Error rendering AptDataList:
           ${(e2 as Error).message};
@@ -78,47 +88,36 @@ export default function AptDataList({
         }
       }
     };
-    if (aptDlgRef.current instanceof HTMLDialogElement) {
-      aptDlgRef.current.showModal();
-      aptDlgRef.current.addEventListener("click", function (this: HTMLDialogElement, click) {
-        if (
-          click.currentTarget &&
-          isClickOutside(click, click.currentTarget as HTMLElement).some(coord => coord === true)
-        ) {
+    if (mainRef.current instanceof HTMLDialogElement) {
+      mainRef.current.addEventListener("click", ev => {
+        if (ev.currentTarget && isClickOutside(ev, ev.currentTarget as HTMLElement).some(coord => coord === true)) {
           !isDirectRender ? setDisplayAptList(!shouldDisplayAptList) : renderDirectlyAsEffect();
         }
       });
-      syncAriaStates([...aptDlgRef.current!.querySelectorAll("*"), aptDlgRef.current]);
-      const btnExport = aptDlgRef.current.querySelector('[id*="btnExport"]');
+      syncAriaStates([...mainRef.current!.querySelectorAll("*"), mainRef.current]);
+      const btnExport = mainRef.current.querySelector('[id*="btnExport"]');
       btnExport instanceof HTMLButtonElement
-        ? addExportFlags(aptDlgRef.current)
+        ? addExportFlags(mainRef.current)
         : elementNotFound(btnExport, "Button for generating spreadsheet in appointment modal", extLine(new Error()));
       transferBtn instanceof HTMLButtonElement
         ? transferBtn.addEventListener("click", () => {
             //como isso ocorre na montagem na raíz, então não há inversão, só set
             setDisplayAptList(shouldDisplayAptList);
-            shouldDisplayAptList ? aptDlgRef.current?.showModal() : aptDlgRef.current?.close();
+            shouldDisplayAptList ? mainRef.current?.showModal() : mainRef.current?.close();
           })
         : elementNotFound(transferBtn, "transferBtn for AptDataList", extLine(new Error()));
-      const handleKeyDown = (press: KeyboardEvent): void => {
-        if (press.key === "Escape") {
-          !isDirectRender ? setDisplayAptList(!shouldDisplayAptList) : renderDirectlyAsEffect();
-        }
-      };
-      document.addEventListener("keydown", handleKeyDown);
-      return (): void => document.removeEventListener("keydown", handleKeyDown);
     }
-  }, [aptDlgRef, data.cpf, data.date, setDisplayAptList, transferBtn, isDirectRender]);
-  useExportHandler("aptExporter", aptDlgRef.current);
+  }, [mainRef, data.cpf, data.date, setDisplayAptList, transferBtn, isDirectRender]);
+  useExportHandler("aptExporter", mainRef.current);
   return !shouldDisplayAptList ? (
     <></>
   ) : (
     <div role='group' className='aptDiv'>
       {shouldDisplayAptList && (
         <dialog
-          className='modalContent__stk2'
+          className='modal-content-stk2'
           id={`dlg-${btnId}`}
-          ref={aptDlgRef}
+          ref={mainRef}
           onClick={ev => {
             if (isClickOutside(ev, ev.currentTarget).some(coords => coords === true))
               setDisplayAptList(!shouldDisplayAptList);
@@ -133,7 +132,7 @@ export default function AptDataList({
               />
             )}>
             <div role='group' className='flexRNoWBetCt cGap2v widQ460_120v' id='headRegstPac'>
-              <h2 className='mg__1b'>
+              <h2 className='mg-1b'>
                 <strong>Registro de Consulta</strong>
               </h2>
               <button
@@ -143,13 +142,18 @@ export default function AptDataList({
                 }}></button>
             </div>
             <table className='table table-striped table-responsive table-hover tabApt'>
-              <caption className='caption_t'>
+              <caption className='caption-t'>
                 <strong>
                   <small role='textbox'>
                     <em className='noInvert'>
                       Lista Recuperada da Ficha de Consultas registradas. Acesse
                       <samp>
-                        <a> ROTA_PLACEHOLDER </a>
+                        <Link
+                          to={`${location.origin}/panel?panel=agenda&new-cons=open`}
+                          style={{ display: "inline" }}
+                          id='addAppointmentLink'>
+                          Adicionar Consulta
+                        </Link>
                       </samp>
                       para cadastrar
                     </em>
@@ -321,8 +325,8 @@ export default function AptDataList({
                   exporters.aptExporter.handleExportClick(
                     ev,
                     `detalhesDeAgendamento`,
-                    (aptDlgRef.current?.querySelector(`[id*="outpNamePac"]`) as HTMLOutputElement) ??
-                      aptDlgRef.current ??
+                    (mainRef.current?.querySelector(`[id*="outpNamePac"]`) as HTMLOutputElement) ??
+                      mainRef.current ??
                       document,
                     `spreadsheet_${data.cpf || "semCPF"}_${data.name || "anonimo"}_${data.date || "semData"}`,
                   ),

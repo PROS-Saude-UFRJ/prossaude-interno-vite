@@ -7,8 +7,10 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import PacList from "../../lists/PacList";
 import { assignFormAttrs } from "@/lib/global/gModel";
 import { ExportHandler } from "@/lib/global/declarations/classes";
-import { exporters } from "@/vars";
+import { exporters, navigatorVars } from "@/vars";
 import useExportHandler from "@/lib/hooks/useExportHandler";
+import { ErrorBoundary } from "react-error-boundary";
+import GenericErrorComponent from "../../error/GenericErrorComponent";
 export default function PacTabForm(): JSX.Element {
   const [shouldDisplayRowData, setDisplayRowData] = useState<boolean>(false),
     formRef = useRef<nlFm>(null),
@@ -65,11 +67,18 @@ export default function PacTabForm(): JSX.Element {
         <hr />
       </div>
       <section className='formPadded pdL0' id='sectPacsTab'>
-        <PacList
-          setDisplayRowData={setDisplayRowData}
-          shouldDisplayRowData={shouldDisplayRowData}
-          shouldShowAlocBtn={false}
-        />
+        <ErrorBoundary
+          FallbackComponent={() => (
+            <GenericErrorComponent
+              message={navigatorVars.pt ? `Houve algum erro carregando a lista` : `There was an error loading the list`}
+            />
+          )}>
+          <PacList
+            setDisplayRowData={setDisplayRowData}
+            shouldDisplayRowData={shouldDisplayRowData}
+            shouldShowAlocBtn={false}
+          />
+        </ErrorBoundary>
         <div role='group' className='formPadded pdL0 widQ460FullW '></div>
       </section>
       <button

@@ -1,7 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import schedHoursSlice from "./slices/schedHoursSlice";
 import schedColsSlice from "./slices/schedColsSlice";
-const schedStore = configureStore({
+const panelStore = configureStore({
   devTools: process.env.NODE_ENV !== "production",
   preloadedState: {
     schedHoursSlice: {
@@ -20,4 +20,4 @@ const schedStore = configureStore({
     schedColsSlice,
   }),
 });
-export default schedStore;
+export default panelStore;

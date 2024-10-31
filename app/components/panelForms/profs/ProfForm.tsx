@@ -5,7 +5,7 @@ import { clearPhDates, normalizeSizeSb } from "@/lib/global/gStyleScript";
 import { providers, panelRoots, exporters } from "@/vars";
 import { handleClientPermissions } from "@/lib/locals/panelPage/handlers/consHandlerUsers";
 import { handleSubmit } from "@/lib/global/data-service";
-import { panelFormsVariables } from "../panelFormsData";
+import { panelFormsVariables } from "@/vars";
 import { useEffect, useRef, useState, useCallback, useContext } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import ReseterBtn from "../defs/ReseterBtn";
@@ -16,6 +16,7 @@ import { handleCondtReq, handleEventReq, validateForm, syncAriaStates } from "@/
 import { PanelCtx } from "../defs/client/SelectLoader";
 import { ExportHandler } from "@/lib/global/declarations/classes";
 import useExportHandler from "@/lib/hooks/useExportHandler";
+import sR from "@/styles/modules/panel/register.module.scss";
 export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     [showForm] = useState(true),
@@ -23,9 +24,14 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
     CPFProfRef = useRef<nlInp>(null),
     telProfRef = useRef<nlInp>(null),
     btnExportProfForm = useRef<nlBtn>(null),
+    baseInpClasses = "form-control ssPersist",
+    tInpClasses = `${baseInpClasses} minText maxText patternText`,
+    btnClasses = `btn flexAlItCt flexJC flexBasis50 widFull noInvert`,
+    deactClasses = `deActBtn form-check-input`,
+    fsSw = `form-switch spanRight ${sR.fsSw}`,
     callbackNormalizeSizeSb = useCallback(() => {
       normalizeSizeSb([
-        ...document.querySelectorAll(".formPadded"),
+        ...document.querySelectorAll(".form-padded"),
         ...document.querySelectorAll(".ovFlAut"),
         ...document.querySelectorAll("[scrollbar-width=none]"),
       ]);
@@ -145,7 +151,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
               validation[0] ? handleSubmit("profs", validation[2], true) : ev.preventDefault(),
             )
           }>
-          <div role='group' id='formAddProfHDiv' className='mg__3b'>
+          <div role='group' id='formAddProfHDiv' className='mg-3b'>
             <h1 id='titleAddProfHBlock' className='bolded'>
               <strong id='titleAddProfH'>Cadastro de Profissional</strong>
             </h1>
@@ -154,32 +160,32 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
             </small>
           </div>
           <div role='group' className='flexNoWR flexQ460NoWC'>
-            <span role='group' className='form-switch spanRight' id='autocorrectDivprof'>
+            <fieldset role='group' className={fsSw} id='autocorrectDivprof'>
               <input
                 type='checkbox'
-                className='deActBtn form-check-input'
+                className={deactClasses}
                 role='switch'
                 id='deactAutocorrectBtnProf'
                 title='Correção automática de Nomes'
                 data-title='Autocorreção(Profissional)'
               />
               <strong>Autocorreção</strong>
-            </span>
-            <span role='group' className='form-switch spanRight' id='autofillDivprof'>
+            </fieldset>
+            <fieldset role='group' className={fsSw} id='autofillDivprof'>
               <input
                 type='checkbox'
-                className='deActBtn form-check-input'
+                className={deactClasses}
                 role='switch'
                 id='deactAutofilltBtnProf'
                 title='Correção automática de CPF, Telefone e E-mail'
                 data-title='Autopreenchimento(Profissional)'
               />
               <strong>Autopreenchimento</strong>
-            </span>
+            </fieldset>
           </div>
           <hr className='rdc05rHr460Q' />
           <fieldset className='flexColumn' id='formAddProfBodyFs'>
-            <label htmlFor='inpNameProf'>
+            <label className={sR.label} htmlFor='inpNameProf'>
               <strong id='titleNameProf'>Nome Completo:</strong>
               <input
                 type='text'
@@ -204,7 +210,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
                 }}
               />
             </label>
-            <label htmlFor='inpCPFProf'>
+            <label className={sR.label} htmlFor='inpCPFProf'>
               <strong id='titleCPFProf'>CPF:</strong>
               <input
                 type='text'
@@ -213,7 +219,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
                 minLength={15}
                 maxLength={16}
                 pattern='^(\d{3}\.?\d{3}\.?\d{3}-?\d{2})$'
-                className='form-control ssPersist minText maxText patternText'
+                className={tInpClasses}
                 placeholder='Preencha com o CPF'
                 autoComplete='username'
                 data-title='CPF Profissional'
@@ -224,14 +230,14 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
                 required
               />
             </label>
-            <label htmlFor='inpTel'>
+            <label className={sR.label} htmlFor='inpTel'>
               <strong id='titleTelProf'>Telefone (com DDD):</strong>
               <input
                 type='tel'
                 list='listProfRegstTel'
                 id='inpTel'
                 name='telephone'
-                className='form-control ssPersist minText maxText patternText'
+                className={tInpClasses}
                 minLength={8}
                 maxLength={20}
                 placeholder='Preencha com o Telefone para contato'
@@ -246,14 +252,14 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
               />
               <datalist id='listProfRegstTel'></datalist>
             </label>
-            <label htmlFor='inpEmailProf'>
+            <label className={sR.label} htmlFor='inpEmailProf'>
               <strong id='titleEmailProf'>E-mail:</strong>
               <input
                 type='email'
                 list='listProfRegstEmail'
                 id='inpEmailProf'
                 name='email'
-                className='form-control ssPersist'
+                className={baseInpClasses}
                 maxLength={20}
                 placeholder='Preencha com o E-mail para contato'
                 autoComplete='email'
@@ -267,7 +273,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
               />
               <datalist id='listProfRegstEmail'></datalist>
             </label>
-            <label htmlFor='inpCourseProf'>
+            <label className={sR.label} htmlFor='inpCourseProf'>
               <strong id='titleOrigProf'>Curso de Origem:</strong>
               <input
                 type='text'
@@ -276,7 +282,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
                 name='origin'
                 minLength={3}
                 maxLength={99}
-                className='form-control ssPersist minText maxText patternText'
+                className={tInpClasses}
                 placeholder='Preencha com o Curso do Membro Profissional'
                 autoCapitalize='true'
                 data-title='Curso de Origem do Membro Profissional'
@@ -294,7 +300,7 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
                 <option value='Psicologia'></option>
               </datalist>
             </label>
-            <label htmlFor='inpAtuacao'>
+            <label className={sR.label} htmlFor='inpAtuacao'>
               <strong id='titleActProf'>Área de atuação:</strong>
               <select
                 id='inpAtuacao'
@@ -306,44 +312,41 @@ export default function ProfForm({ mainRoot }: GlobalFormProps): JSX.Element {
                 <option value='psiq'>Psiquiatria & Psicologia</option>
               </select>
             </label>
-            <label htmlFor='inpEntr'>
+            <label className={sR.label} htmlFor='inpEntr'>
               <strong>Período de Entrada no Projeto:</strong>
               <input
                 type='text'
                 id='inpEntr'
                 name='beginning_semester'
                 maxLength={7}
-                className='form-control ssPersist'
+                className={baseInpClasses}
                 placeholder='Preencha com o Período (do Calendário) na entrada'
                 data-title='Período de Entrada do Profissional'
                 required
                 onInput={ev => handleEventReq(ev.currentTarget)}
               />
             </label>
-            <label htmlFor='inpDayEntrProf' className='forceInvert'>
+            <label className={`${sR.label} forceInvert`} htmlFor='inpDayEntrProf'>
               <strong>Dia de Entrada no Projeto:</strong>
               <input
                 type='date'
                 id='inpDayEntrProf'
                 name='beginning_day'
-                className='form-control ssPersist maxCurrDate'
+                className={`${baseInpClasses} maxCurrDate`}
                 placeholder='Preencha com o Dia de Entrada do Profissional no projeto'
                 data-title='Dia de Entrada do Profissional'
                 required
               />
             </label>
             <div role='group' className='flexNoW flexJSe cGap2v flexAlItCt flexQ900NoWC rGapQ9002v'>
-              <button
-                type='submit'
-                id='btnSubmitNewProf'
-                className='btn btn-success flexAlItCt flexJC flexBasis50 widFull noInvert'>
+              <button type='submit' id='btnSubmitNewProf' className={`${btnClasses} btn-success`}>
                 <strong>Finalizar Cadastro</strong>
               </button>
               <button
                 type='button'
                 id='btnExport'
                 name='btnExportProfsForm'
-                className='btn btn-primary flexAlItCt flexJC flexBasis50 widFull bolded noInvert'
+                className={`${btnClasses} btn-primary bolded`}
                 ref={btnExportProfForm}
                 data-active='false'
                 title='Gere um .xlsx com os dados preenchidos'

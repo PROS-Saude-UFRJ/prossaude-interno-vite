@@ -10,7 +10,7 @@ import {
   UserPrivilegeAction,
   UserState,
   UserStringAction,
-} from "../../../src/lib/locals/basePage/declarations/serverInterfaces";
+} from "@/lib/locals/basePage/declarations/serverInterfaces";
 import { createSlice } from "@reduxjs/toolkit/react";
 export const defCurrSemester =
   new Date().getMonth() < 6 ? `${new Date().getFullYear()}.1` : `${new Date().getFullYear()}.2`;

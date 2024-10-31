@@ -1,4 +1,5 @@
-import { syncAriaStates } from "../../src/lib/global/handlers/gHandlers";
+"use client";
+import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
 import { useEffect, useState } from "react";
 import FormDlg from "./FormDlg";
 export default function BtnAddPac(): JSX.Element {

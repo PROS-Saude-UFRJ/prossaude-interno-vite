@@ -4,7 +4,7 @@ import { clearPhDates, normalizeSizeSb } from "@/lib/global/gStyleScript";
 import { providers, panelRoots, exporters } from "@/vars";
 import { handleClientPermissions } from "@/lib/locals/panelPage/handlers/consHandlerUsers";
 import { handleSubmit } from "@/lib/global/data-service";
-import { panelFormsVariables } from "../panelFormsData";
+import { panelFormsVariables } from "@/vars";
 import { useEffect, useRef, useState, useCallback, useContext } from "react";
 import GenericErrorComponent from "../../error/GenericErrorComponent";
 import ReseterBtn from "../defs/ReseterBtn";
@@ -15,6 +15,7 @@ import { handleCondtReq, handleEventReq, validateForm, syncAriaStates } from "@/
 import { PanelCtx } from "../defs/client/SelectLoader";
 import { ExportHandler } from "@/lib/global/declarations/classes";
 import useExportHandler from "@/lib/hooks/useExportHandler";
+import sR from "@/styles/modules/panel/register.module.scss";
 export default function StudentForm(): JSX.Element {
   const userClass = useContext(PanelCtx).userClass,
     [showForm] = useState<boolean>(true),
@@ -22,9 +23,17 @@ export default function StudentForm(): JSX.Element {
     CPFStudRef = useRef<nlInp>(null),
     telStudRef = useRef<nlInp>(null),
     btnExportStudsRef = useRef<nlBtn>(null),
+    baseInpClasses = "form-control ssPersist",
+    tInpClasses = `${baseInpClasses} minText maxText patternText`,
+    btnClasses = `btn flexAlItCt flexJC flexBasis50 widFull noInvert`,
+    checkClasses = `form-check-input mdGreen ssPersist ${sR.check}`,
+    deactClasses = `deActBtn form-check-input`,
+    fsSw = `form-switch spanRight ${sR.fsSw}`,
+    slot = `lcPersist`,
+    slotLab = `${sR.checkLabel} flexWR gapped1v`,
     callbackNormalizeSizeSb = useCallback(() => {
       normalizeSizeSb([
-        ...document.querySelectorAll(".formPadded"),
+        ...document.querySelectorAll(".form-padded"),
         ...document.querySelectorAll(".ovFlAut"),
         ...document.querySelectorAll("[scrollbar-width=none]"),
       ]);
@@ -148,7 +157,7 @@ export default function StudentForm(): JSX.Element {
               validation[0] ? handleSubmit("studs", validation[2], true) : ev.preventDefault(),
             )
           }>
-          <div role='group' id='formAddStudHDiv' className='mg__3b'>
+          <div role='group' id='formAddStudHDiv' className={`mg-3b ${sR.formHeader}`}>
             <h1 id='titleAddStudHBlock' className='bolded'>
               <strong>Cadastro de Aluno</strong>
             </h1>
@@ -157,39 +166,39 @@ export default function StudentForm(): JSX.Element {
             </small>
           </div>
           <div role='group' className='flexNoWR flexQ460NoWC'>
-            <span role='group' className='form-switch spanRight' id='autocorrectDivStud'>
+            <fieldset role='group' className={fsSw} id='autocorrectDivStud'>
               <input
                 type='checkbox'
-                className='deActBtn form-check-input'
+                className={deactClasses}
                 role='switch'
                 id='deactAutocorrectBtnStud'
                 title='Correção automática de Nomes'
                 data-title='Autocorreção(Estudante)'
               />
               <strong>Autocorreção</strong>
-            </span>
-            <span role='group' className='form-switch spanRight' id='autofillDivStud'>
+            </fieldset>
+            <fieldset role='group' className={fsSw} id='autofillDivStud'>
               <input
                 type='checkbox'
-                className='deActBtn form-check-input'
+                className={deactClasses}
                 role='switch'
                 id='deactAutofilltBtnStud'
                 title='Correção automática de CPF, Telefone e E-mail'
                 data-title='Autopreenchimento(Estudante)'
               />
               <strong>Autopreenchimento</strong>
-            </span>
+            </fieldset>
           </div>
           <hr className='rdc05rHr460Q' />
           <fieldset className='flexColumn' id='formAddStudBodyFs'>
-            <label htmlFor='inpNameStud'>
+            <label className={sR.label} htmlFor='inpNameStud'>
               <strong id='titleNameStud'>Nome Completo:</strong>
               <input
                 type='text'
                 list='listStudRegstName'
                 id='inpNameStud'
                 name='name'
-                className='form-control autocorrectAll ssPersist minText maxText patternText'
+                className={`${tInpClasses} autocorrectAll`}
                 placeholder='Preencha com o nome completo'
                 autoFocus
                 autoComplete='given-name'
@@ -209,14 +218,14 @@ export default function StudentForm(): JSX.Element {
               />
               <datalist id='listStudRegstName'></datalist>
             </label>
-            <label htmlFor='inpCPFStud'>
+            <label className={sR.label} htmlFor='inpCPFStud'>
               <strong id='titleCPFStud'>CPF:</strong>
               <input
                 type='text'
                 list='listStudRegstCPF'
                 id='inpCPFStud'
                 name='cpf'
-                className='form-control ssPersist minText maxText patternText'
+                className={tInpClasses}
                 minLength={15}
                 maxLength={16}
                 placeholder='Preencha com o CPF'
@@ -232,17 +241,17 @@ export default function StudentForm(): JSX.Element {
               />
               <datalist id='listStudRegstCPF'></datalist>
             </label>
-            <label htmlFor='inpDRE'>
+            <label className={sR.label} htmlFor='inpDRE'>
               <strong id='titleDREStud'>DRE:</strong>
               <input
                 type='number'
                 id='inpDRE'
                 name='dre'
-                className='form-control ssPersist minText maxText patternText'
+                className={tInpClasses}
                 list='listStudRegstDRE'
                 minLength={1}
                 maxLength={12}
-                pattern='/^\d{9,}$/'
+                pattern='^\d{9,}$'
                 placeholder='Preencha com o DRE'
                 autoComplete='username'
                 data-title='DRE'
@@ -254,15 +263,15 @@ export default function StudentForm(): JSX.Element {
               />
               <datalist id='listStudRegstDRE'></datalist>
             </label>
-            <label htmlFor='inpTel'>
+            <label className={sR.label} htmlFor='inpTel'>
               <strong id='titleTelStud'>Telefone (com DDD):</strong>
               <input
                 type='tel'
                 list='listStudRegstTel'
                 id='inpTel'
                 name='telephone'
-                pattern='/^(\+\d{2}\s?)?(\(\d{2}\)\s?)?\d{3,5}[-\s]?\d{4}$/'
-                className='form-control ssPersist minText maxText patternText'
+                pattern='^(\+\d{2}\s?)?(\(\d{2}\)\s?)?\d{3,5}[-\s]?\d{4}$'
+                className={tInpClasses}
                 minLength={8}
                 maxLength={20}
                 placeholder='Preencha com o Telefone para contato'
@@ -277,7 +286,7 @@ export default function StudentForm(): JSX.Element {
               />
               <datalist id='listStudRegstTel'></datalist>
             </label>
-            <label htmlFor='inpEmailStud'>
+            <label className={sR.label} htmlFor='inpEmailStud'>
               <strong id='titleEmailStud' className='forceInvert'>
                 E-mail:
               </strong>
@@ -286,7 +295,7 @@ export default function StudentForm(): JSX.Element {
                 list='listStudRegstEmail'
                 id='inpEmailStud'
                 name='email'
-                className='form-control ssPersist'
+                className={baseInpClasses}
                 placeholder='Preencha com o E-mail para contato'
                 autoComplete='email'
                 data-title='E-mail'
@@ -299,14 +308,14 @@ export default function StudentForm(): JSX.Element {
               />
               <datalist id='listStudRegstEmail'></datalist>
             </label>
-            <label htmlFor='inpCourseStud'>
+            <label className={sR.label} htmlFor='inpCourseStud'>
               <strong id='titleOrigStud'>Curso de Origem:</strong>
               <input
                 type='text'
                 list='listCoursesStud'
                 id='inpCourseStud'
                 name='origin'
-                className='form-control ssPersist minText maxText patternText'
+                className={tInpClasses}
                 minLength={3}
                 maxLength={99}
                 placeholder='Preencha com o Curso do Estudante'
@@ -326,14 +335,14 @@ export default function StudentForm(): JSX.Element {
                 ))}
               </datalist>
             </label>
-            <label htmlFor='inpAtuacaoStud'>
+            <label className={sR.label} htmlFor='inpAtuacaoStud'>
               <strong id='titleActStud' className='forceInvert'>
                 Área de atuação:
               </strong>
               <select
                 id='inpAtuacaoStud'
                 name='area'
-                className='form-select ssPersist'
+                className={baseInpClasses}
                 data-title='Área de Atuação do Estudante'
                 required>
                 <option value='educacaofisicanut'>Educação Física & Nutrição</option>
@@ -341,7 +350,7 @@ export default function StudentForm(): JSX.Element {
                 <option value='psiq'>Psiquiatria & Psicologia</option>
               </select>
             </label>
-            <label htmlFor='inpPeriodo'>
+            <label className={sR.label} htmlFor='inpPeriodo'>
               <strong>Período Atual:</strong>
               <input
                 type='number'
@@ -351,7 +360,7 @@ export default function StudentForm(): JSX.Element {
                 max={20}
                 minLength={1}
                 maxLength={2}
-                className='form-control ssPersist minText maxText minNum maxNum patternText'
+                className={`${tInpClasses} minNum maxNum`}
                 placeholder='Preencha com o Período Atual do aluno (em número simples)'
                 data-title='Período Atual Estudante'
                 data-reqlength='1'
@@ -370,13 +379,13 @@ export default function StudentForm(): JSX.Element {
                 ))}
               </datalist>
             </label>
-            <label htmlFor='inpEntr'>
+            <label className={sR.label} htmlFor='inpEntr'>
               <strong>Período de Entrada no Projeto:</strong>
               <input
                 type='text'
                 id='inpEntr'
                 name='beginning_semester'
-                className='form-control ssPersist'
+                className={baseInpClasses}
                 placeholder='Preencha com o Período do Aluno (ano.semestre, em número) na sua entrada'
                 data-title='Período de Entrada do aluno'
                 onInput={ev =>
@@ -390,24 +399,24 @@ export default function StudentForm(): JSX.Element {
                 }
               />
             </label>
-            <label htmlFor='inpDayEntr' className='forceInvert'>
+            <label htmlFor='inpDayEntr' className={`${sR.label} forceInvert`} style={{ marginBlock: "0.5rem" }}>
               <strong className='forceInvert'>Dia de Entrada no Projeto:</strong>
               <input
                 type='date'
                 id='inpDayEntr'
                 name='beginning_day'
-                className='form-control forceInvert ssPersist maxCurrDate'
+                className={`${baseInpClasses} forceInvert maxCurrDate`}
                 placeholder='Preencha com o Dia de Entrada do Aluno no projeto'
                 data-title='Dia de Entrada do aluno'
                 required
               />
             </label>
-            <span role='group' id='spanDias' className='mg__3b flexNoWC rGap1v'>
+            <span role='group' id='spanDias' className='mg-3b flexNoWC rGap1v' style={{ marginBottom: "1.5rem" }}>
               <strong className='forceInvert'>Dias de Atividade:</strong>
-              <div role='group' id='divDiasAtv' className='flexSimple flexLineDiv flexQ460R'>
-                <label className='flexWR gap1v' id='labQuarta'>
+              <fieldset role='group' id='divDiasAtv' className='flexSimple flexLineDiv flexQ460R'>
+                <label className={slotLab} id='labQuarta'>
                   <slot
-                    className='bolded lcPersist'
+                    className={slot}
                     role='textbox'
                     id='titleQuarta'
                     contentEditable='true'
@@ -418,13 +427,13 @@ export default function StudentForm(): JSX.Element {
                     type='checkbox'
                     id='checkQuarta'
                     name='quarta-feira'
-                    className='form-check-input mdGreen ssPersist'
+                    className={checkClasses}
                     data-title='Quarta-feira'
                   />
                 </label>
-                <label className='flexWR gap1v' id='labSexta'>
+                <label className={slotLab} id='labSexta'>
                   <slot
-                    className='bolded lcPersist'
+                    className={slot}
                     role='textbox'
                     id='titleSexta'
                     contentEditable='true'
@@ -435,23 +444,20 @@ export default function StudentForm(): JSX.Element {
                     type='checkbox'
                     id='checkSexta'
                     name='sexta-feira'
-                    className='form-check-input mdGreen ssPersist'
+                    className={checkClasses}
                     data-title='Sexta-feira'
                   />
                 </label>
-              </div>
+              </fieldset>
             </span>
             <div role='group' className='flexNoW flexJSe cGap2v flexAlItCt flexQ900NoWC rGapQ9002v noInvert'>
-              <button
-                type='submit'
-                id='btnSubmitNewStud'
-                className='btn btn-success flexAlItCt flexJC flexBasis50 widFull noInvert'>
+              <button type='submit' id='btnSubmitNewStud' className={`${btnClasses} btn-success`}>
                 <strong>Finalizar Cadastro</strong>
               </button>
               <button
                 id='btnExport'
                 type='button'
-                className='btn btn-primary flexAlItCt flexJC flexBasis50 widFull bolded noInvert'
+                className={`${btnClasses} btn-primary bolded`}
                 ref={btnExportStudsRef}
                 data-active='false'
                 title='Gere um .xlsx com os dados preenchidos'

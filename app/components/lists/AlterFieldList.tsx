@@ -1,8 +1,8 @@
+"use client";
 import { AlterFieldListProps } from "@/lib/global/declarations/interfacesCons";
 import { ErrorBoundary } from "react-error-boundary";
 import { isClickOutside } from "@/lib/global/gStyleScript";
-import { nlDlg, nlFm, nlSel } from "@/lib/global/declarations/types";
-import { syncAriaStates } from "@/lib/global/handlers/gHandlers";
+import { nlFm, nlSel } from "@/lib/global/declarations/types";
 import { useEffect, useRef, useState } from "react";
 import ErrorFallbackDlg from "../error/ErrorFallbackDlg";
 import GenericErrorComponent from "../error/GenericErrorComponent";
@@ -15,89 +15,30 @@ import {
   formatCPF,
   formatTel,
 } from "@/lib/global/gModel";
+import useDialog from "@/lib/hooks/useDialog";
+import { useLocation, useNavigate } from "react-router-dom";
 export default function AlterFieldList({
   dispatch,
   tabRef,
   name = "anonimo",
   state = true,
 }: AlterFieldListProps): JSX.Element {
-  const alterFieldRef = useRef<nlDlg>(null),
+  const { mainRef } = useDialog({
+      state,
+      dispatch,
+      param: `&alter-dlg=open#${btoa(
+        String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))),
+      )}`,
+    }),
     formRef = useRef<nlFm>(null),
     optsRef = useRef<nlSel>(null),
     [, setChosenOp] = useState(optsRef.current?.value || null),
+    navigate = useNavigate(),
+    location = useLocation(),
     handleChange = (targ: HTMLSelectElement): void => {
-      history.pushState(
-        {},
-        "",
-        `${location.origin}${location.pathname}${location.search}${camelToKebab(targ.value)}${location.hash}`,
-      );
-      setTimeout(() => {
-        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
-      }, 300);
+      navigate(`${location.pathname}${location.search}${camelToKebab(targ.value)}${location.hash}`);
     },
     toggleDisplayRowData = (state: boolean = true): void => dispatch(!state);
-  useEffect(() => {
-    if (alterFieldRef.current instanceof HTMLDialogElement) {
-      alterFieldRef.current.showModal();
-      syncAriaStates([...alterFieldRef.current!.querySelectorAll("*"), alterFieldRef.current]);
-      alterFieldRef.current.addEventListener(
-        "click",
-        click => {
-          if (isClickOutside(click, alterFieldRef.current!).filter(point => point === true).length >= 1) {
-            alterFieldRef.current!.close();
-            toggleDisplayRowData(state);
-          }
-        },
-        true,
-      );
-      const handleKeyDown = (press: KeyboardEvent): void => {
-        if (press.key === "Escape") {
-          dispatch(!state);
-        }
-      };
-      addEventListener("keydown", handleKeyDown);
-      return (): void => removeEventListener("keydown", handleKeyDown);
-    }
-  }, [alterFieldRef, dispatch, toggleDisplayRowData]);
-  //push em history
-  useEffect(() => {
-    history.pushState(
-      {},
-      "",
-      `${location.origin}${location.pathname}${location.search}&alter-dlg=open#${btoa(
-        String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))),
-      )}`,
-    );
-    optsRef.current instanceof HTMLSelectElement && handleChange(optsRef.current);
-    setTimeout(() => {
-      history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
-    }, 300);
-    return (): void => {
-      optsRef.current instanceof HTMLSelectElement
-        ? history.pushState(
-            {},
-            "",
-            `${location.origin}${location.pathname}${location.search}`
-              .replaceAll(`&alter-dlg=open`, "")
-              .replaceAll(
-                `#${btoa(String.fromCodePoint(...new TextEncoder().encode(name.toLowerCase().replaceAll(" ", "-"))))}`,
-                "",
-              )
-              .replaceAll(`${camelToKebab(optsRef.current.value)}${location.hash}`, ""),
-          )
-        : history.pushState(
-            {},
-            "",
-            `${location.origin}${location.pathname}${location.search}`
-              .replaceAll(`&alter-dlg=open`, "")
-              .replaceAll(`#${name.toLowerCase().replaceAll(" ", "-")}`, "")
-              .replaceAll(`${location.hash}`, ""),
-          );
-      setTimeout(() => {
-        history.pushState({}, "", `${location.href}`.replaceAll("/?", "?").replaceAll("/#", "#"));
-      }, 300);
-    };
-  }, [name]);
   useEffect(() => {
     if (
       (optsRef?.current instanceof HTMLSelectElement || optsRef.current! instanceof HTMLInputElement) &&
@@ -134,6 +75,9 @@ export default function AlterFieldList({
           optsRef.current?.appendChild(newOpt);
         });
       if (optsRef.current.childElementCount < headers.length || optsRef.current.childElementCount === 0) {
+        console.error(
+          `Error generating options for <select> reflecting headers. Abort process and replacing by <input>`,
+        );
         const replaceInp = document.createElement("input") as HTMLInputElement;
         Object.assign(replaceInp, optsRef.current);
         Object.assign(replaceInp.style, optsRef.current);
@@ -151,14 +95,17 @@ export default function AlterFieldList({
   return (
     <ErrorBoundary FallbackComponent={() => <GenericErrorComponent message='Erro carregando modal de alteração' />}>
       <dialog
-        className='modalContent__stk2'
-        ref={alterFieldRef}
+        className='modal-content-stk2'
+        ref={mainRef}
         id='alterFieldDlg'
         onClick={ev => {
-          if (isClickOutside(ev, ev.currentTarget).some(coord => coord === true)) {
-            dispatch(!state);
-            ev.currentTarget.closest("dialog")?.close();
-          }
+          if (
+            !mainRef.current ||
+            (mainRef.current && isClickOutside(ev, mainRef.current).filter(point => point === true).length >= 1)
+          )
+            return;
+          mainRef.current?.close();
+          toggleDisplayRowData(state);
         }}>
         <ErrorBoundary
           FallbackComponent={() => (
@@ -169,7 +116,7 @@ export default function AlterFieldList({
           )}>
           <fieldset id='fsAlterFieldStud' className='flexNoWC flexJSt flexAlItSt noInvert'>
             <section className='flexRNoWBetCt widFull' id='headFieldsHead'>
-              <h2 className='mg__1b'>
+              <h2 className='mg-1b'>
                 <strong>Campos Disponíveis</strong>
               </h2>
               <button className='btn btn-close forceInvert' onClick={() => toggleDisplayRowData(state)}></button>
