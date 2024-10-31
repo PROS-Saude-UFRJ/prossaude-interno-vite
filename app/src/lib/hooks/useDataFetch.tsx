@@ -10,10 +10,10 @@ import {
   PersonValidator,
   ProfInfoValidator,
   StudInfoValidator,
-} from "../global/declarations/validators";
+} from "../global/declarations/classes";
 import TabSpinner from "../../../components/icons/TabSpinner";
 import GenericErrorComponent from "../../../components/error/GenericErrorComponent";
-import { codifyError } from "../global/handlers/codifyError";
+import { codifyError } from "../global/handlers/errorHandler";
 export function useDataFetch(
   apiRoute: formCases,
   ref: MutableRefObject<nlHtEl>,
@@ -23,7 +23,6 @@ export function useDataFetch(
   grp: (PacInfo | ProfInfo | StudInfo)[];
   loaded: boolean;
 } {
-  let grp: (PacInfo | ProfInfo | StudInfo)[] = useMemo<any[]>((): any[] => [], []);
   const [data, setData] = useState<JSX.Element[]>([
       <TabSpinner
         key={crypto.randomUUID()}
@@ -34,6 +33,7 @@ export function useDataFetch(
     ]),
     [loaded, setLoad] = useState<boolean>(false),
     tabToasted = useRef<boolean>(false),
+    grp: (PacInfo | ProfInfo | StudInfo)[] = useMemo<any[]>((): any[] => [], []),
     validator = useMemo<(data: Partial<ProfInfo | StudInfo | PacInfo>) => boolean>((): ((
       data: Partial<ProfInfo | StudInfo | PacInfo>,
     ) => boolean) => {
@@ -57,14 +57,13 @@ export function useDataFetch(
           );
         if (Array.isArray(res)) {
           for (const p of res) !grp.includes(p) && grp.push(p as ProfInfo | StudInfo | PacInfo);
-          const grpSet = new Set(grp);
-          grp = [...grpSet];
         } else
           throw new Error(
             navigatorVars.pt ? `A lista de dados não pôde ser criada` : "The data list could not be created",
           );
       })
       .catch(err => {
+        console.log(err);
         if (tabToasted.current) return;
         toast.error(
           `${navigatorVars.pt ? `Erro: código` : `Error: code`} ${codifyError(err)}` ||
@@ -83,6 +82,7 @@ export function useDataFetch(
   }, [apiRoute, dataParser, ref]);
   useEffect(() => {
     if (!loaded) return;
+    console.log(grp);
     const filtered = grp.filter(p => validator(p));
     console.log(filtered);
     if (filtered.length > 0)
