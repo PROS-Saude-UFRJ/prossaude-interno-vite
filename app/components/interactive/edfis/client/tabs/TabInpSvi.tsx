@@ -14,10 +14,24 @@ export default function TabInpSvi({ nRow, nCol, ctx, lab }: TdProps): JSX.Elemen
           return lab;
       }
     })(),
+    pattern = "^[0-9]+([\\.,](?=[0-9])[0-9]+)?$",
     inpRef = useRef<nlInp>(null),
     [v, setValue] = useState<string>("");
   if (/prog/gi.test(lab)) lab = lab.replace(/prog/gi, "") as any;
   if (/prog/gi.test(ctx)) ctx = ctx.replace(/prog/gi, "") as any;
+  useEffect(() => {
+    if (!inpRef.current) return;
+    if (inpRef.current.required) {
+      inpRef.current.minLength = 1;
+      inpRef.current.maxLength = 99;
+      inpRef.current.dataset.min = "1";
+      inpRef.current.pattern = pattern;
+      if (inpRef.current.type === "number") {
+        inpRef.current.dataset.minNum = "0";
+        inpRef.current.dataset.maxNum = "999999";
+      }
+    }
+  }, [inpRef]);
   useEffect(() => {
     if (!inpRef.current) return;
     if (inpRef.current.required) handleEventReq(inpRef.current);
@@ -28,12 +42,12 @@ export default function TabInpSvi({ nRow, nCol, ctx, lab }: TdProps): JSX.Elemen
             maxNum: 999999,
             min: 1,
             max: 99,
-            pattern: ["^[\\d,.]+$", ""],
+            pattern: [pattern, ""],
           })
         : handleCondtReq(inpRef.current as HTMLInputElement, {
             min: 1,
             max: 99,
-            pattern: ["^[\\d,.]+$", ""],
+            pattern: [pattern, ""],
           });
     }
   }, [v, inpRef]);
@@ -43,9 +57,9 @@ export default function TabInpSvi({ nRow, nCol, ctx, lab }: TdProps): JSX.Elemen
       value={v}
       type='number'
       name={`${lab.toLowerCase()}_${nRow}_${nCol}`}
-      className={`form-control tabInpProg tabInpProg${ctx} tabInpProg${lab}${ctx} tabInpRow${ctx}${nRow} float sevenCharLongNum ${sEn.tabInpProg}`}
+      className={`form-control minNum minText maxText patternText tabInpProg tabInpProg${ctx} tabInpProg${lab}${ctx} tabInpRow${ctx}${nRow} float sevenCharLongNum ${sEn.tabInpProg}`}
       id={`tabInpRow${ctx}${nRow}_${nCol}`}
-      min={"0"}
+      min='0'
       max='65535'
       data-title={`${"Sinais Vitais"} ${fullName} (Consulta ${nCol - 1})`}
       data-row={nRow}
