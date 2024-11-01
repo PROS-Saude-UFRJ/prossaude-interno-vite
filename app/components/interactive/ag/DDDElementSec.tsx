@@ -1,4 +1,3 @@
-"use client";
 import { handleCondtReq } from "@/lib/global/handlers/gHandlers";
 export default function DDDElementSec(): JSX.Element {
   return (
